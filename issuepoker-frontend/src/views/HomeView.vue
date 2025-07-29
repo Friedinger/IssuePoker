@@ -11,10 +11,10 @@
 
       <v-col class="mb-4">
         <h1 class="text-h3 font-weight-bold mb-3">
-          {{ t("views.home.header") }}
+          Willkommen beim RefArch-KickStarter von it@M
         </h1>
         <p>
-          {{ t("views.home.apiGatewayStatus") }}
+          Das API-Gateway ist:
           <span :class="status">{{ status }}</span>
         </p>
         <p v-if="user">
@@ -30,14 +30,11 @@
 import type User from "@/types/User.ts";
 
 import { onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
 
 import { checkHealth } from "@/api/health-client";
 import { getUser } from "@/api/user-client.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
 import HealthState from "@/types/HealthState";
-
-const { t } = useI18n();
 
 const snackbarStore = useSnackbarStore();
 const status = ref("DOWN");
@@ -58,10 +55,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/*noinspection CssUnusedSymbol*/
 .UP {
   color: limegreen;
 }
 
+/*noinspection CssUnusedSymbol*/
 .DOWN {
   color: lightcoral;
 }

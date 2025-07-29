@@ -4,48 +4,48 @@
     <v-app-bar color="primary">
       <v-row align="center">
         <v-col
-          cols="3"
           class="d-flex align-center justify-start"
+          cols="3"
         >
           <v-app-bar-nav-icon @click.stop="toggleDrawer()" />
           <router-link to="/">
             <v-toolbar-title class="font-weight-bold">
-              <span class="text-white">{{ t("app.name.part1") }}</span>
-              <span class="text-secondary">{{ t("app.name.part2") }}</span>
-              <span class="text-white">{{ t("app.name.part3") }}</span>
+              <span class="text-white">RefArch-</span>
+              <span class="text-secondary">Kick</span>
+              <span class="text-white">Starter</span>
             </v-toolbar-title>
           </router-link>
         </v-col>
         <v-col
-          cols="6"
           class="d-flex align-center justify-center"
+          cols="6"
         >
           <v-text-field
             id="searchField"
             v-model="query"
-            flat
-            variant="solo-inverted"
-            hide-details
-            :label="t('app.search')"
-            clearable
             :prepend-inner-icon="mdiMagnify"
+            clearable
+            flat
+            hide-details
+            label="Suche"
             theme="dark"
+            variant="solo-inverted"
             @keyup.enter="search"
           />
         </v-col>
         <v-col
-          cols="3"
           class="d-flex align-center justify-end"
+          cols="3"
         >
           <app-switcher
             v-if="appswitcherBaseUrl"
             :base-url="appswitcherBaseUrl"
-            :tags="['global']"
             :icon="mdiApps"
+            :tags="['global']"
           />
           <v-btn
-            variant="text"
             icon
+            variant="text"
           >
             <ad2-image-avatar
               v-if="userStore.getUser !== null"
@@ -58,9 +58,7 @@
     <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item :to="{ name: ROUTES_GETSTARTED }">
-          <v-list-item-title>
-            {{ t("views.getStarted.navText") }}
-          </v-list-item-title>
+          <v-list-item-title>Erste Schritte</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -76,12 +74,11 @@
   </v-app>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { mdiApps, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { useToggle } from "@vueuse/core";
 import { onMounted, ref } from "vue";
-import { useI18n } from "vue-i18n";
 
 import { getUser } from "@/api/user-client";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
@@ -90,8 +87,6 @@ import { APPSWITCHER_URL, ROUTES_GETSTARTED } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
 import User, { UserLocalDevelopment } from "@/types/User";
-
-const { t } = useI18n();
 
 const query = ref<string>("");
 const appswitcherBaseUrl = APPSWITCHER_URL;

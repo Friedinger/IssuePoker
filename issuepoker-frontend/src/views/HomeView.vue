@@ -3,9 +3,9 @@
     <v-row class="text-center">
       <v-col cols="12">
         <v-img
-          src="@/assets/logo.png"
           class="my-3"
           height="200"
+          src="@/assets/logo.png"
         />
       </v-col>
 
@@ -17,16 +17,23 @@
           {{ t("views.home.apiGatewayStatus") }}
           <span :class="status">{{ status }}</span>
         </p>
+        <p v-if="user">
+          User:
+          {{ user.email }}
+        </p>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
+import type User from "@/types/User.ts";
+
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import { checkHealth } from "@/api/health-client";
+import { getUser } from "@/api/user-client.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
 import HealthState from "@/types/HealthState";
 
@@ -34,10 +41,16 @@ const { t } = useI18n();
 
 const snackbarStore = useSnackbarStore();
 const status = ref("DOWN");
+const user = ref<User>();
 
 onMounted(() => {
   checkHealth()
     .then((content: HealthState) => (status.value = content.status))
+    .catch((error) => {
+      snackbarStore.showMessage(error);
+    });
+  getUser()
+    .then((content: User) => (user.value = content))
     .catch((error) => {
       snackbarStore.showMessage(error);
     });

@@ -3,32 +3,32 @@ author: Default
 realm: local_realm
 changes:
   - addUser:
-      name: none
-      lastName: none
-      firstName: none
+      name: admin
+      lastName: admin
+      firstName: admin
       enabled: true
       emailVerified: true
-      email: none@none.com
+      email: admin@issuepoker.com
   - updateUserPassword:
-      name: none
-      password: "none"
+      name: admin
+      password: "admin"
   - addUser:
-      name: reader
-      lastName: reader
-      firstName: reader
+      name: user1
+      lastName: user1
+      firstName: user1
       enabled: true
       emailVerified: true
-      email: reader@reader.com
+      email: user1@issuepoker.com
   - updateUserPassword:
-      name: reader
-      password: "reader"
+      name: user1
+      password: "user1"
   - addUser:
-      name: writer
-      lastName: writer
-      firstName: writer
+      name: user2
+      lastName: user2
+      firstName: user2
       enabled: true
       emailVerified: true
-      email: writer@writer.com
+      email: user2@issuepoker.com
   - updateUserPassword:
-      name: writer
-      password: "writer"
+      name: user2
+      password: "user2"

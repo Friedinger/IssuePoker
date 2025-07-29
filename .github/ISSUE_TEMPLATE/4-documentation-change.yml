@@ -19,10 +19,10 @@ body:
       multiple: true
       description: Affected documentation parts
       options:
-        - refarch-frontend
-        - refarch-backend
-        - refarch-eai
-        - refarch-webcomponent
+        - issuepoker-frontend
+        - issuepoker-backend
+        - issuepoker-eai
+        - issuepoker-webcomponent
         - Other
     validations:
       required: true

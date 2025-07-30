@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import type Issue from "@/types/Issue.ts";
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import { ROUTES_ISSUES_LIST } from "@/constants.ts";
@@ -27,14 +27,25 @@ const route = useRoute();
 const router = useRouter();
 
 onMounted(() => {
-  const issueId = route.params.id;
+  getIssue(route.params.id);
+});
+
+watch(
+  () => route.params.id,
+  (newId) => getIssue(newId)
+);
+
+function getIssue(id: string | string[]) {
   try {
-    fetchIssue(parseInt(issueId[0]));
+    if (Array.isArray(id)) {
+      id = id[0];
+    }
+    fetchIssue(parseInt(id));
   } catch (error) {
     snackbarStore.showMessage({ message: (error as Error).message });
     goBack();
   }
-});
+}
 
 function fetchIssue(id: number) {
   const issues: Issue[] = [

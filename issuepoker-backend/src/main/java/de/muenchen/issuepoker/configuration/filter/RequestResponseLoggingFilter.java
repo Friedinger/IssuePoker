@@ -6,6 +6,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.FilterRegistration;
@@ -14,9 +16,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * This filter logs the username for requests.
@@ -59,9 +58,9 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
      */
     private boolean checkForLogging(final HttpServletRequest httpServletRequest) {
         final boolean isLoggingMode = switch (securityProperties.getLoggingMode()) {
-            case ALL -> true;
-            case CHANGING -> CHANGING_METHODS.contains(httpServletRequest.getMethod());
-            default -> false;
+        case ALL -> true;
+        case CHANGING -> CHANGING_METHODS.contains(httpServletRequest.getMethod());
+        default -> false;
         };
 
         return isLoggingMode && securityProperties.getLoggingIgnoreListAsMatchers().stream().noneMatch(matcher -> matcher.matches(httpServletRequest));

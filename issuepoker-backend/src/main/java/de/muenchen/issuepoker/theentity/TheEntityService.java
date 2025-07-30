@@ -1,7 +1,10 @@
 package de.muenchen.issuepoker.theentity;
 
+import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
+
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.security.Authorities;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -9,10 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
-
-import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
 
 @Service
 @Slf4j

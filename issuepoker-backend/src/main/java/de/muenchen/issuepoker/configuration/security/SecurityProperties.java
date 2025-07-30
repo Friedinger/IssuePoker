@@ -5,14 +5,13 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Properties class that holds configuration data relevant for security mechanisms
@@ -25,8 +24,7 @@ public class SecurityProperties {
     /**
      * ID of the used oAuth client.
      */
-    @NotBlank
-    private String clientId;
+    @NotBlank private String clientId;
 
     /**
      * URI of the userinfo endpoint to use for fetching data relevant for authorization (e.g. roles or
@@ -35,22 +33,19 @@ public class SecurityProperties {
      * @deprecated Use {@link KeycloakRolesAuthoritiesConverter}
      */
     @Deprecated
-    @NotBlank
-    private String userInfoUri;
+    @NotBlank private String userInfoUri;
 
     /**
      * Logging mode for incoming HTTP requests, see also
      * {@link RequestResponseLoggingFilter}
      */
-    @NotNull
-    private RequestResponseLoggingFilter.LoggingMode loggingMode = RequestResponseLoggingFilter.LoggingMode.NONE;
+    @NotNull private RequestResponseLoggingFilter.LoggingMode loggingMode = RequestResponseLoggingFilter.LoggingMode.NONE;
 
     /**
      * List of paths to ignore when logging HTTP requests, see also
      * {@link RequestResponseLoggingFilter}
      */
-    @NotNull
-    private List<PathPatternRequestMatcher> loggingIgnoreList = List.of(PathPatternRequestMatcher.withDefaults().matcher("/actuator/**"));
+    @NotNull private List<PathPatternRequestMatcher> loggingIgnoreList = List.of(PathPatternRequestMatcher.withDefaults().matcher("/actuator/**"));
 
     @SuppressFBWarnings(value = "EI_EXPOSE_REP", matchType = SuppressMatchType.EXACT)
     public List<PathPatternRequestMatcher> getLoggingIgnoreListAsMatchers() {

@@ -4,14 +4,17 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-
-import java.text.Normalizer;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for NFC normalization
@@ -94,7 +97,7 @@ public class NfcHelper {
      * @see Normalizer#normalize(CharSequence, Normalizer.Form)
      */
     @SuppressFBWarnings(
-            value = {"HTTPONLY_COOKIE", "INSECURE_COOKIE"},
+            value = { "HTTPONLY_COOKIE", "INSECURE_COOKIE" },
             justification = "conversion only alters string based types, other attributes are copied from the original cookie",
             matchType = SuppressMatchType.EXACT
     )

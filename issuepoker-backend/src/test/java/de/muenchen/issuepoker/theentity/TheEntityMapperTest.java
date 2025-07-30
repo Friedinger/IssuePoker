@@ -1,17 +1,16 @@
 package de.muenchen.issuepoker.theentity;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import de.muenchen.issuepoker.theentity.dto.TheEntityMapper;
 import de.muenchen.issuepoker.theentity.dto.TheEntityRequestDTO;
 import de.muenchen.issuepoker.theentity.dto.TheEntityResponseDTO;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @AllArgsConstructor
 class TheEntityMapperTest {

@@ -1,12 +1,11 @@
 package de.muenchen.issuepoker.configuration.filter.nfcconverter;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 
 /**
  * <p>

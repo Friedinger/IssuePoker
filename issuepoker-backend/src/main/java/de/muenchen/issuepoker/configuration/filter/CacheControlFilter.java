@@ -4,13 +4,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.web.servlet.FilterRegistration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
 
 /**
  * The filter adds a {@link HttpHeaders#CACHE_CONTROL} header to each HTTP response, if
@@ -35,8 +34,8 @@ public class CacheControlFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(final HttpServletRequest request,
-                                    final HttpServletResponse response,
-                                    final FilterChain filterChain) throws ServletException, IOException {
+            final HttpServletResponse response,
+            final FilterChain filterChain) throws ServletException, IOException {
 
         final String cacheControlHeaderValue = response.getHeader(HttpHeaders.CACHE_CONTROL);
         if (StringUtils.isBlank(cacheControlHeaderValue)) {

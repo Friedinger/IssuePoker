@@ -1,15 +1,14 @@
 package de.muenchen.issuepoker.configuration.filter.nfcconverter;
 
-import jakarta.servlet.http.Cookie;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 class NfcHelperTest {
 
@@ -25,9 +24,9 @@ class NfcHelperTest {
 
     private static final String THIRD_NFC = "\u1e69";
 
-    private static final String[] NFD_INPUT = {FIRST_NFD, SECOND_NFD, THIRD_NFD};
+    private static final String[] NFD_INPUT = { FIRST_NFD, SECOND_NFD, THIRD_NFD };
 
-    private static final String[] NFC_OUTPUT_EXPECTED = {FIRST_NFC, SECOND_NFC, THIRD_NFC};
+    private static final String[] NFC_OUTPUT_EXPECTED = { FIRST_NFC, SECOND_NFC, THIRD_NFC };
 
     private static Cookie createNfdCookie() {
         final Cookie nfdCookie = new Cookie(NfcConverterTest.TOKEN, Arrays.toString(NFD_INPUT));

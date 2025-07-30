@@ -2,6 +2,12 @@ package de.muenchen.issuepoker.configuration.security;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -17,13 +23,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 /**
  * Service that calls an OIDC /userinfo endpoint (with JWT Bearer Auth) and extracts the
@@ -48,7 +47,7 @@ public class UserInfoAuthoritiesConverter implements Converter<Jwt, Collection<G
     /**
      * Creates a new instance
      *
-     * @param userInfoUri         userinfo endpoint URI
+     * @param userInfoUri userinfo endpoint URI
      * @param restTemplateBuilder a {@link RestTemplateBuilder}
      */
     public UserInfoAuthoritiesConverter(final String userInfoUri, final RestTemplateBuilder restTemplateBuilder) {
@@ -90,19 +89,22 @@ public class UserInfoAuthoritiesConverter implements Converter<Jwt, Collection<G
         final ValueWrapper valueWrapper = this.cache.get(jwt.getSubject());
         if (valueWrapper != null) {
             // value present in cache
-            @SuppressWarnings("unchecked") final Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) valueWrapper.get();
+            @SuppressWarnings("unchecked")
+            final Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) valueWrapper.get();
             log.debug("Resolved authorities (from cache): {}", authorities);
             return authorities;
         }
 
         log.debug("Fetching user-info for token subject: {}", jwt.getSubject());
-        @SuppressWarnings("PMD.LooseCoupling") final HttpHeaders headers = new HttpHeaders();
+        @SuppressWarnings("PMD.LooseCoupling")
+        final HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + jwt.getTokenValue());
         final HttpEntity<String> entity = new HttpEntity<>(headers);
 
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         try {
-            @SuppressWarnings("unchecked") final Map<String, Object> map = restTemplate.exchange(this.userInfoUri, HttpMethod.GET, entity,
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> map = restTemplate.exchange(this.userInfoUri, HttpMethod.GET, entity,
                     Map.class).getBody();
 
             log.debug("Response from user-info Endpoint: {}", map);

@@ -1,5 +1,8 @@
 package de.muenchen.issuepoker.configuration.filter.nfcconverter;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletResponse;
@@ -7,6 +10,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.collections4.list.UnmodifiableList;
 import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.io.IOUtils;
@@ -18,18 +34,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -98,7 +102,7 @@ class NfcConverterTest {
         Mockito.when(req.getRequestURI()).thenReturn("/index.html?type=" + contentType);
 
         final Map<String, String[]> baseMapParams = new HashMap<>();
-        baseMapParams.put(NAME_NFD, new String[]{VALUE_NFD, VALUE2_NFD});
+        baseMapParams.put(NAME_NFD, new String[] { VALUE_NFD, VALUE2_NFD });
         final Map<String, String[]> params = UnmodifiableMap.unmodifiableMap(baseMapParams);
         Mockito.when(req.getParameter(NAME_NFD)).thenReturn(params.get(NAME_NFD)[0]);
         Mockito.when(req.getParameterMap()).thenReturn(params);

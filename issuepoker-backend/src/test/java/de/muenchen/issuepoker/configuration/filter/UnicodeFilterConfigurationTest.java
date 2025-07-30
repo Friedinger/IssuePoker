@@ -1,11 +1,17 @@
 package de.muenchen.issuepoker.configuration.filter;
 
+import static de.muenchen.issuepoker.TestConstants.SPRING_NO_SECURITY_PROFILE;
+import static de.muenchen.issuepoker.TestConstants.SPRING_TEST_PROFILE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import de.muenchen.issuepoker.MicroServiceApplication;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.theentity.TheEntity;
 import de.muenchen.issuepoker.theentity.TheEntityRepository;
 import de.muenchen.issuepoker.theentity.dto.TheEntityRequestDTO;
 import de.muenchen.issuepoker.theentity.dto.TheEntityResponseDTO;
+import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,19 +23,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.net.URI;
-
-import static de.muenchen.issuepoker.TestConstants.SPRING_NO_SECURITY_PROFILE;
-import static de.muenchen.issuepoker.TestConstants.SPRING_TEST_PROFILE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 @Testcontainers
 @SpringBootTest(
-        classes = {MicroServiceApplication.class},
+        classes = { MicroServiceApplication.class },
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-@ActiveProfiles(profiles = {SPRING_TEST_PROFILE, SPRING_NO_SECURITY_PROFILE})
+@ActiveProfiles(profiles = { SPRING_TEST_PROFILE, SPRING_NO_SECURITY_PROFILE })
 class UnicodeFilterConfigurationTest {
 
     @Container

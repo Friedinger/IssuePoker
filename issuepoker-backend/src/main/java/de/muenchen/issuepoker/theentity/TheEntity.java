@@ -5,7 +5,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * This class represents a TheEntity.
@@ -29,8 +33,6 @@ public class TheEntity extends BaseEntity {
     // ========= //
 
     @Column(nullable = false, length = 8)
-    @NotNull
-    @Size(min = 2, max = 8)
-    private String textAttribute;
+    @NotNull @Size(min = 2, max = 8) private String textAttribute;
 
 }

@@ -2,8 +2,8 @@
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
 import "vuetify/styles";
 
-import {createVuetify} from "vuetify";
-import {aliases, mdi} from "vuetify/iconsets/mdi-svg";
+import { createVuetify } from "vuetify";
+import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 
 export default createVuetify({
   icons: {

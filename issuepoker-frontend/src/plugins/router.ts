@@ -1,11 +1,15 @@
 // @formatter:off
 // Composables
-import {createRouter, createWebHashHistory} from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 
-import {ROUTES_HOME, ROUTES_ISSUES_DETAIL, ROUTES_ISSUES_LIST} from "@/constants";
-import IssuesListView from "@/views/IssueListView.vue";
+import {
+  ROUTES_HOME,
+  ROUTES_ISSUES_DETAIL,
+  ROUTES_ISSUES_LIST,
+} from "@/constants";
 import HomeView from "@/views/HomeView.vue";
 import IssueDetailsView from "@/views/IssueDetailsView.vue";
+import IssuesListView from "@/views/IssueListView.vue";
 
 const routes = [
   {

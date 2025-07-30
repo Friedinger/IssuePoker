@@ -8,12 +8,22 @@
           cols="3"
         >
           <v-app-bar-nav-icon @click.stop="toggleDrawer()" />
-          <router-link to="/">
-            <v-toolbar-title class="font-weight-bold">
-              <span class="text-white">RefArch-</span>
-              <span class="text-secondary">Kick</span>
-              <span class="text-white">Starter</span>
-            </v-toolbar-title>
+          <router-link
+            class="flex-fill"
+            to="/"
+          >
+            <v-col class="d-flex align-center justify-start">
+              <v-img
+                contain
+                height="auto"
+                max-width="50"
+                src="@/assets/IssuePoker Icon.svg"
+              />
+              <v-toolbar-title class="font-weight-bold">
+                <span class="text-white">Issue</span>
+                <span class="text-secondary">Poker</span>
+              </v-toolbar-title>
+            </v-col>
           </router-link>
         </v-col>
         <v-col

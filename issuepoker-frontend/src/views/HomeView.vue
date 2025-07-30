@@ -5,13 +5,13 @@
         <v-img
           class="my-3"
           height="200"
-          src="@/assets/logo.png"
+          src="@/assets/IssuePoker Logo Light.svg"
         />
       </v-col>
 
       <v-col class="mb-4">
         <h1 class="text-h3 font-weight-bold mb-3">
-          Willkommen beim RefArch-KickStarter von it@M
+          Willkommen beim Issue Poker
         </h1>
         <p>
           Das API-Gateway ist:

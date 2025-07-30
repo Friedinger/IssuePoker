@@ -14,22 +14,18 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { ROUTES_ISSUES_DETAIL } from "@/constants.ts";
+<script lang="ts" setup>
+import type Issue from "@/types/Issue.ts";
 
-export default {
-  data() {
-    return {
-      issues: [
-        { id: 1, title: "Issue 1", description: "Beschreibung für Issue 1" },
-        { id: 2, title: "Issue 2", description: "Beschreibung für Issue 2" },
-      ],
-    };
-  },
-  methods: {
-    goToIssue(id: number) {
-      this.$router.push({ name: ROUTES_ISSUES_DETAIL, params: { id } });
-    },
-  },
-};
+import { ROUTES_ISSUES_DETAIL } from "@/constants.ts";
+import router from "@/plugins/router.ts";
+
+const issues: Issue[] = [
+  { id: 1, title: "Issue 1", description: "Beschreibung für Issue 1" },
+  { id: 2, title: "Issue 2", description: "Beschreibung für Issue 2" },
+];
+
+function goToIssue(id: number) {
+  router.push({ name: ROUTES_ISSUES_DETAIL, params: { id } });
+}
 </script>

@@ -1,5 +1,6 @@
 export const ROUTES_HOME = "home";
-export const ROUTES_ISSUES_LIST = "issues";
+export const ROUTES_ISSUES_LIST = "issuesList";
+export const ROUTES_ISSUES_DETAIL = "issuesDetail";
 
 export const AD2IMAGE_URL = import.meta.env.VITE_AD2IMAGE_URL;
 export const APPSWITCHER_URL = import.meta.env.VITE_APPSWITCHER_URL;

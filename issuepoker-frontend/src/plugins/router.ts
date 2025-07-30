@@ -2,9 +2,10 @@
 // Composables
 import {createRouter, createWebHashHistory} from "vue-router";
 
-import {ROUTES_HOME, ROUTES_ISSUES_LIST} from "@/constants";
+import {ROUTES_HOME, ROUTES_ISSUES_DETAIL, ROUTES_ISSUES_LIST} from "@/constants";
 import IssuesListView from "@/views/IssueListView.vue";
 import HomeView from "@/views/HomeView.vue";
+import IssueDetailsView from "@/views/IssueDetailsView.vue";
 
 const routes = [
   {
@@ -17,6 +18,11 @@ const routes = [
     path: "/issues",
     name: ROUTES_ISSUES_LIST,
     component: IssuesListView,
+  },
+  {
+    path: "/issue/:id",
+    name: ROUTES_ISSUES_DETAIL,
+    component: IssueDetailsView,
   },
   { path: "/:catchAll(.*)*", redirect: "/" }, // CatchAll route
 ];

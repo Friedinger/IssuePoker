@@ -57,8 +57,11 @@
     </v-app-bar>
     <v-navigation-drawer v-model="drawer">
       <v-list>
-        <v-list-item :to="{ name: ROUTES_GETSTARTED }">
-          <v-list-item-title>Erste Schritte</v-list-item-title>
+        <v-list-item :to="{ name: ROUTES_HOME }">
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+        <v-list-item :to="{ name: ROUTES_ISSUES_LIST }">
+          <v-list-item-title>Issue Liste</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -83,7 +86,7 @@ import { onMounted, ref } from "vue";
 import { getUser } from "@/api/user-client";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
-import { APPSWITCHER_URL, ROUTES_GETSTARTED } from "@/constants";
+import { APPSWITCHER_URL, ROUTES_HOME, ROUTES_ISSUES_LIST } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
 import User, { UserLocalDevelopment } from "@/types/User";

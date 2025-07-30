@@ -1,8 +1,9 @@
+// @formatter:off
 // Composables
-import { createRouter, createWebHashHistory } from "vue-router";
+import {createRouter, createWebHashHistory} from "vue-router";
 
-import { ROUTES_GETSTARTED, ROUTES_HOME } from "@/constants";
-import GetStartedView from "@/views/GetStartedView.vue";
+import {ROUTES_HOME, ROUTES_ISSUES_LIST} from "@/constants";
+import IssuesListView from "@/views/IssueListView.vue";
 import HomeView from "@/views/HomeView.vue";
 
 const routes = [
@@ -13,9 +14,9 @@ const routes = [
     meta: {},
   },
   {
-    path: "/getstarted",
-    name: ROUTES_GETSTARTED,
-    component: GetStartedView,
+    path: "/issues",
+    name: ROUTES_ISSUES_LIST,
+    component: IssuesListView,
   },
   { path: "/:catchAll(.*)*", redirect: "/" }, // CatchAll route
 ];

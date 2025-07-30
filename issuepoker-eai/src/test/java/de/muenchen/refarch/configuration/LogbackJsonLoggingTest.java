@@ -1,4 +1,4 @@
-package de.muenchen.refarch.configuration;
+package de.muenchen.issuepoker.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.data.Percentage;
@@ -34,9 +35,12 @@ class LogbackJsonLoggingTest {
 
     private Throwable exception;
 
-    @Configuration
-    @SuppressWarnings("PMD.TestClassWithoutTestCases")
-    /* default */ static class TestConfiguration {
+    private static Throwable genExceptionStack(final Throwable root, final int index) {
+        if (index > 0) {
+            return new IllegalArgumentException("stackmessage-#%d: (%s)".formatted(index, StringUtils.repeat("abcd ", 20)), genExceptionStack(root, index - 1));
+        } else {
+            return root;
+        }
     }
 
     @BeforeEach
@@ -101,11 +105,8 @@ class LogbackJsonLoggingTest {
                 .findFirst().orElseThrow();
     }
 
-    private static Throwable genExceptionStack(final Throwable root, final int index) {
-        if (index > 0) {
-            return new IllegalArgumentException("stackmessage-#%d: (%s)".formatted(index, StringUtils.repeat("abcd ", 20)), genExceptionStack(root, index - 1));
-        } else {
-            return root;
-        }
+    @Configuration
+    @SuppressWarnings("PMD.TestClassWithoutTestCases")
+    /* default */ static class TestConfiguration {
     }
 }

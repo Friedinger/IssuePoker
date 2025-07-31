@@ -17,6 +17,7 @@
           Das API-Gateway ist:
           <span :class="status">{{ status }}</span>
         </p>
+        <p>{{ entity }}</p>
         <p v-if="user">
           User:
           {{ user.email }}
@@ -27,10 +28,12 @@
 </template>
 
 <script lang="ts" setup>
+import type { TheEntity } from "@/api/fetch-theentity.ts";
 import type User from "@/types/User.ts";
 
 import { onMounted, ref } from "vue";
 
+import { getEntity } from "@/api/fetch-theentity.ts";
 import { checkHealth } from "@/api/health-client";
 import { getUser } from "@/api/user-client.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
@@ -39,6 +42,7 @@ import HealthState from "@/types/HealthState";
 const snackbarStore = useSnackbarStore();
 const status = ref("DOWN");
 const user = ref<User>();
+const entity = ref<TheEntity>();
 
 onMounted(() => {
   checkHealth()
@@ -48,6 +52,11 @@ onMounted(() => {
     });
   getUser()
     .then((content: User) => (user.value = content))
+    .catch((error) => {
+      snackbarStore.showMessage(error);
+    });
+  getEntity()
+    .then((content: TheEntity) => (entity.value = content))
     .catch((error) => {
       snackbarStore.showMessage(error);
     });

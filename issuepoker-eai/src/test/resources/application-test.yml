@@ -14,4 +14,4 @@ camel:
     tracing: false
 
 # Custom properties
-output : mock:output
+output: mock:output

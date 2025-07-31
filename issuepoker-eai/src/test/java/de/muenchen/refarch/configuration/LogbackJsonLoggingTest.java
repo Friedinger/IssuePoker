@@ -7,7 +7,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.data.Percentage;

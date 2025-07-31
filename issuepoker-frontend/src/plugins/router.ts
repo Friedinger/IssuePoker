@@ -1,5 +1,3 @@
-// @formatter:off
-// Composables
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import {

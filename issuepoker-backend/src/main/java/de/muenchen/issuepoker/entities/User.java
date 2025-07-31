@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 
-@Entity
+@Entity(name = "person")
 @Getter
 @NotNull
 public class User {

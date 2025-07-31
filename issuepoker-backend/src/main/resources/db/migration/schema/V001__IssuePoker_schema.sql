@@ -9,7 +9,7 @@ CREATE TABLE issue
 (
     id          BIGINT NOT NULL,
     title       VARCHAR(255),
-    description VARCHAR(255),
+    description VARCHAR(65535),
     CONSTRAINT pk_issue PRIMARY KEY (id)
 );
 
@@ -19,7 +19,7 @@ CREATE TABLE issue_votes
     votes_id UUID   NOT NULL
 );
 
-CREATE TABLE "user"
+CREATE TABLE person
 (
     sub                UUID    NOT NULL,
     email_verified     BOOLEAN NOT NULL,
@@ -50,7 +50,7 @@ ALTER TABLE issue_votes
     ADD CONSTRAINT uc_issue_votes_votes UNIQUE (votes_id);
 
 ALTER TABLE vote
-    ADD CONSTRAINT FK_VOTE_ON_USER_SUB FOREIGN KEY (user_sub) REFERENCES "user" (sub);
+    ADD CONSTRAINT fk_vote_on_user_sub FOREIGN KEY (user_sub) REFERENCES person (sub);
 
 ALTER TABLE issue_votes
     ADD CONSTRAINT fk_issvot_on_issue FOREIGN KEY (issue_id) REFERENCES issue (id);
@@ -59,4 +59,4 @@ ALTER TABLE issue_votes
     ADD CONSTRAINT fk_issvot_on_vote FOREIGN KEY (votes_id) REFERENCES vote (id);
 
 ALTER TABLE user_authorities
-    ADD CONSTRAINT fk_user_authorities FOREIGN KEY (user_id) REFERENCES "user" (sub);
+    ADD CONSTRAINT fk_person_authorities FOREIGN KEY (user_id) REFERENCES person (sub);

@@ -418,6 +418,7 @@
                         <removeUnusedImports/>
                         <removeWildcardImports/>
                         <formatAnnotations/>
+                        <toggleOffOn />
                     </java>
                 </configuration>
                 <executions>

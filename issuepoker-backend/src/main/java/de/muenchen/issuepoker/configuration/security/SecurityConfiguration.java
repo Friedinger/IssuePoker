@@ -59,8 +59,7 @@ public class SecurityConfiguration {
                         // allow access to SBOM application data
                         PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/actuator/sbom/application"),
                         // allow access to /actuator/metrics for Prometheus monitoring in OpenShift
-                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/actuator/metrics"))
-                        .permitAll())
+                        PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/actuator/metrics")).permitAll())
                 .authorizeHttpRequests((requests) -> requests
                         .anyRequest()
                         .authenticated())

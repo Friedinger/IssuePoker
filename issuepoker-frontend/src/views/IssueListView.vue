@@ -2,45 +2,26 @@
   <v-container>
     <v-row><h1>Issue Liste</h1></v-row>
     <v-row>
-      <v-col>
-        <v-list lines="two">
-          <v-list-item
-            v-for="issue in issues"
-            :key="issue.id"
-            @click="goToIssue(issue.id)"
-          >
-            <v-list-item-title>{{ issue.title }}</v-list-item-title>
-            <v-list-item-subtitle>#{{ issue.id }}</v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item
-            v-for="n in (pageInfo?.size || 0) - (issues?.length || 0)"
-            :key="'invisible-' + n"
-          ></v-list-item>
-        </v-list>
-      </v-col>
-    </v-row>
-    <v-row v-if="pageInfo">
-      <v-col
-        cols="12"
-        md="3"
-        sm="6"
-      >
-        <v-pagination
-          :length="pageInfo.totalPages"
-          :model-value="pageInfo.number + 1"
-          :total-visible="5"
-          @update:model-value="navigatePage"
-        ></v-pagination>
-      </v-col>
+      <v-data-table-server
+        v-model:items-per-page="itemsPerPage"
+        :headers="headers"
+        :hover="true"
+        :items="issues"
+        :items-length="totalIssues"
+        :loading="loading"
+        loading-text="Laden... Bitte warten"
+        @update:options="fetchIssues"
+        @click:row="goToIssue"
+      ></v-data-table-server>
     </v-row>
   </v-container>
 </template>
 
 <script lang="ts" setup>
 import type Issue from "@/types/Issue.ts";
-import type { Page, PageInfo } from "@/types/Page.ts";
+import type Page from "@/types/Page.ts";
 
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issuelist.ts";
 import { ROUTES_ISSUES_DETAIL } from "@/constants.ts";
@@ -48,30 +29,39 @@ import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
-const issues = ref<Issue[]>();
-const pageInfo = ref<PageInfo>();
+const issues = ref<Issue[]>([]);
+const loading = ref(true);
+const itemsPerPage = ref(5);
+const totalIssues = ref(0);
+const headers = ref([
+  { key: "id", title: "Nummer" },
+  { key: "title", title: "Titel" },
+  { key: "description", title: "Beschreibung" },
+  { key: "votes", title: "Gepokert" },
+]);
 
-onMounted(() => {
-  fetchIssues(1, 10);
-});
-
-function fetchIssues(pageNumber: number, pageSize: number) {
-  getIssueList(pageNumber - 1, pageSize)
+function fetchIssues({
+  page,
+  itemsPerPage,
+  sortBy,
+}: {
+  page: number;
+  itemsPerPage: number;
+  sortBy: unknown;
+}) {
+  loading.value = true;
+  getIssueList(page - 1, itemsPerPage)
     .then((content: Page<Issue>) => {
       issues.value = content.content;
-      pageInfo.value = content.page;
+      loading.value = false;
+      totalIssues.value = content.page.totalElements;
     })
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
 }
 
-function navigatePage(newPage: number) {
-  if (!pageInfo.value || !newPage) return;
-  fetchIssues(newPage, pageInfo.value.size);
-}
-
-function goToIssue(id: number) {
-  router.push({ name: ROUTES_ISSUES_DETAIL, params: { id } });
+function goToIssue(_: MouseEvent, props: { item: Issue; index: number }) {
+  router.push({ name: ROUTES_ISSUES_DETAIL, params: { id: props.item.id } });
 }
 </script>

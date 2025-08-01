@@ -1,4 +1,4 @@
-export interface Page<T> {
+export default interface Page<T> {
   content: T[];
   page: PageInfo;
 }

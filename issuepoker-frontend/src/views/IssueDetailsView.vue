@@ -17,6 +17,7 @@ import type Issue from "@/types/Issue.ts";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import { getIssue } from "@/api/fetch-issue.ts";
 import { ROUTES_ISSUES_LIST } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
@@ -27,36 +28,29 @@ const route = useRoute();
 const router = useRouter();
 
 onMounted(() => {
-  getIssue(route.params.id);
+  fetchIssue(parseId(route.params.id));
 });
 
 watch(
   () => route.params.id,
-  (newId) => getIssue(newId)
+  (newId) => fetchIssue(parseId(newId))
 );
 
-function getIssue(id: string | string[]) {
-  try {
-    if (Array.isArray(id)) {
-      id = id[0];
-    }
-    fetchIssue(parseInt(id));
-  } catch (error) {
-    snackbarStore.showMessage({ message: (error as Error).message });
-    goBack();
-  }
+function fetchIssue(id: number) {
+  getIssue(id)
+    .then((content: Issue) => (issue.value = content))
+    .catch((error) => {
+      snackbarStore.showMessage(
+        new Error(`Issue mit ID ${id} wurde nicht gefunden: ${error}`)
+      );
+    });
 }
 
-function fetchIssue(id: number) {
-  const issues: Issue[] = [
-    { id: 1, title: "Issue 1", description: "Beschreibung für Issue 1" },
-    { id: 2, title: "Issue 2", description: "Beschreibung für Issue 2" },
-  ];
-  const foundIssue = issues.find((issue) => issue.id === id);
-  if (!foundIssue) {
-    throw new Error(`Issue mit ID ${id} wurde nicht gefunden.`);
+function parseId(id: string | string[]): number {
+  if (Array.isArray(id)) {
+    id = id[0];
   }
-  issue.value = foundIssue;
+  return parseInt(id);
 }
 
 function goBack() {

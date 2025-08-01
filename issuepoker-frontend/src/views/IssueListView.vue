@@ -43,11 +43,9 @@ const headers = ref([
 function fetchIssues({
   page,
   itemsPerPage,
-  sortBy,
 }: {
   page: number;
   itemsPerPage: number;
-  sortBy: unknown;
 }) {
   loading.value = true;
   getIssueList(page - 1, itemsPerPage)

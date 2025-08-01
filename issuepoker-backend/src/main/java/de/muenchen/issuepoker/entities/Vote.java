@@ -12,7 +12,10 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Vote {
-    @GeneratedValue @Id private UUID id;
-    @ManyToOne private User user;
+    @GeneratedValue
+    @Id
+    private UUID id;
+    @ManyToOne
+    private User user;
     private int vote;
 }

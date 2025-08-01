@@ -11,8 +11,10 @@ import lombok.Setter;
 @Getter
 @Entity
 public class Issue {
-    @Id private long id;
+    @Id
+    private long id;
     private String title;
     private String description;
-    @OneToMany private List<Vote> votes;
+    @OneToMany
+    private List<Vote> votes;
 }

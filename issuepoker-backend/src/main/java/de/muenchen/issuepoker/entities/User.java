@@ -12,9 +12,9 @@ import lombok.Getter;
 
 @Entity(name = "person")
 @Getter
-@NotNull
-public class User {
-    @Id private UUID sub;
+@NotNull public class User {
+    @Id
+    private UUID sub;
     private boolean emailVerified;
     private String name;
     private String preferred_username;

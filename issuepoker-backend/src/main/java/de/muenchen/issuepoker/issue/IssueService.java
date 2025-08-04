@@ -28,6 +28,11 @@ public class IssueService {
         return issueRepository.findAll(pageRequest);
     }
 
+    public Issue createIssue(final Issue issue) {
+        log.debug("Create Issue {}", issue);
+        return issueRepository.save(issue);
+    }
+
     private Issue getIssueOrThrow(final long issueId) {
         return issueRepository.findById(issueId).orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueId)));
     }

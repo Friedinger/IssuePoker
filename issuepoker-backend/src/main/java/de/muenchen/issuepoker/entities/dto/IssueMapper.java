@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.dtos;
+package de.muenchen.issuepoker.entities.dto;
 
 import de.muenchen.issuepoker.entities.Issue;
 import org.mapstruct.Mapper;

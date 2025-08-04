@@ -1,9 +1,9 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.dtos.IssueMapper;
-import de.muenchen.issuepoker.dtos.IssueRequestDTO;
-import de.muenchen.issuepoker.dtos.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

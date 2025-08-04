@@ -1,6 +1,13 @@
 <template>
   <v-container>
-    <v-row><h1>Issues</h1></v-row>
+    <v-row align="center">
+      <v-col>
+        <h1>Issues</h1>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn :to="{ name: ROUTES_ISSUES_CREATE }">Neues Issue</v-btn>
+      </v-col>
+    </v-row>
     <v-row>
       <v-data-table-server
         v-model:items-per-page="itemsPerPage"
@@ -28,7 +35,7 @@ import type Page from "@/types/Page.ts";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issuelist.ts";
-import { ROUTES_ISSUES_DETAIL } from "@/constants.ts";
+import { ROUTES_ISSUES_CREATE, ROUTES_ISSUES_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 

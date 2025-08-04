@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.dtos;
+package de.muenchen.issuepoker.entities.dto;
 
 public record IssueSummaryDTO(long id, String title, int voteCount) {
 }

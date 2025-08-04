@@ -1,8 +1,10 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.dtos.IssueMapper;
-import de.muenchen.issuepoker.dtos.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,6 +30,12 @@ public class IssueController {
     @ResponseStatus(HttpStatus.OK)
     public Issue getIssue(@PathVariable("issueId") final long issueId) {
         return issueService.getIssue(issueId);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Issue createIssue(@Valid @RequestBody final IssueRequestDTO issue) {
+        return issueService.createIssue(issueMapper.toEntity(issue));
     }
 
     @GetMapping

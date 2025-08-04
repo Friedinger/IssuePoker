@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.dtos;
+package de.muenchen.issuepoker.entities.dto;
 
 import de.muenchen.issuepoker.entities.Issue;
 import org.mapstruct.Mapper;
@@ -8,4 +8,7 @@ import org.mapstruct.Mapping;
 public interface IssueMapper {
     @Mapping(expression = "java(issue.getVotes().size())", target = "voteCount")
     IssueSummaryDTO toSummary(Issue issue);
+
+    @Mapping(target = "id", ignore = true)
+    Issue toEntity(IssueRequestDTO issueRequestDTO);
 }

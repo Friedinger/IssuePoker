@@ -29,7 +29,7 @@ public class IssueService {
     }
 
     public Issue createIssue(final Issue issue) {
-        log.debug("Create Issue {}", issue);
+        log.debug("Create Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
         return issueRepository.save(issue);
     }
 

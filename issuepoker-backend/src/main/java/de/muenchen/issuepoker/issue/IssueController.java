@@ -4,6 +4,7 @@ import de.muenchen.issuepoker.dtos.IssueMapper;
 import de.muenchen.issuepoker.dtos.IssueRequestDTO;
 import de.muenchen.issuepoker.dtos.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.Issue;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ public class IssueController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Issue createIssue(@RequestBody final IssueRequestDTO issue) {
+    public Issue createIssue(@Valid @RequestBody final IssueRequestDTO issue) {
         return issueService.createIssue(issueMapper.toEntity(issue));
     }
 

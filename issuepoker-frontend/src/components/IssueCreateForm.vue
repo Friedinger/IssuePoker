@@ -32,15 +32,26 @@
 </template>
 
 <script lang="ts" setup>
+import type Issue from "@/types/Issue.ts";
+
 import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { ref } from "vue";
 
-import { ROUTES_ISSUES_LIST } from "@/constants.ts";
+import { createIssue } from "@/api/create-issue.ts";
+import { ROUTES_ISSUES_DETAIL, ROUTES_ISSUES_LIST } from "@/constants.ts";
+import router from "@/plugins/router.ts";
+import { useSnackbarStore } from "@/stores/snackbar.ts";
+
+const snackbarStore = useSnackbarStore();
 
 const title = ref("");
 const description = ref("");
 
 function save() {
-  description.value = title.value; // Dummy
+  createIssue(title.value, description.value)
+    .then((content: Issue) =>
+      router.push({ name: ROUTES_ISSUES_DETAIL, params: { id: content.id } })
+    )
+    .catch((error) => snackbarStore.showMessage(error));
 }
 </script>

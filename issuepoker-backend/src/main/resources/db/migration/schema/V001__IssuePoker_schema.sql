@@ -5,6 +5,8 @@ create table the_entity
     primary key (id)
 );
 
+CREATE SEQUENCE IF NOT EXISTS issue_seq START WITH 1 INCREMENT BY 1;
+
 CREATE TABLE issue
 (
     id          BIGINT NOT NULL,

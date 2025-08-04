@@ -42,7 +42,7 @@ CREATE TABLE vote
 (
     id       UUID    NOT NULL,
     user_sub UUID,
-    vote     INTEGER NOT NULL,
+    voting   INTEGER NOT NULL,
     CONSTRAINT pk_vote PRIMARY KEY (id)
 );
 

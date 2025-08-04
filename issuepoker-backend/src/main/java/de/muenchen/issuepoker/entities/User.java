@@ -12,14 +12,16 @@ import lombok.Getter;
 
 @Entity(name = "person")
 @Getter
-@NotNull public class User {
+@NotNull
+@SuppressWarnings("PMD.ShortClassName")
+public class User {
     @Id
     private UUID sub;
     private boolean emailVerified;
     private String name;
-    private String preferred_username;
-    private String given_name;
-    private String family_name;
+    private String preferredUsername;
+    private String givenName;
+    private String familyName;
     private String email;
 
     @ElementCollection

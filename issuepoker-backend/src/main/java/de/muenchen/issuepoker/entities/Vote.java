@@ -11,11 +11,12 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
+@SuppressWarnings("PMD.ShortClassName")
 public class Vote {
     @GeneratedValue
     @Id
     private UUID id;
     @ManyToOne
     private User user;
-    private int vote;
+    private int voting;
 }

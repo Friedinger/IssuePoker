@@ -40,7 +40,7 @@ INSERT INTO person (sub, email_verified, name, preferred_username, given_name, f
 VALUES ('123e4567-e89b-12d3-a456-426614174005', TRUE, 'John Doe', 'johndoe', 'John', 'Doe', 'john.doe@example.com'),
        ('123e4567-e89b-12d3-a456-426614174006', FALSE, 'Jane Smith', 'janesmith', 'Jane', 'Smith', 'jane.smith@example.com');
 
-INSERT INTO vote (id, user_sub, vote)
+INSERT INTO vote (id, user_sub, voting)
 VALUES ('123e4567-e89b-12d3-a456-426614174007', '123e4567-e89b-12d3-a456-426614174005', 1),
        ('123e4567-e89b-12d3-a456-426614174008', '123e4567-e89b-12d3-a456-426614174006', -1),
        ('123e4567-e89b-12d3-a456-426614174009', '123e4567-e89b-12d3-a456-426614174005', 1);

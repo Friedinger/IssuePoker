@@ -10,6 +10,7 @@
         :items-length="totalIssues"
         :items-per-page-options="itemsPerPageOptions"
         :loading="loading"
+        disable-sort
         items-per-page-text="Issues pro Seite:"
         loading-text="Issues werden geladen... Bitte warten."
         @update:options="fetchIssues"
@@ -21,6 +22,7 @@
 
 <script lang="ts" setup>
 import type Issue from "@/types/Issue.ts";
+import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 
 import { ref } from "vue";
@@ -34,8 +36,7 @@ const snackbarStore = useSnackbarStore();
 const headers = [
   { key: "id", title: "Nummer" },
   { key: "title", title: "Titel" },
-  { key: "description", title: "Beschreibung" },
-  { key: "votes", title: "Gepokert" },
+  { key: "voteCount", title: "Gepokert" },
 ];
 const itemsPerPageOptions = [
   { value: 5, title: "5" },
@@ -46,7 +47,7 @@ const itemsPerPageOptions = [
   { value: -1, title: "Alle" },
 ];
 
-const issues = ref<Issue[]>([]);
+const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const itemsPerPage = ref(10);
 const totalIssues = ref(0);
@@ -60,7 +61,7 @@ function fetchIssues({
 }) {
   loading.value = true;
   getIssueList(page - 1, itemsPerPage)
-    .then((content: Page<Issue>) => {
+    .then((content: Page<IssueSummary>) => {
       issues.value = content.content;
       loading.value = false;
       totalIssues.value = content.page.totalElements;

@@ -1,8 +1,12 @@
 package de.muenchen.issuepoker.issue;
 
+import de.muenchen.issuepoker.dtos.IssueMapper;
+import de.muenchen.issuepoker.dtos.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.Issue;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/issues")
 public class IssueController {
     private final IssueService issueService;
+    private final IssueMapper issueMapper;
 
     @GetMapping("{issueId}")
     @ResponseStatus(HttpStatus.OK)
@@ -25,7 +30,10 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<Issue> getIssuesPage(@RequestParam(defaultValue = "0") final int pageNumber, @RequestParam(defaultValue = "10") final int pageSize) {
-        return issueService.getAllIssues(pageNumber, pageSize);
+    public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(defaultValue = "0") final int pageNumber,
+            @RequestParam(defaultValue = "10") final int pageSize) {
+        final Page<Issue> issuePage = issueService.getAllIssues(pageNumber, pageSize);
+        final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
+        return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
     }
 }

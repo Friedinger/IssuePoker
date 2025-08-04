@@ -1,4 +1,4 @@
-import type Issue from "@/types/Issue.ts";
+import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 
 import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
@@ -6,7 +6,7 @@ import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
 export function getIssueList(
   pageNumber: number,
   pageSize: number
-): Promise<Page<Issue>> {
+): Promise<Page<IssueSummary>> {
   return fetch(
     `api/backend-service/issues?pageNumber=${pageNumber}&pageSize=${pageSize}`,
     getConfig()

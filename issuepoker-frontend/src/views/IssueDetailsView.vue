@@ -1,13 +1,18 @@
 <template>
   <v-container>
-    <template v-if="issue">
-      <h1>{{ issue.title }}</h1>
-      <p>{{ issue.description }}</p>
-    </template>
-    <template v-else>
-      <h1>Issue nicht gefunden</h1>
-    </template>
-    <v-btn :to="{ name: ROUTES_ISSUES_LIST }">Zurück zur Liste</v-btn>
+    <v-row align="center">
+      <v-col>
+        <h1>{{ issue.title }}</h1>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn :to="{ name: ROUTES_ISSUES_LIST }">Zurück zur Liste</v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <p>{{ issue.description }}</p>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -18,30 +23,46 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
-import { ROUTES_ISSUES_LIST } from "@/constants.ts";
+import { ROUTES_ISSUES_LIST, STATUS_INDICATORS } from "@/constants.ts";
+import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
-const snackbarStore = useSnackbarStore();
+const issueLoading: Issue = {
+  id: NaN,
+  title: "Issue wird geladen...",
+  description: "Bitte warten.",
+  votes: [],
+};
+const issueNotFound: Issue = {
+  id: NaN,
+  title: "Issue wurde nicht gefunden",
+  description: "Bitte zurück zur Liste gehen.",
+  votes: [],
+};
 
-const issue = ref<Issue>();
+const snackbarStore = useSnackbarStore();
 const route = useRoute();
+const issue = ref<Issue>(issueLoading);
 
 onMounted(() => {
-  fetchIssue(parseId(route.params.id));
+  fetchIssue(route.params.id);
 });
 
 watch(
   () => route.params.id,
-  (newId) => fetchIssue(parseId(newId))
+  (newId) => fetchIssue(newId)
 );
 
-function fetchIssue(id: number) {
-  getIssue(id)
+function fetchIssue(id: string | string[]) {
+  getIssue(parseId(id))
     .then((content: Issue) => (issue.value = content))
-    .catch((error) => {
-      snackbarStore.showMessage(
-        new Error(`Issue mit ID ${id} wurde nicht gefunden: ${error}`)
-      );
+    .catch(() => {
+      snackbarStore.showMessage({
+        message: `Issue mit ID "${id}" wurde nicht gefunden.`,
+        level: STATUS_INDICATORS.WARNING,
+      });
+      issue.value = issueNotFound;
+      router.push({ name: ROUTES_ISSUES_LIST });
     });
 }
 

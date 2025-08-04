@@ -1,21 +1,28 @@
 <template>
-  <v-form>
+  <v-form
+    v-model="valid"
+    @submit.prevent
+  >
     <v-row>
       <v-text-field
         v-model="title"
+        :rules="[validateTitle]"
         label="Titel"
       ></v-text-field>
     </v-row>
     <v-row>
       <v-textarea
         v-model="description"
+        :rules="[validateDescription]"
         label="Beschreibung"
       ></v-textarea>
     </v-row>
     <v-row align="center">
       <v-col cols="auto">
         <v-btn
+          :disabled="!valid"
           :prepend-icon="mdiContentSave"
+          type="submit"
           @click="save"
           >Speichern
         </v-btn>
@@ -46,12 +53,27 @@ const snackbarStore = useSnackbarStore();
 
 const title = ref("");
 const description = ref("");
+const valid = ref();
 
 function save() {
+  if (!valid.value) return;
   createIssue(title.value, description.value)
     .then((content: Issue) =>
       router.push({ name: ROUTES_ISSUES_DETAIL, params: { id: content.id } })
     )
     .catch((error) => snackbarStore.showMessage(error));
+}
+
+function validateTitle(value: string) {
+  if (value.trim().length < 1) return "Bitte einen Titel angeben.";
+  if (value.length > 255)
+    return "Titel darf nicht länger als 255 Zeichen sein.";
+  return true;
+}
+
+function validateDescription(value: string) {
+  if (value.length > 65_535)
+    return "Beschreibung darf nicht länger als 65535 Zeichen sein.";
+  return true;
 }
 </script>

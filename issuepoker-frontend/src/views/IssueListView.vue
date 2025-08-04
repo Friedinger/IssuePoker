@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row><h1>Issue Liste</h1></v-row>
+    <v-row><h1>Issues</h1></v-row>
     <v-row>
       <v-data-table-server
         v-model:items-per-page="itemsPerPage"
@@ -8,8 +8,10 @@
         :hover="true"
         :items="issues"
         :items-length="totalIssues"
+        :items-per-page-options="itemsPerPageOptions"
         :loading="loading"
-        loading-text="Laden... Bitte warten"
+        items-per-page-text="Issues pro Seite:"
+        loading-text="Issues werden geladen... Bitte warten."
         @update:options="fetchIssues"
         @click:row="goToIssue"
       ></v-data-table-server>
@@ -29,16 +31,25 @@ import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
-const issues = ref<Issue[]>([]);
-const loading = ref(true);
-const itemsPerPage = ref(5);
-const totalIssues = ref(0);
-const headers = ref([
+const headers = [
   { key: "id", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "description", title: "Beschreibung" },
   { key: "votes", title: "Gepokert" },
-]);
+];
+const itemsPerPageOptions = [
+  { value: 5, title: "5" },
+  { value: 10, title: "10" },
+  { value: 25, title: "25" },
+  { value: 50, title: "50" },
+  { value: 100, title: "100" },
+  { value: -1, title: "Alle" },
+];
+
+const issues = ref<Issue[]>([]);
+const loading = ref(true);
+const itemsPerPage = ref(10);
+const totalIssues = ref(0);
 
 function fetchIssues({
   page,

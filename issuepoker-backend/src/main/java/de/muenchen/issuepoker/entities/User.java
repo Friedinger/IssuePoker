@@ -12,7 +12,7 @@ import lombok.Getter;
 
 @Entity(name = "person")
 @Getter
-@SuppressWarnings("PMD.ShortClassName") @NotNull
+@NotNull @SuppressWarnings("PMD.ShortClassName")
 public class User {
     @Id
     private UUID sub;

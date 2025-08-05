@@ -24,19 +24,19 @@ public class VoteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Vote> getVotes(@PathVariable("issueId") long issueId) {
+    public List<Vote> getVotes(@PathVariable("issueId") final long issueId) {
         return voteService.getAllVotes(issueId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Vote createVote(@PathVariable("issueId") long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+    public Vote createVote(@PathVariable("issueId") final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
         return voteService.saveVote(issueId, voteRequestDTO);
     }
 
     @DeleteMapping("{voteId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteVote(@PathVariable("issueId") long issueId, @PathVariable("voteId") UUID voteId) {
+    public void deleteVote(@PathVariable("issueId") final long issueId, @PathVariable("voteId") final UUID voteId) {
         voteService.deleteVote(issueId, voteId);
     }
 }

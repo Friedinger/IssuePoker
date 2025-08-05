@@ -3,6 +3,7 @@ package de.muenchen.issuepoker.issue;
 import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.User;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
@@ -32,14 +33,14 @@ public class VoteService {
 
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
-        final var user = userRepository.findById(voteRequestDTO.userSub())
+        final User user = userRepository.findById(voteRequestDTO.userSub())
                 .orElseThrow(() -> new NotFoundException("User for given Id %s not found".formatted(voteRequestDTO.userSub())));
-        var vote = voteMapper.toEntity(voteRequestDTO, user);
-        var issue = getIssue(issueId);
+        final Vote vote = voteMapper.toEntity(voteRequestDTO, user);
+        final Issue issue = getIssue(issueId);
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUser().getSub().equals(existing.getUser().getSub()))) {
             throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(voteRequestDTO.userSub(), issueId));
         }
-        var savedVote = voteRepository.save(vote);
+        final Vote savedVote = voteRepository.save(vote);
         issue.getVotes().add(savedVote);
         issueService.saveIssue(issue);
         return savedVote;
@@ -47,7 +48,7 @@ public class VoteService {
 
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
-        var issue = getIssue(issueId);
+        final Issue issue = getIssue(issueId);
         issue.getVotes().remove(issue.getVoteById(voteId));
         voteRepository.deleteById(voteId);
     }

@@ -13,7 +13,7 @@ public class VoteValidator implements ConstraintValidator<ValidVote, Integer> {
     }
 
     @Override
-    public boolean isValid(Integer value, ConstraintValidatorContext context) {
+    public boolean isValid(final Integer value, ConstraintValidatorContext context) {
         return value != null && ALLOWED_VALUES.contains(value);
     }
 }

@@ -25,7 +25,7 @@ public class Issue {
     @OneToMany
     private List<Vote> votes;
 
-    public Vote getVoteById(UUID voteId) {
+    public Vote getVoteById(final UUID voteId) {
         return votes.stream().filter(vote -> voteId.equals(vote.getId())).findFirst()
                 .orElseThrow(() -> new NotFoundException("No Vote for given Id found"));
     }

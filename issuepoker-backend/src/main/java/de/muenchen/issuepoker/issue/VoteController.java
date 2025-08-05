@@ -33,7 +33,7 @@ public class VoteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Vote createVote(@PathVariable("issueId") long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
-        return voteService.saveVote(issueId, voteMapper.toEntity(voteRequestDTO));
+        return voteService.saveVote(issueId, voteRequestDTO);
     }
 
     @DeleteMapping("{voteId}")

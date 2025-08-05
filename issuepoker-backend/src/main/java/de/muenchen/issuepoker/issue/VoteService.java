@@ -1,8 +1,11 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.common.ConflictException;
+import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.VoteMapper;
+import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 public class VoteService {
     private final IssueService issueService;
     private final VoteRepository voteRepository;
+    private final UserRepository userRepository;
+    private final VoteMapper voteMapper;
 
     private Issue getIssue(final long issueId) {
         return issueService.getIssue(issueId);
@@ -25,8 +30,11 @@ public class VoteService {
         return getIssue(issueId).getVotes();
     }
 
-    public Vote saveVote(final long issueId, final Vote vote) {
+    public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
+        final var user = userRepository.findById(voteRequestDTO.userSub())
+                .orElseThrow(() -> new NotFoundException("User for given Id not found"));
+        var vote = voteMapper.toEntity(voteRequestDTO, user);
         var issue = getIssue(issueId);
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUser().getSub().equals(existing.getUser().getSub()))) {
             throw new ConflictException("User has already voted for this issue");

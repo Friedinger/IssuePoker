@@ -1,9 +1,9 @@
 package de.muenchen.issuepoker.entities.dto;
 
-import de.muenchen.issuepoker.entities.User;
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 
 public record VoteRequestDTO(
         @NotNull int voting,
-        @NotNull User user) {
+        @NotNull UUID userSub) {
 }

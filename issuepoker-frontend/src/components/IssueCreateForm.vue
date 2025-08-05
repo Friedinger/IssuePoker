@@ -30,7 +30,7 @@
       <v-col cols="auto">
         <v-btn
           :prepend-icon="mdiCancel"
-          :to="{ name: ROUTES_ISSUES_LIST }"
+          :to="{ name: ROUTES_HOME }"
           >Abbrechen
         </v-btn>
       </v-col>
@@ -45,7 +45,7 @@ import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { ref } from "vue";
 
 import { createIssue } from "@/api/create-issue.ts";
-import { ROUTES_ISSUES_DETAIL, ROUTES_ISSUES_LIST } from "@/constants.ts";
+import { ROUTES_HOME, ROUTES_ISSUES_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 

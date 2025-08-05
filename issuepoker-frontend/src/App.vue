@@ -59,7 +59,7 @@
           >
             <ad2-image-avatar
               v-if="userStore.getUser !== null"
-              :username="userStore.getUser.username"
+              :username="userStore.getUser.preferred_username"
             />
           </v-btn>
         </v-col>
@@ -69,9 +69,6 @@
       <v-list>
         <v-list-item :to="{ name: ROUTES_HOME }">
           <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-        <v-list-item :to="{ name: ROUTES_ISSUES_LIST }">
-          <v-list-item-title>Issue Liste</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -98,7 +95,7 @@ import { onMounted, ref } from "vue";
 import { getUser } from "@/api/user-client";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
-import { APPSWITCHER_URL, ROUTES_HOME, ROUTES_ISSUES_LIST } from "@/constants";
+import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
 

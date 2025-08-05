@@ -1,30 +1,28 @@
 <template>
-  <v-container>
-    <v-row align="center">
-      <v-col>
-        <h1>Issues</h1>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn :to="{ name: ROUTES_ISSUES_CREATE }">Neues Issue</v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-data-table-server
-        v-model:items-per-page="itemsPerPage"
-        :headers="headers"
-        :hover="true"
-        :items="issues"
-        :items-length="totalIssues"
-        :items-per-page-options="itemsPerPageOptions"
-        :loading="loading"
-        disable-sort
-        items-per-page-text="Issues pro Seite:"
-        loading-text="Issues werden geladen... Bitte warten."
-        @update:options="fetchIssues"
-        @click:row="goToIssue"
-      ></v-data-table-server>
-    </v-row>
-  </v-container>
+  <v-row align="center">
+    <v-col>
+      <h1>Issues</h1>
+    </v-col>
+    <v-col cols="auto">
+      <v-btn :to="{ name: ROUTES_ISSUES_CREATE }">Neues Issue</v-btn>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-data-table-server
+      v-model:items-per-page="itemsPerPage"
+      :headers="headers"
+      :hover="true"
+      :items="issues"
+      :items-length="totalIssues"
+      :items-per-page-options="itemsPerPageOptions"
+      :loading="loading"
+      disable-sort
+      items-per-page-text="Issues pro Seite:"
+      loading-text="Issues werden geladen... Bitte warten."
+      @update:options="fetchIssues"
+      @click:row="goToIssue"
+    ></v-data-table-server>
+  </v-row>
 </template>
 
 <script lang="ts" setup>

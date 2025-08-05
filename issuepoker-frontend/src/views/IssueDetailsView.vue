@@ -5,7 +5,7 @@
         <h1>{{ issue.title }}</h1>
       </v-col>
       <v-col cols="auto">
-        <v-btn :to="{ name: ROUTES_ISSUES_LIST }">Zurück zur Liste</v-btn>
+        <v-btn :to="{ name: ROUTES_HOME }">Zurück zur Liste</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -29,7 +29,7 @@ import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
 import IssueVoting from "@/components/IssueVoting.vue";
-import { ROUTES_ISSUES_LIST, STATUS_INDICATORS } from "@/constants.ts";
+import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
@@ -68,7 +68,7 @@ function fetchIssue(id: string | string[]) {
         level: STATUS_INDICATORS.WARNING,
       });
       issue.value = issueNotFound;
-      router.push({ name: ROUTES_ISSUES_LIST });
+      router.push({ name: ROUTES_HOME });
     });
 }
 

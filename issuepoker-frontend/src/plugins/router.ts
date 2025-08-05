@@ -1,11 +1,9 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
-import IssuesListView from "@/components/IssueList.vue";
 import {
   ROUTES_HOME,
   ROUTES_ISSUES_CREATE,
   ROUTES_ISSUES_DETAIL,
-  ROUTES_ISSUES_LIST,
 } from "@/constants";
 import HomeView from "@/views/HomeView.vue";
 import IssuesCreateView from "@/views/IssueCreateView.vue";
@@ -17,11 +15,6 @@ const routes = [
     name: ROUTES_HOME,
     component: HomeView,
     meta: {},
-  },
-  {
-    path: "/issues",
-    name: ROUTES_ISSUES_LIST,
-    component: IssuesListView,
   },
   {
     path: "/issues/:id",

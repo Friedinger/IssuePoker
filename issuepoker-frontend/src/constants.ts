@@ -1,5 +1,4 @@
 export const ROUTES_HOME = "home";
-export const ROUTES_ISSUES_LIST = "issuesList";
 export const ROUTES_ISSUES_DETAIL = "issuesDetail";
 export const ROUTES_ISSUES_CREATE = "issuesCreate";
 

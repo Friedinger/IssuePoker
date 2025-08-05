@@ -4,6 +4,7 @@ import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,12 @@ public class VoteService {
         issue.getVotes().add(savedVote);
         issueService.saveIssue(issue);
         return savedVote;
+    }
+
+    public void deleteVote(final long issueId, final UUID voteId) {
+        log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
+        var issue = getIssue(issueId);
+        issue.getVotes().remove(issue.getVoteById(voteId));
+        voteRepository.deleteById(voteId);
     }
 }

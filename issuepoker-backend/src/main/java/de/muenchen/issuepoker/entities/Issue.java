@@ -1,5 +1,6 @@
 package de.muenchen.issuepoker.entities;
 
+import de.muenchen.issuepoker.common.NotFoundException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,4 +24,9 @@ public class Issue {
     private String description;
     @OneToMany
     private List<Vote> votes;
+
+    public Vote getVoteById(UUID voteId) {
+        return votes.stream().filter(vote -> voteId.equals(vote.getId())).findFirst()
+                .orElseThrow(() -> new NotFoundException("No Vote for given Id found"));
+    }
 }

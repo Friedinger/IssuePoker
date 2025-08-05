@@ -5,6 +5,5 @@ import jakarta.validation.constraints.NotNull;
 
 public record VoteRequestDTO(
         @NotNull int voting,
-        @NotNull User user
-) {
+        @NotNull User user) {
 }

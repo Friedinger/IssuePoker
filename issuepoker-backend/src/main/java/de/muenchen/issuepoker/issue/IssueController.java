@@ -35,7 +35,7 @@ public class IssueController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Issue createIssue(@Valid @RequestBody final IssueRequestDTO issue) {
-        return issueService.createIssue(issueMapper.toEntity(issue));
+        return issueService.saveIssue(issueMapper.toEntity(issue));
     }
 
     @GetMapping

@@ -28,8 +28,8 @@ public class IssueService {
         return issueRepository.findAll(pageRequest);
     }
 
-    public Issue createIssue(final Issue issue) {
-        log.debug("Create Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
+    public Issue saveIssue(final Issue issue) {
+        log.debug("Save Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
         return issueRepository.save(issue);
     }
 

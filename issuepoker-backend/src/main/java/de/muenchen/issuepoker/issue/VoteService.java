@@ -33,11 +33,11 @@ public class VoteService {
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
         final var user = userRepository.findById(voteRequestDTO.userSub())
-                .orElseThrow(() -> new NotFoundException("User for given Id not found"));
+                .orElseThrow(() -> new NotFoundException("User for given Id %s not found".formatted(voteRequestDTO.userSub())));
         var vote = voteMapper.toEntity(voteRequestDTO, user);
         var issue = getIssue(issueId);
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUser().getSub().equals(existing.getUser().getSub()))) {
-            throw new ConflictException("User has already voted for this issue");
+            throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(voteRequestDTO.userSub(), issueId));
         }
         var savedVote = voteRepository.save(vote);
         issue.getVotes().add(savedVote);

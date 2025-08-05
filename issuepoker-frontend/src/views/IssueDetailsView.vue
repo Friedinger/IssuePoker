@@ -13,6 +13,11 @@
         <p>{{ issue.description }}</p>
       </v-col>
     </v-row>
+    <v-row v-if="validIssueLoaded()">
+      <v-col>
+        <issue-voting :issue="issue" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -23,6 +28,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
+import IssueVoting from "@/components/IssueVoting.vue";
 import { ROUTES_ISSUES_LIST, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -71,5 +77,10 @@ function parseId(id: string | string[]): number {
     id = id[0];
   }
   return parseInt(id);
+}
+
+function validIssueLoaded(): boolean {
+  const invalidIssues = [issueLoading, issueNotFound];
+  return !invalidIssues.includes(issue.value);
 }
 </script>

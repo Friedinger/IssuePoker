@@ -1,7 +1,6 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/issues/{issueId}/votes")
 public class VoteController {
     private final VoteService voteService;
-    private final VoteMapper voteMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

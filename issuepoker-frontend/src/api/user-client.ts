@@ -1,9 +1,10 @@
+import type User from "@/types/User";
+
 import {
   defaultCatchHandler,
   defaultResponseHandler,
   getConfig,
 } from "@/api/fetch-utils";
-import User from "@/types/User";
 
 /**
  * Retrieves the user data via the userinfo route of the API gateway. The SSO client must be configured so that
@@ -22,26 +23,5 @@ export function getUser(): Promise<User> {
         "Beim Laden des Users ist ein Fehler aufgetreten."
       );
       return response.json();
-    })
-    .then((json: Partial<User>) => {
-      const u = new User();
-      u.sub = json.sub || "";
-
-      // LHM
-      u.displayName = json.displayName || "";
-      u.surname = json.surname || "";
-      u.telephoneNumber = json.telephoneNumber || "";
-      u.email = json.email || "";
-      u.username = json.username || "";
-      u.givenname = json.givenname || "";
-      u.department = json.department || "";
-      u.lhmObjectID = json.lhmObjectID || "";
-
-      // LHM_Extended
-      u.preferred_username = json.preferred_username || "";
-      u.memberof = json.memberof || [];
-      u.user_roles = json.user_roles || [];
-      u.authorities = json.authorities || [];
-      return u;
     });
 }

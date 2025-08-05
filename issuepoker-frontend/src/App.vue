@@ -88,6 +88,8 @@
 </template>
 
 <script lang="ts" setup>
+import type User from "@/types/User";
+
 import { mdiApps, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { useToggle } from "@vueuse/core";
@@ -99,7 +101,6 @@ import TheSnackbar from "@/components/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME, ROUTES_ISSUES_LIST } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
-import User, { UserLocalDevelopment } from "@/types/User";
 
 const query = ref<string>("");
 const appswitcherBaseUrl = APPSWITCHER_URL;
@@ -120,11 +121,7 @@ function loadUser(): void {
     .then((user: User) => userStore.setUser(user))
     .catch(() => {
       // No user info received, so fallback
-      if (import.meta.env.DEV) {
-        userStore.setUser(UserLocalDevelopment());
-      } else {
-        userStore.setUser(null);
-      }
+      userStore.setUser(null);
     });
 }
 

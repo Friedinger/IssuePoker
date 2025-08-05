@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
+import IssuesListView from "@/components/IssueList.vue";
 import {
   ROUTES_HOME,
   ROUTES_ISSUES_CREATE,
@@ -9,7 +10,6 @@ import {
 import HomeView from "@/views/HomeView.vue";
 import IssuesCreateView from "@/views/IssueCreateView.vue";
 import IssueDetailsView from "@/views/IssueDetailsView.vue";
-import IssuesListView from "@/views/IssueListView.vue";
 
 const routes = [
   {

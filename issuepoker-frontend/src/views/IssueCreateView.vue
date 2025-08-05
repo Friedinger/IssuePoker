@@ -7,7 +7,7 @@
     </v-row>
     <v-row>
       <v-col>
-        <issue-create-form></issue-create-form>
+        <issue-create-form />
       </v-col>
     </v-row>
   </v-container>

@@ -4,7 +4,7 @@
       <h1>Issues</h1>
     </v-col>
     <v-col cols="auto">
-      <v-btn :to="{ name: ROUTES_ISSUES_CREATE }">Neues Issue</v-btn>
+      <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
     </v-col>
   </v-row>
   <v-row>
@@ -33,7 +33,7 @@ import type Page from "@/types/Page.ts";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issuelist.ts";
-import { ROUTES_ISSUES_CREATE, ROUTES_ISSUES_DETAIL } from "@/constants.ts";
+import { ROUTES_ISSUE_CREATE, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
@@ -77,6 +77,6 @@ function fetchIssues({
 }
 
 function goToIssue(_: MouseEvent, props: { item: Issue; index: number }) {
-  router.push({ name: ROUTES_ISSUES_DETAIL, params: { id: props.item.id } });
+  router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: props.item.id } });
 }
 </script>

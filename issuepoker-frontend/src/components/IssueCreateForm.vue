@@ -45,7 +45,7 @@ import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { ref } from "vue";
 
 import { createIssue } from "@/api/create-issue.ts";
-import { ROUTES_HOME, ROUTES_ISSUES_DETAIL } from "@/constants.ts";
+import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
@@ -59,7 +59,7 @@ function save() {
   if (!valid.value) return;
   createIssue(title.value, description.value)
     .then((content: Issue) =>
-      router.push({ name: ROUTES_ISSUES_DETAIL, params: { id: content.id } })
+      router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: content.id } })
     )
     .catch((error) => snackbarStore.showMessage(error));
 }

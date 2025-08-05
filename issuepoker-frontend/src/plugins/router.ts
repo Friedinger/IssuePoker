@@ -2,8 +2,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 
 import {
   ROUTES_HOME,
-  ROUTES_ISSUES_CREATE,
-  ROUTES_ISSUES_DETAIL,
+  ROUTES_ISSUE_CREATE,
+  ROUTES_ISSUE_DETAIL,
 } from "@/constants";
 import HomeView from "@/views/HomeView.vue";
 import IssuesCreateView from "@/views/IssueCreateView.vue";
@@ -18,12 +18,12 @@ const routes = [
   },
   {
     path: "/issues/:id",
-    name: ROUTES_ISSUES_DETAIL,
+    name: ROUTES_ISSUE_DETAIL,
     component: IssueDetailsView,
   },
   {
     path: "/issues/new",
-    name: ROUTES_ISSUES_CREATE,
+    name: ROUTES_ISSUE_CREATE,
     component: IssuesCreateView,
   },
   { path: "/:catchAll(.*)*", redirect: "/" }, // CatchAll route

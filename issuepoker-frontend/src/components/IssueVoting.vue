@@ -63,20 +63,29 @@
 </template>
 
 <script lang="ts" setup>
+import type { SnackbarState } from "@/stores/snackbar.ts";
 import type Vote from "@/types/Vote.ts";
 
 import { mdiEye, mdiEyeRemove } from "@mdi/js";
+import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 
 import { createVote } from "@/api/create-vote.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
+import { STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { useUserStore } from "@/stores/user.ts";
 
 const votingOptions = [1, 2, 3, 5, 8, 13, 21];
-const userSub = "123e4567-e89b-12d3-a456-426614174006";
+const notLoggedInMessage: SnackbarState = {
+  message: "Bitte anmelden um die Poker Funktion zu nutzen.",
+  level: STATUS_INDICATORS.ERROR,
+  show: true,
+};
 
 const snackbarStore = useSnackbarStore();
+const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
 const votes = ref<Vote[]>([]);
 const userVote = ref<Vote>();
@@ -90,6 +99,11 @@ watch(
 );
 
 function fetchVotes() {
+  if (!getUser.value) {
+    snackbarStore.showMessage(notLoggedInMessage);
+    return;
+  }
+  const userSub = getUser.value.sub;
   getVotes(props.issue.id)
     .then((content: Vote[]) => {
       votes.value = content;
@@ -102,8 +116,12 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
+  if (!getUser.value) {
+    snackbarStore.showMessage(notLoggedInMessage);
+    return;
+  }
   if (!userVote.value) {
-    createVote(props.issue.id, userSub, voting)
+    createVote(props.issue.id, getUser.value.sub, voting)
       .then((content: Vote) => {
         votes.value.push(content);
         userVote.value = content;

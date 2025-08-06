@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
@@ -17,15 +18,20 @@ import org.mapstruct.factory.Mappers;
 public class IssueMapperTest {
     private final IssueMapper issueMapper = Mappers.getMapper(IssueMapper.class);
 
+    private Issue createIssue() {
+        final Issue issue = new Issue();
+        issue.setId(42);
+        issue.setTitle("TestTitle");
+        issue.setDescription("TestDescription");
+        issue.setVotes(List.of());
+        return issue;
+    }
+
     @Nested
     class ToSummary {
         @Test
-        void givenEntity_thenReturnSummaryDTO() {
-            final Issue issue = new Issue();
-            issue.setId(42);
-            issue.setTitle("TestTitle");
-            issue.setDescription("TestDescription");
-            issue.setVotes(List.of());
+        void givenIssue_thenReturnSummaryDTO() {
+            final Issue issue = createIssue();
             final IssueSummaryDTO result = issueMapper.toSummary(issue);
             assertNotNull(result);
             assertThat(result).usingRecursiveComparison().ignoringFields("voteCount").isEqualTo(issue);
@@ -33,9 +39,20 @@ public class IssueMapperTest {
     }
 
     @Nested
+    class ToDetails {
+        @Test
+        void givenIssue_thenReturnDetailsDTO() {
+            final Issue issue = createIssue();
+            final IssueDetailsDTO result = issueMapper.toDetails(issue);
+            assertNotNull(result);
+            assertThat(result).usingRecursiveComparison().isEqualTo(issue);
+        }
+    }
+
+    @Nested
     class ToEntity {
         @Test
-        void givenRequestDTO_thenReturnEntity() {
+        void givenRequestDTO_thenReturnIssue() {
             final IssueRequestDTO requestDTO = new IssueRequestDTO("TestTitle", "TestDescription");
             final Issue result = issueMapper.toEntity(requestDTO);
             assertThat(result).usingRecursiveComparison().ignoringFields("id")

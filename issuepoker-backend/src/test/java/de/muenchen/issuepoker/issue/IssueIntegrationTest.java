@@ -107,8 +107,7 @@ public class IssueIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(List.of(issueMapper.toSummary(testIssue)), PageRequest.of(0, 10), 1)
-                    )));
+                            new PageImpl<>(List.of(issueMapper.toSummary(testIssue)), PageRequest.of(0, 10), 1))));
         }
     }
 }

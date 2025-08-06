@@ -30,7 +30,7 @@ public class IssueServiceTest {
     @InjectMocks
     private IssueService issueService;
 
-    private void setFields(Issue issue) {
+    private void setFields(final Issue issue) {
         issue.setTitle("TestTitle");
         issue.setDescription("TestDescription");
         issue.setVotes(List.of());

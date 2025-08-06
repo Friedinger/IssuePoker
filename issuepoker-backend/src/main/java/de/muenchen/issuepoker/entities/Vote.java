@@ -3,7 +3,7 @@ package de.muenchen.issuepoker.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public class Vote {
     @GeneratedValue
     @Id
     private UUID id;
-    @ManyToOne
-    private User user;
+    @NotNull
+    private String username;
     private int voting;
 }

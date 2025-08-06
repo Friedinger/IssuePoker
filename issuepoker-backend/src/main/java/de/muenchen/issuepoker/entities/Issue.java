@@ -21,8 +21,7 @@ public class Issue {
     @SequenceGenerator(name = "issue_seq_gen", sequenceName = "issue_seq", allocationSize = 1)
     @Id
     private long id;
-    @NotNull
-    private String title;
+    @NotNull private String title;
     private String description;
     @OneToMany
     private List<Vote> votes;

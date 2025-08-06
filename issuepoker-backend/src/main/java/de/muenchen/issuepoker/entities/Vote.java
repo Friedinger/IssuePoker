@@ -16,7 +16,6 @@ public class Vote {
     @GeneratedValue
     @Id
     private UUID id;
-    @NotNull
-    private String username;
+    @NotNull private String username;
     private int voting;
 }

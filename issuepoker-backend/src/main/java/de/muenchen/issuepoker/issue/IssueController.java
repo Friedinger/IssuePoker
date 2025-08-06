@@ -1,6 +1,7 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
@@ -28,14 +29,14 @@ public class IssueController {
 
     @GetMapping("{issueId}")
     @ResponseStatus(HttpStatus.OK)
-    public Issue getIssue(@PathVariable("issueId") final long issueId) {
-        return issueService.getIssue(issueId);
+    public IssueDetailsDTO getIssue(@PathVariable("issueId") final long issueId) {
+        return issueMapper.toDetails(issueService.getIssue(issueId));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Issue createIssue(@Valid @RequestBody final IssueRequestDTO issue) {
-        return issueService.saveIssue(issueMapper.toEntity(issue));
+    public IssueDetailsDTO createIssue(@Valid @RequestBody final IssueRequestDTO issue) {
+        return issueMapper.toDetails(issueService.saveIssue(issueMapper.toEntity(issue)));
     }
 
     @GetMapping

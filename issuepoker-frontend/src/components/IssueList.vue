@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import type Issue from "@/types/Issue.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 
@@ -76,7 +76,10 @@ function fetchIssues({
     });
 }
 
-function goToIssue(_: MouseEvent, props: { item: Issue; index: number }) {
+function goToIssue(
+  _: MouseEvent,
+  props: { item: IssueDetails; index: number }
+) {
   router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: props.item.id } });
 }
 </script>

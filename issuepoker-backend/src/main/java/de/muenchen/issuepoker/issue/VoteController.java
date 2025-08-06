@@ -1,6 +1,7 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.VoteDTO;
+import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -21,17 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/issues/{issueId}/votes")
 public class VoteController {
     private final VoteService voteService;
+    private final VoteMapper voteMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Vote> getVotes(@PathVariable("issueId") final long issueId) {
-        return voteService.getAllVotes(issueId);
+    public List<VoteDTO> getVotes(@PathVariable("issueId") final long issueId) {
+        return voteService.getAllVotes(issueId).stream().map(voteMapper::toDTO).toList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Vote createVote(@PathVariable("issueId") final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
-        return voteService.saveVote(issueId, voteRequestDTO);
+    public VoteDTO createVote(@PathVariable("issueId") final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+        return voteMapper.toDTO(voteService.saveVote(issueId, voteRequestDTO));
     }
 
     @DeleteMapping("{voteId}")

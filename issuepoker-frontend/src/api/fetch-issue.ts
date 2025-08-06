@@ -1,8 +1,8 @@
-import type Issue from "@/types/Issue.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
 
-export function getIssue(id: number): Promise<Issue> {
+export function getIssue(id: number): Promise<IssueDetails> {
   return fetch(`api/backend-service/issues/${id}`, getConfig())
     .then((response) => {
       defaultResponseHandler(response);

@@ -76,11 +76,11 @@ public class IssueIntegrationTest {
     @Nested
     class GetIssue {
         @Test
-        void givenIssueId_thenReturnIssue() throws Exception {
+        void givenIssueId_thenReturnIssueDetails() throws Exception {
             mockMvc.perform(get("/issues/{issueId}", testIssue.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(testIssue)));
+                    .andExpect(content().json(objectMapper.writeValueAsString(issueMapper.toDetails(testIssue))));
         }
     }
 
@@ -94,7 +94,7 @@ public class IssueIntegrationTest {
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(expectedIssue)));
+                    .andExpect(content().json(objectMapper.writeValueAsString(issueMapper.toDetails(expectedIssue))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }

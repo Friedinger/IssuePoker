@@ -1,11 +1,11 @@
-import type Issue from "@/types/Issue.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
 export function createIssue(
   title: string,
   description: string
-): Promise<Issue> {
+): Promise<IssueDetails> {
   return fetch(
     `api/backend-service/issues`,
     postConfig({

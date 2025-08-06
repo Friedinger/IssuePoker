@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import type Issue from "@/types/Issue.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { ref } from "vue";
@@ -58,7 +58,7 @@ const valid = ref();
 function save() {
   if (!valid.value) return;
   createIssue(title.value, description.value)
-    .then((content: Issue) =>
+    .then((content: IssueDetails) =>
       router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: content.id } })
     )
     .catch((error) => snackbarStore.showMessage(error));

@@ -93,7 +93,7 @@ function fetchVotes() {
   getVotes(props.issue.id)
     .then((content: Vote[]) => {
       votes.value = content;
-      userVote.value = content.find((v) => v.user.sub === userSub);
+      userVote.value = content.find((v) => v.userSub === userSub);
       countVotes();
     })
     .catch((error) => {

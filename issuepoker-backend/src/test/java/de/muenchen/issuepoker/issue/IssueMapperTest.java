@@ -1,0 +1,45 @@
+package de.muenchen.issuepoker.issue;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
+
+@AllArgsConstructor
+public class IssueMapperTest {
+    private final IssueMapper issueMapper = Mappers.getMapper(IssueMapper.class);
+
+    @Nested
+    class ToSummary {
+        @Test
+        void givenEntity_thenReturnSummaryDTO() {
+            final Issue issue = new Issue();
+            issue.setId(42);
+            issue.setTitle("TestTitle");
+            issue.setDescription("TestDescription");
+            issue.setVotes(List.of());
+            final IssueSummaryDTO result = issueMapper.toSummary(issue);
+            assertNotNull(result);
+            assertThat(result).usingRecursiveComparison().ignoringFields("voteCount").isEqualTo(issue);
+        }
+    }
+
+    @Nested
+    class ToEntity {
+        @Test
+        void givenRequestDTO_thenReturnEntity() {
+            final IssueRequestDTO requestDTO = new IssueRequestDTO("TestTitle", "TestDescription");
+            final Issue result = issueMapper.toEntity(requestDTO);
+            assertThat(result).usingRecursiveComparison().ignoringFields("id")
+                    .ignoringFields("votes").isEqualTo(requestDTO);
+        }
+    }
+}

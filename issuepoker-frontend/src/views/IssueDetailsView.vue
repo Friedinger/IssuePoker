@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import type Issue from "@/types/Issue.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
@@ -33,22 +33,20 @@ import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
-const issueLoading: Issue = {
+const issueLoading: IssueDetails = {
   id: NaN,
   title: "Issue wird geladen...",
   description: "Bitte warten.",
-  votes: [],
 };
-const issueNotFound: Issue = {
+const issueNotFound: IssueDetails = {
   id: NaN,
   title: "Issue wurde nicht gefunden",
   description: "Bitte zurück zur Liste gehen.",
-  votes: [],
 };
 
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
-const issue = ref<Issue>(issueLoading);
+const issue = ref<IssueDetails>(issueLoading);
 
 onMounted(() => {
   fetchIssue(route.params.id);
@@ -61,7 +59,7 @@ watch(
 
 function fetchIssue(id: string | string[]) {
   getIssue(parseId(id))
-    .then((content: Issue) => (issue.value = content))
+    .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
       snackbarStore.showMessage({
         message: `Issue mit ID "${id}" wurde nicht gefunden.`,

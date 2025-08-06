@@ -1,48 +1,46 @@
 <template>
   <v-container>
-    <v-row class="text-center">
-      <v-col cols="12">
+    <v-row align="center">
+      <v-col>
         <v-img
           class="my-3"
           height="200"
           src="@/assets/IssuePoker Logo Light.svg"
         />
       </v-col>
-
-      <v-col class="mb-4">
-        <h1 class="text-h3 font-weight-bold mb-3">
+      <v-col>
+        <h1 class="text-h3 font-weight-bold mb-3 text-center">
           Willkommen beim Issue Poker
         </h1>
+        <p v-if="user">
+          <strong>Angemeldet als:</strong> {{ user.name }} ({{ user.email }},
+          {{ user.sub }})
+        </p>
+        <br />
         <p>
           Das API-Gateway ist:
           <span :class="status">{{ status }}</span>
         </p>
-        <p>{{ entity }}</p>
-        <p v-if="user">
-          User:
-          {{ user.email }}
-        </p>
       </v-col>
     </v-row>
+    <issue-list />
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import type { TheEntity } from "@/api/fetch-theentity.ts";
 import type User from "@/types/User.ts";
 
 import { onMounted, ref } from "vue";
 
-import { getEntity } from "@/api/fetch-theentity.ts";
 import { checkHealth } from "@/api/health-client";
 import { getUser } from "@/api/user-client.ts";
+import IssueList from "@/components/IssueList.vue";
 import { useSnackbarStore } from "@/stores/snackbar";
 import HealthState from "@/types/HealthState";
 
 const snackbarStore = useSnackbarStore();
 const status = ref("DOWN");
 const user = ref<User>();
-const entity = ref<TheEntity>();
 
 onMounted(() => {
   checkHealth()
@@ -52,11 +50,6 @@ onMounted(() => {
     });
   getUser()
     .then((content: User) => (user.value = content))
-    .catch((error) => {
-      snackbarStore.showMessage(error);
-    });
-  getEntity()
-    .then((content: TheEntity) => (entity.value = content))
     .catch((error) => {
       snackbarStore.showMessage(error);
     });

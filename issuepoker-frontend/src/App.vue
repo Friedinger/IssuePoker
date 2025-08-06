@@ -59,7 +59,7 @@
           >
             <ad2-image-avatar
               v-if="userStore.getUser !== null"
-              :username="userStore.getUser.username"
+              :username="userStore.getUser.preferred_username"
             />
           </v-btn>
         </v-col>
@@ -69,9 +69,6 @@
       <v-list>
         <v-list-item :to="{ name: ROUTES_HOME }">
           <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-        <v-list-item :to="{ name: ROUTES_ISSUES_LIST }">
-          <v-list-item-title>Issue Liste</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -88,6 +85,8 @@
 </template>
 
 <script lang="ts" setup>
+import type User from "@/types/User";
+
 import { mdiApps, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { useToggle } from "@vueuse/core";
@@ -96,10 +95,9 @@ import { onMounted, ref } from "vue";
 import { getUser } from "@/api/user-client";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
-import { APPSWITCHER_URL, ROUTES_HOME, ROUTES_ISSUES_LIST } from "@/constants";
+import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
-import User, { UserLocalDevelopment } from "@/types/User";
 
 const query = ref<string>("");
 const appswitcherBaseUrl = APPSWITCHER_URL;
@@ -120,11 +118,7 @@ function loadUser(): void {
     .then((user: User) => userStore.setUser(user))
     .catch(() => {
       // No user info received, so fallback
-      if (import.meta.env.DEV) {
-        userStore.setUser(UserLocalDevelopment());
-      } else {
-        userStore.setUser(null);
-      }
+      userStore.setUser(null);
     });
 }
 

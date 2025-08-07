@@ -4,6 +4,7 @@ import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FO
 
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.security.Authorities;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,5 +38,13 @@ public class IssueService {
     public Issue saveIssue(final Issue issue) {
         log.debug("Save Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
         return issueRepository.save(issue);
+    }
+
+    @PreAuthorize(Authorities.VOTE_CREATE)
+    public void addVote(final long issueId, final Vote vote) {
+        log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issueId);
+        final Issue issue = getIssue(issueId);
+        issue.getVotes().add(vote);
+        issueRepository.save(issue);
     }
 }

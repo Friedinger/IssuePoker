@@ -43,8 +43,7 @@ public class VoteService {
             throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
         }
         final Vote savedVote = voteRepository.save(vote);
-        issue.getVotes().add(savedVote);
-        issueService.saveIssue(issue);
+        issueService.addVote(issue.getId(), savedVote);
         return savedVote;
     }
 

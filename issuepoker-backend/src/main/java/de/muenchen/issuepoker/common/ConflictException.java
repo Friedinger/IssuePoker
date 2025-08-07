@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Exception if data cannot be found.
+ * Exception if the input data has a conflict with existing data.
  */
 @SuppressWarnings("PMD.MissingSerialVersionUID")
 public class ConflictException extends ResponseStatusException {

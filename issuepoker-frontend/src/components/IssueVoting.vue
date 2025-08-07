@@ -103,11 +103,11 @@ function fetchVotes() {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
   }
-  const userSub = getUser.value.sub;
+  const username = getUser.value.preferred_username;
   getVotes(props.issue.id)
     .then((content: Vote[]) => {
       votes.value = content;
-      userVote.value = content.find((v) => v.userSub === userSub);
+      userVote.value = content.find((v) => v.username === username);
       countVotes();
     })
     .catch((error) => {

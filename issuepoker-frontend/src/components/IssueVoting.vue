@@ -19,10 +19,13 @@
           cols="auto"
         >
           <v-btn
-            :disabled="userVote && votingOption !== userVote.voting"
+            :class="userVote?.voting === votingOption ? 'userVote' : ''"
+            :disabled="
+              revealed || (userVote && votingOption !== userVote.voting)
+            "
             @click="vote(votingOption)"
           >
-            {{ votingOption }} <br />
+            {{ votingOption }}
           </v-btn>
           <p
             v-if="revealed"
@@ -200,3 +203,10 @@ function isAdmin(): boolean {
   return getUser.value.authorities.includes(ROLE_ADMIN);
 }
 </script>
+
+<style scoped>
+/*noinspection CssUnusedSymbol*/
+.userVote {
+  background: #ffcd00;
+}
+</style>

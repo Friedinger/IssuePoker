@@ -2,6 +2,7 @@ package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.ForbiddenException;
+import de.muenchen.issuepoker.common.GoneException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
@@ -40,6 +41,7 @@ public class VoteService {
         final String username = AuthUtils.getUsername();
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
         final Issue issue = getIssue(issueId);
+        if (issue.isRevealed()) throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issueId));
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUsername().equals(existing.getUsername()))) {
             throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
         }
@@ -52,6 +54,7 @@ public class VoteService {
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
         final Issue issue = getIssue(issueId);
+        if (issue.isRevealed()) throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issueId));
         final Vote vote = issue.getVoteById(voteId);
         if (!AuthUtils.getUsername().equals(vote.getUsername())) {
             throw new ForbiddenException("Cannot delete Vote (%s) because it doesn't belong to the user.".formatted(vote.getId()));

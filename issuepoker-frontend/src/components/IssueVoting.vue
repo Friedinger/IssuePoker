@@ -82,6 +82,7 @@
         @yes="resetVotes()"
       />
     </v-col>
+    <v-col cols="auto">Anzahl Stimmen: {{ votes.length }}</v-col>
   </v-row>
 </template>
 

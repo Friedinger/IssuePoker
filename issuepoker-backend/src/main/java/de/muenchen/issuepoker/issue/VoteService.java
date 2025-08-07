@@ -8,6 +8,7 @@ import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
 import de.muenchen.issuepoker.security.Authorities;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,14 @@ public class VoteService {
         }
         issue.getVotes().remove(vote);
         voteRepository.delete(vote);
+    }
+
+    @PreAuthorize(Authorities.VOTE_DELETE_ALL)
+    public void deleteAllVotes(final long issueId) {
+        log.info("Delete all Votes for Issue with ID {}", issueId);
+        final Issue issue = getIssue(issueId);
+        List<Vote> votes = new ArrayList<>(issue.getVotes());
+        issue.getVotes().clear();
+        voteRepository.deleteAll(votes);
     }
 }

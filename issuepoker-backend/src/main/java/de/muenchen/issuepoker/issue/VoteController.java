@@ -41,4 +41,10 @@ public class VoteController {
     public void deleteVote(@PathVariable("issueId") final long issueId, @PathVariable("voteId") final UUID voteId) {
         voteService.deleteVote(issueId, voteId);
     }
+
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllVotes(@PathVariable("issueId") final long issueId) {
+        voteService.deleteAllVotes(issueId);
+    }
 }

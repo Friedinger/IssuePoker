@@ -6,10 +6,12 @@ import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
+import de.muenchen.issuepoker.security.Authorities;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,11 +26,13 @@ public class VoteService {
         return issueService.getIssue(issueId);
     }
 
+    @PreAuthorize(Authorities.VOTE_GET_ALL)
     public List<Vote> getAllVotes(final long issueId) {
         log.info("Get Votes for Issue with ID {}", issueId);
         return getIssue(issueId).getVotes();
     }
 
+    @PreAuthorize(Authorities.VOTE_CREATE)
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
         final String username = AuthUtils.getUsername();
@@ -43,6 +47,7 @@ public class VoteService {
         return savedVote;
     }
 
+    @PreAuthorize(Authorities.VOTE_DELETE_OWN)
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
         final Issue issue = getIssue(issueId);

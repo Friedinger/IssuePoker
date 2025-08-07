@@ -10,18 +10,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 @SuppressWarnings("PMD.DataClass")
 public final class Authorities {
-    public static final String THEENTITY_GET = "hasAnyRole('reader', 'writer')";
-    public static final String THEENTITY_GET_ALL = "hasAnyRole('reader', 'writer')";
-    public static final String THEENTITY_CREATE = "hasAnyRole('writer')";
-    public static final String THEENTITY_UPDATE = "hasAnyRole('writer')";
-    public static final String THEENTITY_DELETE = "hasAnyRole('writer')";
+    public static final String THEENTITY_GET = "hasAnyRole('user', 'admin')";
+    public static final String THEENTITY_GET_ALL = "hasAnyRole('user', 'admin')";
+    public static final String THEENTITY_CREATE = "hasAnyRole('admin')";
+    public static final String THEENTITY_UPDATE = "hasAnyRole('admin')";
+    public static final String THEENTITY_DELETE = "hasAnyRole('admin')";
 
-    // Permissions based auth
-    // public static final String THEENTITY_GET = "hasAuthority('REFARCH_THEENTITY_READ')";
-    // public static final String THEENTITY_GET_ALL = "hasAuthority('REFARCH_THEENTITY_READ')";
-    // public static final String THEENTITY_CREATE = "hasAuthority('REFARCH_THEENTITY_WRITE')";
-    // public static final String THEENTITY_UPDATE = "hasAuthority('REFARCH_THEENTITY_WRITE')";
-    // public static final String THEENTITY_DELETE = "hasAuthority('REFARCH_THEENTITY_DELETE')";
+    public static final String ISSUE_GET = "hasAnyRole('user', 'admin')";
+    public static final String ISSUE_GET_ALL = "hasAnyRole('user', 'admin')";
+    public static final String ISSUE_CREATE = "hasAnyRole('admin')";
+    public static final String VOTE_GET_ALL = "hasAnyRole('user', 'admin')";
+    public static final String VOTE_CREATE = "hasAnyRole('user', 'admin')";
+    public static final String VOTE_DELETE_OWN = "hasAnyRole('user', 'admin')";
+    public static final String VOTE_DELETE_ALL = "hasAnyRole('admin')";
 
     private Authorities() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");

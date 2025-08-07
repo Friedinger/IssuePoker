@@ -1,11 +1,9 @@
-import type IssueDetails from "@/types/IssueDetails.ts";
-
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
 export function setIssueRevealed(
   issueId: string,
   revealed: boolean
-): Promise<IssueDetails> {
+): Promise<void> {
   return fetch(
     `api/backend-service/issues/${issueId}/revealed`,
     postConfig({
@@ -14,7 +12,7 @@ export function setIssueRevealed(
   )
     .then((response) => {
       defaultResponseHandler(response);
-      return response.json();
+      return;
     })
     .catch((err) => {
       defaultResponseHandler(err);

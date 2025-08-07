@@ -51,7 +51,7 @@ public class IssueController {
 
     @PostMapping("{issueId}/revealed")
     @ResponseStatus(HttpStatus.OK)
-    public IssueDetailsDTO setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
-        return issueMapper.toDetails(issueService.setRevealed(issueId, revealedDTO.revealed()));
+    public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
+        issueService.setRevealed(issueId, revealedDTO.revealed());
     }
 }

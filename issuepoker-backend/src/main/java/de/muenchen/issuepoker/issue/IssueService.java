@@ -49,9 +49,9 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
-    public Issue setRevealed(final long issueId, final boolean revealed) {
+    public void setRevealed(final long issueId, final boolean revealed) {
         final Issue issue = getIssue(issueId);
         issue.setRevealed(revealed);
-        return issueRepository.save(issue);
+        issueRepository.save(issue);
     }
 }

@@ -143,12 +143,8 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (!getUser.value) {
-    snackbarStore.showMessage(notLoggedInMessage);
-    return;
-  }
   if (!userVote.value) {
-    createVote(props.issue.id, getUser.value.sub, voting)
+    createVote(props.issue.id, voting)
       .then((content: Vote) => {
         votes.value.push(content);
         userVote.value = content;

@@ -46,11 +46,12 @@
     </v-col>
     <v-col
       v-if="isAdmin()"
+      class="d-flex ga-2"
       cols="auto"
     >
       <v-tooltip
         location="top"
-        text="Ergebnisse anzeigen"
+        text="Stimmen anzeigen"
       >
         <template v-slot:activator="{ props }">
           <v-btn
@@ -61,6 +62,25 @@
           />
         </template>
       </v-tooltip>
+      <v-tooltip
+        location="top"
+        text="Stimmen zurücksetzen"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            :icon="mdiDelete"
+            v-bind="props"
+            @click="deleteDialog = true"
+          />
+        </template>
+      </v-tooltip>
+      <yes-no-dialog
+        v-model="deleteDialog"
+        dialogtext="Sollen wirklick alle Stimmen dieses Issues zurückgesetzt werden?"
+        dialogtitle="Stimmen zurücksetzen"
+        @no="deleteDialog = false"
+        @yes="resetVotes()"
+      />
     </v-col>
   </v-row>
 </template>
@@ -69,13 +89,15 @@
 import type { SnackbarState } from "@/stores/snackbar.ts";
 import type Vote from "@/types/Vote.ts";
 
-import { mdiEye, mdiEyeRemove } from "@mdi/js";
+import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 
 import { createVote } from "@/api/create-vote.ts";
+import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
+import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
@@ -95,6 +117,7 @@ const userVote = ref<Vote>();
 const voteCounts = ref<Record<string, number>>({});
 const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);
+const deleteDialog = ref(false);
 
 watch(
   () => props.issue,
@@ -140,6 +163,17 @@ function vote(voting: number) {
       })
       .catch((error) => snackbarStore.showMessage(error));
   }
+}
+
+function resetVotes() {
+  deleteDialog.value = false;
+  deleteAllVotes(props.issue.id)
+    .then(() => {
+      userVote.value = undefined;
+      revealed.value = false;
+      fetchVotes();
+    })
+    .catch((error) => snackbarStore.showMessage(error));
 }
 
 function countVotes() {

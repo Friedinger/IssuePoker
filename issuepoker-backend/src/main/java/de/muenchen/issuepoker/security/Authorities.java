@@ -19,6 +19,7 @@ public final class Authorities {
     public static final String ISSUE_GET = "hasAnyRole('user', 'admin')";
     public static final String ISSUE_GET_ALL = "hasAnyRole('user', 'admin')";
     public static final String ISSUE_CREATE = "hasAnyRole('admin')";
+    public static final String ISSUE_REVEAL = "hasAnyRole('admin')";
     public static final String VOTE_GET_ALL = "hasAnyRole('user', 'admin')";
     public static final String VOTE_CREATE = "hasAnyRole('user', 'admin')";
     public static final String VOTE_DELETE_OWN = "hasAnyRole('user', 'admin')";

@@ -4,6 +4,7 @@ import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -46,5 +47,11 @@ public class IssueController {
         final Page<Issue> issuePage = issueService.getAllIssues(pageNumber, pageSize);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
+    }
+
+    @PostMapping("{issueId}/revealed")
+    @ResponseStatus(HttpStatus.OK)
+    public IssueDetailsDTO setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
+        return issueMapper.toDetails(issueService.setRevealed(issueId, revealedDTO.revealed()));
     }
 }

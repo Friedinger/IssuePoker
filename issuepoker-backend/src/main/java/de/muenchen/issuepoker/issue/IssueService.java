@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class IssueService {
     @PreAuthorize(Authorities.ISSUE_GET_ALL)
     public Page<Issue> getAllIssues(final int pageNumber, final int pageSize) {
         log.info("Get all Issues at Page {} with a PageSize of {}", pageNumber, pageSize);
-        final Pageable pageRequest = PageRequest.of(pageNumber, pageSize);
+        final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         return issueRepository.findAll(pageRequest);
     }
 
@@ -46,5 +47,12 @@ public class IssueService {
         final Issue issue = getIssue(issueId);
         issue.getVotes().add(vote);
         issueRepository.save(issue);
+    }
+
+    @PreAuthorize(Authorities.ISSUE_REVEAL)
+    public Issue setRevealed(final long issueId, final boolean revealed) {
+        final Issue issue = getIssue(issueId);
+        issue.setRevealed(revealed);
+        return issueRepository.save(issue);
     }
 }

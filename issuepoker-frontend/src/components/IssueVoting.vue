@@ -25,7 +25,7 @@
             {{ votingOption }} <br />
           </v-btn>
           <p
-            v-if="revealed && userVote"
+            v-if="revealed"
             class="text-center"
           >
             {{ voteCounts[votingOption] ?? 0 }}x
@@ -55,10 +55,9 @@
       >
         <template v-slot:activator="{ props }">
           <v-btn
-            :disabled="!userVote"
-            :icon="!(revealed && userVote) ? mdiEye : mdiEyeRemove"
+            :icon="!revealed ? mdiEye : mdiEyeRemove"
             v-bind="props"
-            @click="revealed = !revealed"
+            @click="toggleRevealed()"
           />
         </template>
       </v-tooltip>
@@ -98,6 +97,7 @@ import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
+import { setIssueRevealed } from "@/api/set-issue-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -126,6 +126,7 @@ watch(
 );
 
 function fetchVotes() {
+  revealed.value = props.issue.revealed;
   if (!getUser.value) {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
@@ -155,11 +156,17 @@ function vote(voting: number) {
     deleteVote(props.issue.id, userVote.value.id)
       .then(() => {
         userVote.value = undefined;
-        revealed.value = false;
         fetchVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   }
+}
+
+function toggleRevealed() {
+  revealed.value = !revealed.value;
+  setIssueRevealed(props.issue.id, revealed.value).catch((error) =>
+    snackbarStore.showMessage(error)
+  );
 }
 
 function resetVotes() {
@@ -167,7 +174,6 @@ function resetVotes() {
   deleteAllVotes(props.issue.id)
     .then(() => {
       userVote.value = undefined;
-      revealed.value = false;
       fetchVotes();
     })
     .catch((error) => snackbarStore.showMessage(error));

@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 public class IssueServiceTest {
@@ -34,6 +35,7 @@ public class IssueServiceTest {
         issue.setTitle("TestTitle");
         issue.setDescription("TestDescription");
         issue.setVotes(List.of());
+        issue.setRevealed(true);
     }
 
     @Nested
@@ -68,7 +70,7 @@ public class IssueServiceTest {
         void givenPageNumberAndPageSize_thenReturnPageOfIssues() {
             final int pageNumber = 0;
             final int pageSize = 10;
-            final Pageable pageRequest = PageRequest.of(pageNumber, pageSize);
+            final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
             final List<Issue> issues = List.of(new Issue(), new Issue());
             final Page<Issue> expectedPage = new PageImpl<>(issues, pageRequest, issues.size());
             when(issueRepository.findAll(pageRequest)).thenReturn(expectedPage);

@@ -21,34 +21,34 @@ import org.springframework.stereotype.Service;
 public class IssueService {
     private final IssueRepository issueRepository;
 
-    @PreAuthorize(Authorities.ISSUE_GET)
+    @PreAuthorize(Authorities.IS_USER)
     public Issue getIssue(final long issueId) {
         log.info("Get Issue with ID {}", issueId);
         return issueRepository.findById(issueId)
                 .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueId)));
     }
 
-    @PreAuthorize(Authorities.ISSUE_GET_ALL)
+    @PreAuthorize(Authorities.IS_USER)
     public Page<Issue> getAllIssues(final int pageNumber, final int pageSize) {
         log.info("Get all Issues at Page {} with a PageSize of {}", pageNumber, pageSize);
         final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
         return issueRepository.findAll(pageRequest);
     }
 
-    @PreAuthorize(Authorities.ISSUE_CREATE)
+    @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
         log.debug("Save Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
         return issueRepository.save(issue);
     }
 
-    @PreAuthorize(Authorities.VOTE_CREATE)
+    @PreAuthorize(Authorities.IS_USER)
     public void addVote(final Issue issue, final Vote vote) {
         log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
         issueRepository.save(issue);
     }
 
-    @PreAuthorize(Authorities.ISSUE_REVEAL)
+    @PreAuthorize(Authorities.IS_ADMIN)
     public Issue setRevealed(final long issueId, final boolean revealed) {
         final Issue issue = getIssue(issueId);
         issue.setRevealed(revealed);

@@ -29,13 +29,13 @@ public class VoteService {
         return issueService.getIssue(issueId);
     }
 
-    @PreAuthorize(Authorities.VOTE_GET_ALL)
+    @PreAuthorize(Authorities.IS_USER)
     public List<Vote> getAllVotes(final long issueId) {
         log.info("Get Votes for Issue with ID {}", issueId);
         return getIssue(issueId).getVotes();
     }
 
-    @PreAuthorize(Authorities.VOTE_CREATE)
+    @PreAuthorize(Authorities.IS_USER)
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
         final String username = AuthUtils.getUsername();
@@ -50,7 +50,7 @@ public class VoteService {
         return savedVote;
     }
 
-    @PreAuthorize(Authorities.VOTE_DELETE_OWN)
+    @PreAuthorize(Authorities.IS_USER)
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
         final Issue issue = getIssue(issueId);
@@ -63,7 +63,7 @@ public class VoteService {
         voteRepository.delete(vote);
     }
 
-    @PreAuthorize(Authorities.VOTE_DELETE_ALL)
+    @PreAuthorize(Authorities.IS_ADMIN)
     public void deleteAllVotes(final long issueId) {
         log.info("Delete all Votes for Issue with ID {}", issueId);
         final Issue issue = getIssue(issueId);

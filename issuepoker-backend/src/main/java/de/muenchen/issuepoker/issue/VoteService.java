@@ -1,12 +1,11 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.common.ConflictException;
-import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.User;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
+import de.muenchen.issuepoker.security.AuthUtils;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class VoteService {
     private final IssueService issueService;
     private final VoteRepository voteRepository;
-    private final UserRepository userRepository;
     private final VoteMapper voteMapper;
 
     private Issue getIssue(final long issueId) {
@@ -33,12 +31,11 @@ public class VoteService {
 
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
-        final User user = userRepository.findById(voteRequestDTO.userSub())
-                .orElseThrow(() -> new NotFoundException("User for given Id %s not found".formatted(voteRequestDTO.userSub())));
-        final Vote vote = voteMapper.toEntity(voteRequestDTO, user);
+        final String username = AuthUtils.getUsername();
+        final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
         final Issue issue = getIssue(issueId);
-        if (issue.getVotes().stream().anyMatch(existing -> vote.getUser().getSub().equals(existing.getUser().getSub()))) {
-            throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(voteRequestDTO.userSub(), issueId));
+        if (issue.getVotes().stream().anyMatch(existing -> vote.getUsername().equals(existing.getUsername()))) {
+            throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
         }
         final Vote savedVote = voteRepository.save(vote);
         issue.getVotes().add(savedVote);

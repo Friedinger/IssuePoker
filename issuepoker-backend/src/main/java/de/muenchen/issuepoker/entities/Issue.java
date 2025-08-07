@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class Issue {
     @SequenceGenerator(name = "issue_seq_gen", sequenceName = "issue_seq", allocationSize = 1)
     @Id
     private long id;
-    private String title;
+    @NotNull private String title;
     private String description;
     @OneToMany
     private List<Vote> votes;

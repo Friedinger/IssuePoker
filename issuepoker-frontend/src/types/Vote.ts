@@ -1,5 +1,5 @@
 export default interface Vote {
   id: string;
-  userSub: string;
+  username: string;
   voting: number;
 }

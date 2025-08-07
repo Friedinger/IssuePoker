@@ -76,7 +76,7 @@
       </v-tooltip>
       <yes-no-dialog
         v-model="deleteDialog"
-        dialogtext="Sollen wirklick alle Stimmen dieses Issues zurückgesetzt werden?"
+        dialogtext="Sollen wirklich alle Stimmen dieses Issues zurückgesetzt werden?"
         dialogtitle="Stimmen zurücksetzen"
         @no="deleteDialog = false"
         @yes="resetVotes()"

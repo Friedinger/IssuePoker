@@ -41,7 +41,7 @@ public class VoteService {
         final String username = AuthUtils.getUsername();
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
         final Issue issue = getIssue(issueId);
-        if (issue.isRevealed()) throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issueId));
+        checkVotable(issue);
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUsername().equals(existing.getUsername()))) {
             throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
         }
@@ -54,7 +54,7 @@ public class VoteService {
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
         final Issue issue = getIssue(issueId);
-        if (issue.isRevealed()) throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issueId));
+        checkVotable(issue);
         final Vote vote = issue.getVoteById(voteId);
         if (!AuthUtils.getUsername().equals(vote.getUsername())) {
             throw new ForbiddenException("Cannot delete Vote (%s) because it doesn't belong to the user.".formatted(vote.getId()));
@@ -67,8 +67,14 @@ public class VoteService {
     public void deleteAllVotes(final long issueId) {
         log.info("Delete all Votes for Issue with ID {}", issueId);
         final Issue issue = getIssue(issueId);
-        List<Vote> votes = new ArrayList<>(issue.getVotes());
+        final List<Vote> votes = new ArrayList<>(issue.getVotes());
         issue.getVotes().clear();
         voteRepository.deleteAll(votes);
+    }
+
+    private void checkVotable(final Issue issue) {
+        if (issue.isRevealed()) {
+            throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issue.getId()));
+        }
     }
 }

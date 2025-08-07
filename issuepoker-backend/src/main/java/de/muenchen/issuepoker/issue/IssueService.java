@@ -42,9 +42,8 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.VOTE_CREATE)
-    public void addVote(final long issueId, final Vote vote) {
-        log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issueId);
-        final Issue issue = getIssue(issueId);
+    public void addVote(final Issue issue, final Vote vote) {
+        log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
         issueRepository.save(issue);
     }

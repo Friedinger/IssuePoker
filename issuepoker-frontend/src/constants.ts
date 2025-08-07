@@ -13,3 +13,6 @@ export const enum STATUS_INDICATORS {
   WARNING = "warning",
   ERROR = "error",
 }
+
+export const ROLE_ADMIN = "ROLE_admin";
+export const ROLE_USER = "ROLE_user";

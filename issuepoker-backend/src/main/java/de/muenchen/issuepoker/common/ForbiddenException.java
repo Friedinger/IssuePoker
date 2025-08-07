@@ -4,16 +4,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Exception if the input data has a conflict with existing data.
+ * Exception if the user has insufficient permissions.
  */
 @SuppressWarnings("PMD.MissingSerialVersionUID")
-public class ConflictException extends ResponseStatusException {
+public class ForbiddenException extends ResponseStatusException {
     /**
-     * NotFoundException constructor
+     * ForbiddenException constructor
      *
      * @param message Exception message
      */
-    public ConflictException(final String message) {
-        super(HttpStatus.CONFLICT, message);
+    public ForbiddenException(final String message) {
+        super(HttpStatus.FORBIDDEN, message);
     }
 }

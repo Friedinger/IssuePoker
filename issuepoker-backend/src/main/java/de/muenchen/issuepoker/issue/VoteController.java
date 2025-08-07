@@ -21,24 +21,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/issues/{issueId}/votes")
 public class VoteController {
+    private final static String ISSUE_ID = "issueId";
     private final VoteService voteService;
     private final VoteMapper voteMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<VoteDTO> getVotes(@PathVariable("issueId") final long issueId) {
+    public List<VoteDTO> getVotes(@PathVariable(ISSUE_ID) final long issueId) {
         return voteService.getAllVotes(issueId).stream().map(voteMapper::toDTO).toList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VoteDTO createVote(@PathVariable("issueId") final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+    public VoteDTO createVote(@PathVariable(ISSUE_ID) final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
         return voteMapper.toDTO(voteService.saveVote(issueId, voteRequestDTO));
     }
 
     @DeleteMapping("{voteId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteVote(@PathVariable("issueId") final long issueId, @PathVariable("voteId") final UUID voteId) {
+    public void deleteVote(@PathVariable(ISSUE_ID) final long issueId, @PathVariable("voteId") final UUID voteId) {
         voteService.deleteVote(issueId, voteId);
+    }
+
+    @DeleteMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllVotes(@PathVariable(ISSUE_ID) final long issueId) {
+        voteService.deleteAllVotes(issueId);
     }
 }

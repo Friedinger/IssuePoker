@@ -4,9 +4,17 @@ realm: local_realm
 changes:
   - assignRole:
       user: user1
-      role: reader
+      role: user
+      clientId: local
+  - assignRole:
+      user: user2
+      role: user
       clientId: local
   - assignRole:
       user: admin
-      role: writer
+      role: user
+      clientId: local
+  - assignRole:
+      user: admin
+      role: admin
       clientId: local

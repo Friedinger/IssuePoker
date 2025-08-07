@@ -37,11 +37,13 @@ const issueLoading: IssueDetails = {
   id: NaN,
   title: "Issue wird geladen...",
   description: "Bitte warten.",
+  revealed: false,
 };
 const issueNotFound: IssueDetails = {
   id: NaN,
   title: "Issue wurde nicht gefunden",
   description: "Bitte zurück zur Liste gehen.",
+  revealed: false,
 };
 
 const snackbarStore = useSnackbarStore();

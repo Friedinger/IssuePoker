@@ -1,15 +1,20 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.common.ConflictException;
+import de.muenchen.issuepoker.common.ForbiddenException;
+import de.muenchen.issuepoker.common.GoneException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
+import de.muenchen.issuepoker.security.Authorities;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,29 +29,52 @@ public class VoteService {
         return issueService.getIssue(issueId);
     }
 
+    @PreAuthorize(Authorities.IS_USER)
     public List<Vote> getAllVotes(final long issueId) {
         log.info("Get Votes for Issue with ID {}", issueId);
         return getIssue(issueId).getVotes();
     }
 
+    @PreAuthorize(Authorities.IS_USER)
     public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
         final String username = AuthUtils.getUsername();
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
         final Issue issue = getIssue(issueId);
+        checkVotable(issue);
         if (issue.getVotes().stream().anyMatch(existing -> vote.getUsername().equals(existing.getUsername()))) {
             throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
         }
         final Vote savedVote = voteRepository.save(vote);
-        issue.getVotes().add(savedVote);
-        issueService.saveIssue(issue);
+        issueService.addVote(issue, savedVote);
         return savedVote;
     }
 
+    @PreAuthorize(Authorities.IS_USER)
     public void deleteVote(final long issueId, final UUID voteId) {
         log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
         final Issue issue = getIssue(issueId);
-        issue.getVotes().remove(issue.getVoteById(voteId));
-        voteRepository.deleteById(voteId);
+        checkVotable(issue);
+        final Vote vote = issue.getVoteById(voteId);
+        if (!AuthUtils.getUsername().equals(vote.getUsername())) {
+            throw new ForbiddenException("Cannot delete Vote (%s) because it doesn't belong to the user.".formatted(vote.getId()));
+        }
+        issue.getVotes().remove(vote);
+        voteRepository.delete(vote);
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public void deleteAllVotes(final long issueId) {
+        log.info("Delete all Votes for Issue with ID {}", issueId);
+        final Issue issue = getIssue(issueId);
+        final List<Vote> votes = new ArrayList<>(issue.getVotes());
+        issue.getVotes().clear();
+        voteRepository.deleteAll(votes);
+    }
+
+    private void checkVotable(final Issue issue) {
+        if (issue.isRevealed()) {
+            throw new GoneException("Issue %d is already revealed, so voting is not available anymore".formatted(issue.getId()));
+        }
     }
 }

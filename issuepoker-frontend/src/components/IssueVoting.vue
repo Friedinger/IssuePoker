@@ -44,7 +44,10 @@
         </v-col>
       </v-row>
     </v-col>
-    <v-col cols="auto">
+    <v-col
+      v-if="isAdmin()"
+      cols="auto"
+    >
       <v-tooltip
         location="top"
         text="Ergebnisse anzeigen"
@@ -73,7 +76,7 @@ import { ref, watch } from "vue";
 import { createVote } from "@/api/create-vote.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
-import { STATUS_INDICATORS } from "@/constants.ts";
+import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
 
@@ -151,5 +154,12 @@ function countVotes() {
   Object.entries(voteCounts.value).forEach(([voting, count]) => {
     voteCountValues.value[votingOptions.indexOf(parseInt(voting))] = count;
   });
+}
+
+function isAdmin(): boolean {
+  if (!getUser.value) {
+    return false;
+  }
+  return getUser.value.authorities.includes(ROLE_ADMIN);
 }
 </script>

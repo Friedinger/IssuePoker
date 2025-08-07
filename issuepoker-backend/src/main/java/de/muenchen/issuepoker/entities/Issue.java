@@ -25,6 +25,7 @@ public class Issue {
     private String description;
     @OneToMany
     private List<Vote> votes;
+    @NotNull private boolean revealed = false;
 
     public Vote getVoteById(final UUID voteId) {
         return votes.stream().filter(vote -> voteId.equals(vote.getId())).findFirst()

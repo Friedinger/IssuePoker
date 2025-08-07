@@ -5,6 +5,7 @@ CREATE TABLE issue
     id          BIGINT       NOT NULL,
     title       VARCHAR(255) NOT NULL,
     description VARCHAR(65535),
+    revealed    BOOLEAN      NOT NULL,
     CONSTRAINT pk_issue PRIMARY KEY (id)
 );
 

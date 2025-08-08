@@ -69,13 +69,13 @@ public class IssueServiceTest {
         @Test
         void givenPageNumberAndPageSize_thenReturnPageOfIssues() {
             final int pageNumber = 0;
-            final int pageSize = 10;
+            final int pageSize = 7;
             final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
             final List<Issue> issues = List.of(new Issue(), new Issue());
             final Page<Issue> expectedPage = new PageImpl<>(issues, pageRequest, issues.size());
             when(issueRepository.findAll(pageRequest)).thenReturn(expectedPage);
 
-            final Page<Issue> result = issueService.getAllIssues(pageNumber, pageSize);
+            final Page<Issue> result = issueService.getAllIssues(pageRequest);
             assertEquals(expectedPage, result);
             verify(issueRepository, times(1)).findAll(pageRequest);
         }

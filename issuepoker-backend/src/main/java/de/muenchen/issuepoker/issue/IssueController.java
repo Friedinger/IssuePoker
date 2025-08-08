@@ -43,7 +43,7 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueSummaries(@PageableDefault(sort = "id") Pageable pageRequest) {
+    public Page<IssueSummaryDTO> getIssueSummaries(@PageableDefault(sort = "id") final Pageable pageRequest) {
         final Page<Issue> issuePage = issueService.getAllIssues(pageRequest);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());

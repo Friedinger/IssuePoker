@@ -6,7 +6,8 @@
     <v-col>
       <p v-if="!userVote">Klicke auf einen Wert um dafür zu stimmen.</p>
       <p v-else>
-        Klicke auf den aktuell ausgewählten Wert, um ihn zurückzunehmen.
+        Klicke auf einen anderen Wert um die Stimme zu ändern oder auf den
+        Aktuellen um die Stimme zurückzunehmen.
       </p>
     </v-col>
   </v-row>
@@ -20,9 +21,7 @@
         >
           <v-btn
             :class="userVote?.voting === votingOption ? 'userVote' : ''"
-            :disabled="
-              revealed || (userVote && votingOption !== userVote.voting)
-            "
+            :disabled="revealed"
             @click="vote(votingOption)"
           >
             {{ votingOption }}
@@ -147,22 +146,23 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (!userVote.value) {
+  if (userVote.value?.voting != voting) {
     createVote(props.issue.id, voting)
       .then((content: Vote) => {
+        votes.value = votes.value.filter((vote) => vote !== userVote.value);
         votes.value.push(content);
         userVote.value = content;
-        countVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   } else {
     deleteVote(props.issue.id, userVote.value.id)
       .then(() => {
+        votes.value = votes.value.filter((vote) => vote !== userVote.value);
         userVote.value = undefined;
-        fetchVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   }
+  countVotes();
 }
 
 function toggleRevealed() {

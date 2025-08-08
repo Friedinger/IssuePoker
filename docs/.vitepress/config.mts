@@ -3,8 +3,8 @@ import { withMermaid } from "vitepress-plugin-mermaid";
 
 // https://vitepress.dev/reference/site-config
 const vitepressConfig = defineConfig({
-  title: "RefArch Docs Template",
-  description: "Documentation template from the RefArch Templates",
+  title: "IssuePoker Docs",
+  description: "Documentation from IssuePoker",
   head: [
     [
       "link",
@@ -22,21 +22,23 @@ const vitepressConfig = defineConfig({
       {
         text: "Docs",
         items: [
-          { text: "Example", link: "/example" },
-          { text: "External link", link: "https://refarch.oss.muenchen.de" },
+          { text: "Data model", link: "/datamodel" },
+          {
+            text: "Repository",
+            link: "https://github.com/Friedinger/IssuePoker",
+          },
         ],
       },
     ],
     sidebar: [
-      { text: "Example", link: "/example" },
-      { text: "External link", link: "https://refarch.oss.muenchen.de" },
+      { text: "Data model", link: "/datamodel" },
+      { text: "Repository", link: "https://github.com/Friedinger/IssuePoker" },
     ],
     socialLinks: [
-      { icon: "github", link: "https://github.com/it-at-m/refarch-templates" },
+      { icon: "github", link: "https://github.com/Friedinger/IssuePoker" },
     ],
     editLink: {
-      pattern:
-        "https://github.com/it-at-m/refarch-templates/blob/main/docs/:path",
+      pattern: "https://github.com/Friedinger/IssuePoker/blob/main/docs/:path",
       text: "View this page on GitHub",
     },
     footer: {

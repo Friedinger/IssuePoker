@@ -1,7 +1,7 @@
 name: 🐞 Bug report
 description: Report a bug to help the project improve.
 title: "[Bug] "
-labels: ["Type: Bug"]
+labels: [ "Type: Bug" ]
 body:
   - type: markdown
     attributes:
@@ -58,8 +58,6 @@ body:
       options:
         - issuepoker-frontend
         - issuepoker-backend
-        - issuepoker-eai
-        - issuepoker-webcomponent
     validations:
       required: false
   - type: input

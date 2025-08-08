@@ -1,7 +1,7 @@
 name: 📄 Documentation change (not web documentation)
 description: Suggest a documentation change for this project (should not be used for topics related to the web documentation, see 'RefArch - Documentation' below)
 title: "[Documentation] "
-labels: ["Type: Documentation"]
+labels: [ "Type: Documentation" ]
 body:
   - type: markdown
     attributes:
@@ -21,8 +21,6 @@ body:
       options:
         - issuepoker-frontend
         - issuepoker-backend
-        - issuepoker-eai
-        - issuepoker-webcomponent
         - Other
     validations:
       required: true

@@ -17,8 +17,6 @@ jobs:
         include: # hier müssen die Pfade angegeben werden
           - app-path: issuepoker-backend
           - app-path: issuepoker-frontend
-          - app-path: issuepoker-eai
-          - app-path: issuepoker-webcomponent
 
     steps:
       - uses: it-at-m/lhm_actions/action-templates/actions/action-checkout@9767179088fd2e344d1a24c17404ab809a60f1b6 # v1.0.20

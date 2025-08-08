@@ -7,20 +7,14 @@
 "Type: Documentation":
   - head-branch: [ '^docs', '-documentation-' ]
   - changed-files:
-    - any-glob-to-any-file: ['docs/**']
+      - any-glob-to-any-file: [ 'docs/**' ]
 "Type: Dependency":
   - head-branch: [ '^dep', '-dependency-' ]
 "Type: Security":
   - head-branch: [ '^sec', '-security-' ]
 "Template: Backend":
   - changed-files:
-    - any-glob-to-any-file: ['issuepoker-backend/**']
-"Template: EAI":
-  - changed-files:
-      - any-glob-to-any-file: ['issuepoker-eai/**']
+      - any-glob-to-any-file: [ 'issuepoker-backend/**' ]
 "Template: Frontend":
   - changed-files:
-      - any-glob-to-any-file: ['issuepoker-frontend/**']
-"Template: Webcomponent":
-  - changed-files:
-      - any-glob-to-any-file: ['issuepoker-webcomponent/**']
+      - any-glob-to-any-file: [ 'issuepoker-frontend/**' ]

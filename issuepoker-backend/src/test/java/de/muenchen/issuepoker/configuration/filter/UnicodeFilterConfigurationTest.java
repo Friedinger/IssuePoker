@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.muenchen.issuepoker.MicroServiceApplication;
 import de.muenchen.issuepoker.TestConstants;
-import de.muenchen.issuepoker.theentity.TheEntity;
-import de.muenchen.issuepoker.theentity.TheEntityRepository;
-import de.muenchen.issuepoker.theentity.dto.TheEntityRequestDTO;
-import de.muenchen.issuepoker.theentity.dto.TheEntityResponseDTO;
+import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.issue.IssueRepository;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ class UnicodeFilterConfigurationTest {
     private static final PostgreSQLContainer<?> POSTGRE_SQL_CONTAINER = new PostgreSQLContainer<>(
             DockerImageName.parse(TestConstants.TESTCONTAINERS_POSTGRES_IMAGE));
 
-    private static final String ENTITY_ENDPOINT_URL = "/theEntity";
+    private static final String ENTITY_ENDPOINT_URL = "/issues";
 
     /**
      * Decomposed string:
@@ -55,29 +55,29 @@ class UnicodeFilterConfigurationTest {
     private TestRestTemplate testRestTemplate;
 
     @Autowired
-    private TheEntityRepository theEntityRepository;
+    private IssueRepository issueRepository;
 
     @Test
     void testForNfcNormalization() {
         // Given
         // Persist entity with decomposed string.
-        final TheEntityRequestDTO theEntityRequestDto = new TheEntityRequestDTO(TEXT_ATTRIBUTE_DECOMPOSED);
+        final IssueRequestDTO requestDTO = new IssueRequestDTO(TEXT_ATTRIBUTE_DECOMPOSED, "");
 
         // When
-        final TheEntityResponseDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL), theEntityRequestDto, TheEntityResponseDTO.class)
+        final IssueDetailsDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL), requestDTO, IssueDetailsDTO.class)
                 .getBody();
-        final TheEntity theEntity = theEntityRepository.findById(response.id()).orElse(null);
+        final Issue issue = issueRepository.findById(response.id()).orElse(null);
 
         // Then
         // Check whether response contains a composed string.
-        assertNotNull(response.textAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED, response.textAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), response.textAttribute().length());
+        assertNotNull(response.title());
+        assertEquals(TEXT_ATTRIBUTE_COMPOSED, response.title());
+        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), response.title().length());
 
         // Check persisted entity contains a composed string via JPA repository.
-        assertNotNull(theEntity.getTextAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED, theEntity.getTextAttribute());
-        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), theEntity.getTextAttribute().length());
+        assertNotNull(issue.getTitle());
+        assertEquals(TEXT_ATTRIBUTE_COMPOSED, issue.getTitle());
+        assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), issue.getTitle().length());
     }
 
 }

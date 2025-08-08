@@ -1,8 +1,11 @@
 # Pull Request
 
 <!-- Links -->
+
 [code-quality-link]: https://refarch.oss.muenchen.de/templates/develop#code-quality
+
 [refarch-create-issue-link]: https://github.com/it-at-m/refarch/issues/new/choose
+
 [refarch-create-documentation-issue-link]: https://github.com/it-at-m/refarch/issues/new?template=4-documentation-change.yml
 
 ## Changes
@@ -32,13 +35,13 @@ Issue: #XXX
 - [ ] Added unit tests
 - [ ] Removed waste on branch (e.g. `console.log`), see [code quality tooling][code-quality-link]
 
-#### Frontend / WebComponent
+#### Frontend
 
 - [ ] Added component tests (if component was changed)
 - [ ] Considered and tested accessibility (if UI change was made)
 - [ ] Checked / Updated Node.js engine requirements in `package.json` (if dependencies were changed)
 
-#### Backend / EAI
+#### Backend
 
 - [ ] Added integration tests
 - [ ] Updated database migration scripts (if changes to model were made)

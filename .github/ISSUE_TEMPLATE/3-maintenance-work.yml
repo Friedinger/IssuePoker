@@ -1,7 +1,7 @@
 name: ⚙ Maintenance work
 description: Suggest useful or required maintenance work for this project.
 title: "[Maintenance] "
-labels: ["Type: Maintenance"]
+labels: [ "Type: Maintenance" ]
 body:
   - type: markdown
     attributes:
@@ -21,8 +21,6 @@ body:
       options:
         - issuepoker-frontend
         - issuepoker-backend
-        - issuepoker-eai
-        - issuepoker-webcomponent
     validations:
       required: false
   - type: textarea

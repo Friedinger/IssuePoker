@@ -15,6 +15,7 @@
       :items-length="totalIssues"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
+      :sort-by="sortedBy"
       items-per-page-text="Issues pro Seite:"
       loading-text="Issues werden geladen... Bitte warten."
       @update:options="fetchIssues"
@@ -27,7 +28,7 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
-import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort";
+import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
 import { ref } from "vue";
 
@@ -40,7 +41,7 @@ const snackbarStore = useSnackbarStore();
 const headers = [
   { key: "id", title: "Nummer" },
   { key: "title", title: "Titel" },
-  { key: "voteCount", title: "Anzahl Stimmen" },
+  { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
 ];
 const itemsPerPageOptions = [
   { value: 5, title: "5" },
@@ -54,6 +55,7 @@ const itemsPerPageOptions = [
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
+const sortedBy = ref<SortItem[]>([{ key: "id", order: "asc" }]);
 
 function fetchIssues({
   page,
@@ -65,6 +67,7 @@ function fetchIssues({
   sortBy: SortItem[];
 }) {
   loading.value = true;
+  sortedBy.value = sortBy;
   getIssueList(page - 1, itemsPerPage, sortBy)
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;

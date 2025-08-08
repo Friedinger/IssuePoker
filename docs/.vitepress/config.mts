@@ -3,6 +3,7 @@ import { withMermaid } from "vitepress-plugin-mermaid";
 
 // https://vitepress.dev/reference/site-config
 const vitepressConfig = defineConfig({
+  base: "/IssuePoker",
   title: "IssuePoker Docs",
   description: "Documentation from IssuePoker",
   head: [

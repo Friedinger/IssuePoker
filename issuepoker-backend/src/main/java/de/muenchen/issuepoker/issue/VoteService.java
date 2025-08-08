@@ -1,6 +1,5 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.ForbiddenException;
 import de.muenchen.issuepoker.common.GoneException;
 import de.muenchen.issuepoker.entities.Issue;
@@ -11,7 +10,9 @@ import de.muenchen.issuepoker.security.AuthUtils;
 import de.muenchen.issuepoker.security.Authorities;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,11 +43,11 @@ public class VoteService {
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
         final Issue issue = getIssue(issueId);
         checkVotable(issue);
-        if (issue.getVotes().stream().anyMatch(existing -> vote.getUsername().equals(existing.getUsername()))) {
-            throw new ConflictException("User (%s) has already voted for the issue (%d)".formatted(username, issueId));
-        }
+        final Optional<Vote> existing = issue.getVotes().stream()
+                .filter(issueVote -> username.equals(issueVote.getUsername())).findFirst();
+        existing.ifPresent(value -> vote.setId(value.getId()));
         final Vote savedVote = voteRepository.save(vote);
-        issueService.addVote(issue, savedVote);
+        existing.ifPresentOrElse(Function.identity()::apply, () -> issueService.addVote(issue, savedVote));
         return savedVote;
     }
 

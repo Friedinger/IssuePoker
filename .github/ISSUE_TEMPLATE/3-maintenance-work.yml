@@ -21,7 +21,6 @@ body:
       options:
         - issuepoker-frontend
         - issuepoker-backend
-        - issuepoker-webcomponent
     validations:
       required: false
   - type: textarea

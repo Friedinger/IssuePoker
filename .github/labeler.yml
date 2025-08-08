@@ -18,6 +18,3 @@
 "Template: Frontend":
   - changed-files:
       - any-glob-to-any-file: [ 'issuepoker-frontend/**' ]
-"Template: Webcomponent":
-  - changed-files:
-      - any-glob-to-any-file: [ 'issuepoker-webcomponent/**' ]

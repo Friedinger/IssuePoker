@@ -35,7 +35,7 @@ Issue: #XXX
 - [ ] Added unit tests
 - [ ] Removed waste on branch (e.g. `console.log`), see [code quality tooling][code-quality-link]
 
-#### Frontend / WebComponent
+#### Frontend
 
 - [ ] Added component tests (if component was changed)
 - [ ] Considered and tested accessibility (if UI change was made)

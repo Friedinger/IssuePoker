@@ -9,9 +9,7 @@ import de.muenchen.issuepoker.security.Authorities;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +27,8 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Page<Issue> getAllIssues(final int pageNumber, final int pageSize) {
-        log.info("Get all Issues at Page {} with a PageSize of {}", pageNumber, pageSize);
-        final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
+    public Page<Issue> getAllIssues(final Pageable pageRequest) {
+        log.info("Get all Issues with Pageable {}", pageRequest);
         return issueRepository.findAll(pageRequest);
     }
 

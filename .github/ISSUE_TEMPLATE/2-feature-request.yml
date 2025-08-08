@@ -1,7 +1,7 @@
 name: ✨ Feature request
 description: Suggest an idea or possible new feature for this project.
 title: "[Feature] "
-labels: ["Type: Feature"]
+labels: [ "Type: Feature" ]
 body:
   - type: markdown
     attributes:
@@ -21,7 +21,6 @@ body:
       options:
         - issuepoker-frontend
         - issuepoker-backend
-        - issuepoker-eai
         - issuepoker-webcomponent
     validations:
       required: false

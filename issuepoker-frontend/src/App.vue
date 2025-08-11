@@ -85,6 +85,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { VotingOptions } from "@/stores/votingOptions.ts";
 import type User from "@/types/User";
 
 import { mdiApps, mdiMagnify } from "@mdi/js";
@@ -92,22 +93,33 @@ import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { useToggle } from "@vueuse/core";
 import { onMounted, ref } from "vue";
 
+import { getVotingOptions } from "@/api/fetch-votingOptions.ts";
 import { getUser } from "@/api/user-client";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
+import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
 
 const query = ref<string>("");
 const appswitcherBaseUrl = APPSWITCHER_URL;
 
 const snackbarStore = useSnackbarStore();
 const userStore = useUserStore();
+const votingOptionsStore = useVotingOptionsStore();
 const [drawer, toggleDrawer] = useToggle();
 
 onMounted(() => {
   loadUser();
+  getVotingOptions()
+    .then((content: VotingOptions) =>
+      votingOptionsStore.setVotingOptions(content)
+    )
+    .catch((error) => {
+      votingOptionsStore.setVotingOptions([]);
+      snackbarStore.showMessage(error);
+    });
 });
 
 /**

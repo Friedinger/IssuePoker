@@ -1,6 +1,5 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.common.ForbiddenException;
 import de.muenchen.issuepoker.common.GoneException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
@@ -12,7 +11,6 @@ import de.muenchen.issuepoker.security.Authorities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,14 +59,12 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public void deleteVote(final long issueId, final UUID voteId) {
-        log.info("Delete Vote with ID {} for Issue with ID {}", voteId, issueId);
+    public void deleteVote(final long issueId) {
+        String username = AuthUtils.getUsername();
+        log.info("Delete Vote for User {} for Issue with ID {}", username, issueId);
         final Issue issue = getIssue(issueId);
         checkVotable(issue);
-        final Vote vote = issue.getVoteById(voteId);
-        if (!AuthUtils.getUsername().equals(vote.getUsername())) {
-            throw new ForbiddenException("Cannot delete Vote (%s) because it doesn't belong to the user.".formatted(vote.getId()));
-        }
+        final Vote vote = issue.getVoteByUser(username);
         issue.getVotes().remove(vote);
         voteRepository.delete(vote);
     }

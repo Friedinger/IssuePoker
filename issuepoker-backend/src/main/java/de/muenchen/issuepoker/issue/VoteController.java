@@ -4,7 +4,6 @@ import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,13 +36,13 @@ public class VoteController {
         return voteService.getVotes(issueId);
     }
 
-    @DeleteMapping("{voteId}")
+    @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void deleteVote(@PathVariable(ISSUE_ID) final long issueId, @PathVariable("voteId") final UUID voteId) {
-        voteService.deleteVote(issueId, voteId);
+    public void deleteVote(@PathVariable(ISSUE_ID) final long issueId) {
+        voteService.deleteVote(issueId);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("all")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllVotes(@PathVariable(ISSUE_ID) final long issueId) {
         voteService.deleteAllVotes(issueId);

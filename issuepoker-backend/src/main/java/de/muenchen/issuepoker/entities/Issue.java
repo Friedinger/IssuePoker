@@ -9,7 +9,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,8 +26,8 @@ public class Issue {
     private List<Vote> votes;
     @NotNull private boolean revealed = false;
 
-    public Vote getVoteById(final UUID voteId) {
-        return votes.stream().filter(vote -> voteId.equals(vote.getId())).findFirst()
-                .orElseThrow(() -> new NotFoundException("No Vote for given Id found"));
+    public Vote getVoteByUser(final String username) {
+        return votes.stream().filter(vote -> username.equals(vote.getUsername())).findFirst()
+                .orElseThrow(() -> new NotFoundException("No Vote for given Username found"));
     }
 }

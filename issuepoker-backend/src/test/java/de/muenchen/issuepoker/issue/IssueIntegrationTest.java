@@ -82,8 +82,8 @@ public class IssueIntegrationTest {
             mockMvc.perform(get("/issues/{issueId}", testIssue.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId(), testIssue.getTitle(),
-                            testIssue.getDescription(), testIssue.isRevealed()))));
+                    .andExpect(content().json(objectMapper.writeValueAsString(
+                            new IssueDetailsDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getDescription()))));
         }
     }
 
@@ -98,7 +98,7 @@ public class IssueIntegrationTest {
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId() + 1, requestDTO.title(),
-                            requestDTO.description(), false))));
+                            requestDTO.description()))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }

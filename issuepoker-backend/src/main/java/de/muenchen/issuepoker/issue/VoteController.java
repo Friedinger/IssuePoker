@@ -1,6 +1,5 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class VoteController {
     private final static String ISSUE_ID = "issueId";
     private final VoteService voteService;
-    private final VoteMapper voteMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

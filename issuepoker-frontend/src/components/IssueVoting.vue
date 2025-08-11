@@ -92,6 +92,7 @@ import type { SnackbarState } from "@/stores/snackbar.ts";
 import type Votes from "@/types/Votes.ts";
 
 import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
+import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 
@@ -131,7 +132,6 @@ watch(
 );
 
 function fetchVotes() {
-  revealed.value = props.issue.revealed;
   if (!getUser.value) {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
@@ -139,6 +139,7 @@ function fetchVotes() {
   getVotes(props.issue.id)
     .then((content: Votes) => {
       votes.value = content;
+      revealed.value = isDefined(content.allVotings);
       countVotes();
     })
     .catch((error) => {
@@ -156,26 +157,21 @@ function vote(voting: number) {
       .catch((error) => snackbarStore.showMessage(error));
   } else {
     deleteVote(props.issue.id)
-      .then(() => {
-        fetchVotes();
-      })
+      .then(() => fetchVotes())
       .catch((error) => snackbarStore.showMessage(error));
   }
 }
 
 function toggleRevealed() {
-  revealed.value = !revealed.value;
-  setIssueRevealed(props.issue.id, revealed.value).catch((error) =>
-    snackbarStore.showMessage(error)
-  );
+  setIssueRevealed(props.issue.id, !revealed.value)
+    .then(() => fetchVotes())
+    .catch((error) => snackbarStore.showMessage(error));
 }
 
 function resetVotes() {
   deleteDialog.value = false;
   deleteAllVotes(props.issue.id)
-    .then(() => {
-      fetchVotes();
-    })
+    .then(() => fetchVotes())
     .catch((error) => snackbarStore.showMessage(error));
 }
 

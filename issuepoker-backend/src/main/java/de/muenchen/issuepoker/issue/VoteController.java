@@ -1,10 +1,9 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.VoteDTO;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
+import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,14 +26,15 @@ public class VoteController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<VoteDTO> getVotes(@PathVariable(ISSUE_ID) final long issueId) {
-        return voteService.getAllVotes(issueId).stream().map(voteMapper::toDTO).toList();
+    public VotesDTO getVotes(@PathVariable(ISSUE_ID) final long issueId) {
+        return voteService.getVotes(issueId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VoteDTO createVote(@PathVariable(ISSUE_ID) final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
-        return voteMapper.toDTO(voteService.saveVote(issueId, voteRequestDTO));
+    public VotesDTO createVote(@PathVariable(ISSUE_ID) final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+        voteService.saveVote(issueId, voteRequestDTO);
+        return voteService.getVotes(issueId);
     }
 
     @DeleteMapping("{voteId}")

@@ -4,7 +4,7 @@
   </v-row>
   <v-row class="mt-0">
     <v-col>
-      <p v-if="!userVote">Klicke auf einen Wert um dafür zu stimmen.</p>
+      <p v-if="!votes.userVoting">Klicke auf einen Wert um dafür zu stimmen.</p>
       <p v-else>
         Klicke auf einen anderen Wert um die Stimme zu ändern oder auf den
         Aktuellen um die Stimme zurückzunehmen.
@@ -20,7 +20,7 @@
           cols="auto"
         >
           <v-btn
-            :class="userVote?.voting === votingOption ? 'userVote' : ''"
+            :class="votes.userVoting === votingOption ? 'userVote' : ''"
             :disabled="revealed"
             @click="vote(votingOption)"
           >
@@ -83,13 +83,13 @@
         @yes="resetVotes()"
       />
     </v-col>
-    <v-col cols="auto">Anzahl Stimmen: {{ votes.length }}</v-col>
+    <v-col cols="auto">Anzahl Stimmen: {{ votes.votingCount }}</v-col>
   </v-row>
 </template>
 
 <script lang="ts" setup>
 import type { SnackbarState } from "@/stores/snackbar.ts";
-import type Vote from "@/types/Vote.ts";
+import type Votes from "@/types/Votes.ts";
 
 import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
 import { storeToRefs } from "pinia";
@@ -115,8 +115,11 @@ const notLoggedInMessage: SnackbarState = {
 const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
-const votes = ref<Vote[]>([]);
-const userVote = ref<Vote>();
+const votes = ref<Votes>({
+  userVoting: undefined,
+  votingCount: 0,
+  allVotings: undefined,
+});
 const voteCounts = ref<Record<string, number>>({});
 const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);
@@ -133,11 +136,9 @@ function fetchVotes() {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
   }
-  const username = getUser.value.preferred_username;
   getVotes(props.issue.id)
-    .then((content: Vote[]) => {
+    .then((content: Votes) => {
       votes.value = content;
-      userVote.value = content.find((v) => v.username === username);
       countVotes();
     })
     .catch((error) => {
@@ -146,23 +147,20 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (userVote.value?.voting != voting) {
+  if (votes.value?.userVoting != voting) {
     createVote(props.issue.id, voting)
-      .then((content: Vote) => {
-        votes.value = votes.value.filter((vote) => vote !== userVote.value);
-        votes.value.push(content);
-        userVote.value = content;
+      .then((content: Votes) => {
+        votes.value = content;
+        countVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   } else {
-    deleteVote(props.issue.id, userVote.value.id)
+    deleteVote(props.issue.id)
       .then(() => {
-        votes.value = votes.value.filter((vote) => vote !== userVote.value);
-        userVote.value = undefined;
+        fetchVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   }
-  countVotes();
 }
 
 function toggleRevealed() {
@@ -176,16 +174,16 @@ function resetVotes() {
   deleteDialog.value = false;
   deleteAllVotes(props.issue.id)
     .then(() => {
-      userVote.value = undefined;
       fetchVotes();
     })
     .catch((error) => snackbarStore.showMessage(error));
 }
 
 function countVotes() {
-  voteCounts.value = votes.value.reduce(
-    (acc, vote) => {
-      acc[vote.voting] = (acc[vote.voting] || 0) + 1;
+  if (!votes.value.allVotings) return;
+  voteCounts.value = votes.value.allVotings.reduce(
+    (acc, voting) => {
+      acc[voting] = (acc[voting] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>

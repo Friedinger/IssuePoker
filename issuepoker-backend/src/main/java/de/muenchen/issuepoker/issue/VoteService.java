@@ -6,6 +6,7 @@ import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
+import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
 import de.muenchen.issuepoker.security.Authorities;
 import java.util.ArrayList;
@@ -31,13 +32,22 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public List<Vote> getAllVotes(final long issueId) {
+    public VotesDTO getVotes(final long issueId) {
         log.info("Get Votes for Issue with ID {}", issueId);
-        return getIssue(issueId).getVotes();
+        final Issue issue = getIssue(issueId);
+        final List<Vote> votes = issue.getVotes();
+        final String username = AuthUtils.getUsername();
+        final int userVoting = votes.stream().filter(vote -> username.equals(vote.getUsername()))
+                .findFirst().orElseGet(Vote::new).getVoting();
+        List<Integer> allVotings = null;
+        if (issue.isRevealed()) {
+            allVotings = votes.stream().map(Vote::getVoting).toList();
+        }
+        return new VotesDTO(userVoting, votes.size(), allVotings);
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Vote saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
+    public void saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
         log.info("Save Vote for Issue with ID {}", issueId);
         final String username = AuthUtils.getUsername();
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
@@ -48,7 +58,6 @@ public class VoteService {
         existing.ifPresent(value -> vote.setId(value.getId()));
         final Vote savedVote = voteRepository.save(vote);
         existing.ifPresentOrElse(Function.identity()::apply, () -> issueService.addVote(issue, savedVote));
-        return savedVote;
     }
 
     @PreAuthorize(Authorities.IS_USER)

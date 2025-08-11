@@ -1,8 +1,8 @@
-import type Vote from "@/types/Vote.ts";
+import type Votes from "@/types/Votes.ts";
 
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils.ts";
 
-export function createVote(issueId: string, voting: number): Promise<Vote> {
+export function createVote(issueId: string, voting: number): Promise<Votes> {
   return fetch(
     `api/backend-service/issues/${issueId}/votes`,
     postConfig({

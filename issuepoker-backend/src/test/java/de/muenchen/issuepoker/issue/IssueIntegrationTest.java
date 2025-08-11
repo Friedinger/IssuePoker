@@ -10,8 +10,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -80,7 +82,8 @@ public class IssueIntegrationTest {
             mockMvc.perform(get("/issues/{issueId}", testIssue.getId()).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(issueMapper.toDetails(testIssue))));
+                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId(), testIssue.getTitle(),
+                            testIssue.getDescription(), testIssue.isRevealed()))));
         }
     }
 
@@ -94,7 +97,8 @@ public class IssueIntegrationTest {
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(issueMapper.toDetails(expectedIssue))));
+                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId() + 1, requestDTO.title(),
+                            requestDTO.description(), false))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }
@@ -107,7 +111,8 @@ public class IssueIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(List.of(issueMapper.toSummary(testIssue)), PageRequest.of(0, 10), 1))));
+                            new PageImpl<>(List.of(new IssueSummaryDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getVotes().size())),
+                                    PageRequest.of(0, 10), 1))));
         }
     }
 }

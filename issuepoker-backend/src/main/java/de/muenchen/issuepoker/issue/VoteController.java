@@ -1,5 +1,6 @@
 package de.muenchen.issuepoker.issue;
 
+import de.muenchen.issuepoker.entities.dto.IssueRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
@@ -44,5 +45,11 @@ public class VoteController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllVotes(@PathVariable(ISSUE_ID) final long issueId) {
         voteService.deleteAllVotes(issueId);
+    }
+
+    @PostMapping("revealed")
+    @ResponseStatus(HttpStatus.OK)
+    public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
+        voteService.setRevealed(issueId, revealedDTO.revealed());
     }
 }

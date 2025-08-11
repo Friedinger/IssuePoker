@@ -60,7 +60,7 @@ public class VoteService {
 
     @PreAuthorize(Authorities.IS_USER)
     public void deleteVote(final long issueId) {
-        String username = AuthUtils.getUsername();
+        final String username = AuthUtils.getUsername();
         log.info("Delete Vote for User {} for Issue with ID {}", username, issueId);
         final Issue issue = getIssue(issueId);
         checkVotable(issue);
@@ -76,6 +76,13 @@ public class VoteService {
         final List<Vote> votes = new ArrayList<>(issue.getVotes());
         issue.getVotes().clear();
         voteRepository.deleteAll(votes);
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public void setRevealed(final long issueId, final boolean revealed) {
+        final Issue issue = getIssue(issueId);
+        issue.setRevealed(revealed);
+        issueService.saveIssue(issue);
     }
 
     private void checkVotable(final Issue issue) {

@@ -100,7 +100,7 @@ import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
-import { setIssueRevealed } from "@/api/set-issue-revealed.ts";
+import { setVotesRevealed } from "@/api/set-votes-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -163,7 +163,7 @@ function vote(voting: number) {
 }
 
 function toggleRevealed() {
-  setIssueRevealed(props.issue.id, !revealed.value)
+  setVotesRevealed(props.issue.id, !revealed.value)
     .then(() => fetchVotes())
     .catch((error) => snackbarStore.showMessage(error));
 }

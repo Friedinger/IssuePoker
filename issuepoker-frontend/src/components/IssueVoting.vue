@@ -4,7 +4,7 @@
   </v-row>
   <v-row class="mt-0">
     <v-col>
-      <p v-if="!userVote">Klicke auf einen Wert um dafür zu stimmen.</p>
+      <p v-if="!votes.userVoting">Klicke auf einen Wert um dafür zu stimmen.</p>
       <p v-else>
         Klicke auf einen anderen Wert um die Stimme zu ändern oder auf den
         Aktuellen um die Stimme zurückzunehmen.
@@ -20,7 +20,7 @@
           cols="auto"
         >
           <v-btn
-            :class="userVote?.voting === votingOption ? 'userVote' : ''"
+            :class="votes.userVoting === votingOption ? 'userVote' : ''"
             :disabled="revealed"
             @click="vote(votingOption)"
           >
@@ -83,15 +83,16 @@
         @yes="resetVotes()"
       />
     </v-col>
-    <v-col cols="auto">Anzahl Stimmen: {{ votes.length }}</v-col>
+    <v-col cols="auto">Anzahl Stimmen: {{ votes.votingCount }}</v-col>
   </v-row>
 </template>
 
 <script lang="ts" setup>
 import type { SnackbarState } from "@/stores/snackbar.ts";
-import type Vote from "@/types/Vote.ts";
+import type Votes from "@/types/Votes.ts";
 
 import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
+import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 
@@ -99,7 +100,7 @@ import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
-import { setIssueRevealed } from "@/api/set-issue-revealed.ts";
+import { setVotesRevealed } from "@/api/set-votes-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -115,8 +116,11 @@ const notLoggedInMessage: SnackbarState = {
 const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
-const votes = ref<Vote[]>([]);
-const userVote = ref<Vote>();
+const votes = ref<Votes>({
+  userVoting: undefined,
+  votingCount: 0,
+  allVotings: undefined,
+});
 const voteCounts = ref<Record<string, number>>({});
 const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);
@@ -128,16 +132,14 @@ watch(
 );
 
 function fetchVotes() {
-  revealed.value = props.issue.revealed;
   if (!getUser.value) {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
   }
-  const username = getUser.value.preferred_username;
   getVotes(props.issue.id)
-    .then((content: Vote[]) => {
+    .then((content: Votes) => {
       votes.value = content;
-      userVote.value = content.find((v) => v.username === username);
+      revealed.value = isDefined(content.allVotings);
       countVotes();
     })
     .catch((error) => {
@@ -146,46 +148,38 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (userVote.value?.voting != voting) {
+  if (votes.value?.userVoting != voting) {
     createVote(props.issue.id, voting)
-      .then((content: Vote) => {
-        votes.value = votes.value.filter((vote) => vote !== userVote.value);
-        votes.value.push(content);
-        userVote.value = content;
+      .then((content: Votes) => {
+        votes.value = content;
+        countVotes();
       })
       .catch((error) => snackbarStore.showMessage(error));
   } else {
-    deleteVote(props.issue.id, userVote.value.id)
-      .then(() => {
-        votes.value = votes.value.filter((vote) => vote !== userVote.value);
-        userVote.value = undefined;
-      })
+    deleteVote(props.issue.id)
+      .then(() => fetchVotes())
       .catch((error) => snackbarStore.showMessage(error));
   }
-  countVotes();
 }
 
 function toggleRevealed() {
-  revealed.value = !revealed.value;
-  setIssueRevealed(props.issue.id, revealed.value).catch((error) =>
-    snackbarStore.showMessage(error)
-  );
+  setVotesRevealed(props.issue.id, !revealed.value)
+    .then(() => fetchVotes())
+    .catch((error) => snackbarStore.showMessage(error));
 }
 
 function resetVotes() {
   deleteDialog.value = false;
   deleteAllVotes(props.issue.id)
-    .then(() => {
-      userVote.value = undefined;
-      fetchVotes();
-    })
+    .then(() => fetchVotes())
     .catch((error) => snackbarStore.showMessage(error));
 }
 
 function countVotes() {
-  voteCounts.value = votes.value.reduce(
-    (acc, vote) => {
-      acc[vote.voting] = (acc[vote.voting] || 0) + 1;
+  if (!votes.value.allVotings) return;
+  voteCounts.value = votes.value.allVotings.reduce(
+    (acc, voting) => {
+      acc[voting] = (acc[voting] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>

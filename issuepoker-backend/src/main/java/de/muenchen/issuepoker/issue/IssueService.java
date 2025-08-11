@@ -44,11 +44,4 @@ public class IssueService {
         issue.getVotes().add(vote);
         issueRepository.save(issue);
     }
-
-    @PreAuthorize(Authorities.IS_ADMIN)
-    public void setRevealed(final long issueId, final boolean revealed) {
-        final Issue issue = getIssue(issueId);
-        issue.setRevealed(revealed);
-        issueRepository.save(issue);
-    }
 }

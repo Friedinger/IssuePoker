@@ -1,11 +1,9 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.VoteDTO;
-import de.muenchen.issuepoker.entities.dto.VoteMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
+import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,29 +21,35 @@ import org.springframework.web.bind.annotation.RestController;
 public class VoteController {
     private final static String ISSUE_ID = "issueId";
     private final VoteService voteService;
-    private final VoteMapper voteMapper;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<VoteDTO> getVotes(@PathVariable(ISSUE_ID) final long issueId) {
-        return voteService.getAllVotes(issueId).stream().map(voteMapper::toDTO).toList();
+    public VotesDTO getVotes(@PathVariable(ISSUE_ID) final long issueId) {
+        return voteService.getVotes(issueId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public VoteDTO createVote(@PathVariable(ISSUE_ID) final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
-        return voteMapper.toDTO(voteService.saveVote(issueId, voteRequestDTO));
-    }
-
-    @DeleteMapping("{voteId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteVote(@PathVariable(ISSUE_ID) final long issueId, @PathVariable("voteId") final UUID voteId) {
-        voteService.deleteVote(issueId, voteId);
+    public VotesDTO createVote(@PathVariable(ISSUE_ID) final long issueId, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+        voteService.saveVote(issueId, voteRequestDTO);
+        return voteService.getVotes(issueId);
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
+    public void deleteVote(@PathVariable(ISSUE_ID) final long issueId) {
+        voteService.deleteVote(issueId);
+    }
+
+    @DeleteMapping("all")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteAllVotes(@PathVariable(ISSUE_ID) final long issueId) {
         voteService.deleteAllVotes(issueId);
+    }
+
+    @PostMapping("revealed")
+    @ResponseStatus(HttpStatus.OK)
+    public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
+        voteService.setRevealed(issueId, revealedDTO.revealed());
     }
 }

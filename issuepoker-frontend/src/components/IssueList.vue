@@ -36,7 +36,7 @@ import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sor
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
-import { getIssueList } from "@/api/fetch-issuelist.ts";
+import { getIssueList } from "@/api/fetch-issueList.ts";
 import {
   ROLE_ADMIN,
   ROUTES_ISSUE_CREATE,

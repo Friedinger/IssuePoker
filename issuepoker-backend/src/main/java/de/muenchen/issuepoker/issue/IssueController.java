@@ -1,12 +1,14 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -46,5 +48,11 @@ public class IssueController {
         final Page<Issue> issuePage = issueService.getAllIssues(pageRequest);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
+    }
+
+    @GetMapping("votingOptions")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<Integer> getVotingOptions() {
+        return Vote.VOTING_OPTIONS;
     }
 }

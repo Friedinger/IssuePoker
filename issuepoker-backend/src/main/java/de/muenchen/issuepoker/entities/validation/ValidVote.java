@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidVote {
-    String message() default "Invalid voting value. Allowed values are 1, 2, 3, 5, 8, 13, 21.";
+    String message() default "Invalid voting value. See Vote.VOTING_OPTIONS for allowed values.";
 
     Class<?>[] groups() default {};
 

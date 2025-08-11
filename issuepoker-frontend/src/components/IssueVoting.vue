@@ -15,7 +15,7 @@
     <v-col cols="auto">
       <v-row class="flex-nowrap">
         <v-col
-          v-for="votingOption in votingOptions"
+          v-for="votingOption in getVotingOptions"
           :key="votingOption"
           cols="auto"
         >
@@ -105,8 +105,9 @@ import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
+import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
 
-const votingOptions = [1, 2, 3, 5, 8, 13, 21];
+const { getVotingOptions } = storeToRefs(useVotingOptionsStore());
 const notLoggedInMessage: SnackbarState = {
   message: "Bitte anmelden um die Poker Funktion zu nutzen.",
   level: STATUS_INDICATORS.ERROR,
@@ -184,9 +185,10 @@ function countVotes() {
     },
     {} as Record<string, number>
   );
-  voteCountValues.value = new Array(votingOptions.length).fill(0);
+  voteCountValues.value = new Array(getVotingOptions.value.length).fill(0);
   Object.entries(voteCounts.value).forEach(([voting, count]) => {
-    voteCountValues.value[votingOptions.indexOf(parseInt(voting))] = count;
+    voteCountValues.value[getVotingOptions.value.indexOf(parseInt(voting))] =
+      count;
   });
 }
 

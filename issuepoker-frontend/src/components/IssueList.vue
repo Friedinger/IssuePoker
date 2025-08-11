@@ -3,7 +3,10 @@
     <v-col>
       <h1>Issues</h1>
     </v-col>
-    <v-col cols="auto">
+    <v-col
+      v-if="getUser?.authorities.includes(ROLE_ADMIN)"
+      cols="auto"
+    >
       <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
     </v-col>
   </v-row>
@@ -30,12 +33,18 @@ import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
+import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issuelist.ts";
-import { ROUTES_ISSUE_CREATE, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
+import {
+  ROLE_ADMIN,
+  ROUTES_ISSUE_CREATE,
+  ROUTES_ISSUE_DETAIL,
+} from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const headers = [
@@ -52,6 +61,7 @@ const itemsPerPageOptions = [
   { value: -1, title: "Alle" },
 ];
 
+const { getUser } = storeToRefs(useUserStore());
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);

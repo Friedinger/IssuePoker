@@ -84,6 +84,9 @@ public class VoteService {
         log.info("Set Revealed for Issue with ID {} to {}", issueId, revealed);
         final Issue issue = getIssue(issueId);
         issue.setRevealed(revealed);
+        if (!revealed) {
+            issue.setVoteResult(null);
+        }
         issueService.saveIssue(issue);
     }
 

@@ -21,7 +21,7 @@
         >
           <v-btn
             :class="votes.userVoting === votingOption ? 'userVote' : ''"
-            :disabled="revealed"
+            :disabled="revealed && !isAdmin()"
             @click="vote(votingOption)"
           >
             {{ votingOption }}
@@ -103,6 +103,7 @@ import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
+import { setVoteResult } from "@/api/set-vote-result.ts";
 import { setVoteRevealed } from "@/api/set-vote-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
@@ -148,7 +149,14 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (votes.value?.userVoting != voting) {
+  if (isAdmin() && revealed.value) {
+    setVoteResult(
+      props.issue.id,
+      voting === votes.value.voteResult ? undefined : voting
+    )
+      .then(() => fetchVotes())
+      .catch((error) => snackbarStore.showMessage(error));
+  } else if (votes.value?.userVoting != voting) {
     createVote(props.issue.id, voting)
       .then((content: Votes) => {
         votes.value = content;

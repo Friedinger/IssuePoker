@@ -70,7 +70,7 @@
       >
         <template v-slot:activator="{ props }">
           <v-btn
-            :disabled="votes.voteResult"
+            :disabled="isDefined(votes.voteResult)"
             :icon="!revealed ? mdiEye : mdiEyeRemove"
             v-bind="props"
             @click="toggleRevealed()"

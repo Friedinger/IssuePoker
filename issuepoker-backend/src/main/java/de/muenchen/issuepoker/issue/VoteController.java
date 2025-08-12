@@ -1,8 +1,8 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.VoteRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestResultDTO;
+import de.muenchen.issuepoker.entities.dto.VoteRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

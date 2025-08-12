@@ -20,11 +20,24 @@
           cols="auto"
         >
           <v-btn
-            :class="votes.userVoting === votingOption ? 'userVote' : ''"
+            :class="
+              (votes.userVoting === votingOption ? 'userVoting' : '') +
+              ' ' +
+              (votes.voteResult === votingOption ? 'voteResult' : '')
+            "
             :disabled="revealed && !isAdmin()"
+            stacked
             @click="vote(votingOption)"
           >
-            {{ votingOption }}
+            <v-row>{{ votingOption }}</v-row>
+            <v-row>
+              <v-icon v-if="votes.userVoting === votingOption">
+                {{ mdiAccount }}
+              </v-icon>
+              <v-icon v-if="votes.voteResult === votingOption">
+                {{ mdiTrophy }}
+              </v-icon>
+            </v-row>
           </v-btn>
           <p
             v-if="revealed"
@@ -94,7 +107,13 @@
 import type { SnackbarState } from "@/stores/snackbar.ts";
 import type Votes from "@/types/Votes.ts";
 
-import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
+import {
+  mdiAccount,
+  mdiDelete,
+  mdiEye,
+  mdiEyeRemove,
+  mdiTrophy,
+} from "@mdi/js";
 import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
@@ -209,7 +228,11 @@ function isAdmin(): boolean {
 
 <style scoped>
 /*noinspection CssUnusedSymbol*/
-.userVote {
+.userVoting {
+  background: #5e73c9;
+}
+/*noinspection CssUnusedSymbol*/
+.voteResult {
   background: #ffcd00;
 }
 </style>

@@ -81,8 +81,17 @@ public class VoteService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public void setRevealed(final long issueId, final boolean revealed) {
+        log.info("Set Revealed for Issue with ID {} to {}", issueId, revealed);
         final Issue issue = getIssue(issueId);
         issue.setRevealed(revealed);
+        issueService.saveIssue(issue);
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public void setResult(final long issueId, final Integer voteResult) {
+        log.info("Set Vote Result for Issue with ID {} to {}", issueId, voteResult);
+        final Issue issue = getIssue(issueId);
+        issue.setVoteResult(voteResult);
         issueService.saveIssue(issue);
     }
 

@@ -2,6 +2,7 @@ package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.entities.dto.IssueRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
+import de.muenchen.issuepoker.entities.dto.VoteRequestResultDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +52,11 @@ public class VoteController {
     @ResponseStatus(HttpStatus.OK)
     public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
         voteService.setRevealed(issueId, revealedDTO.revealed());
+    }
+
+    @PostMapping("result")
+    @ResponseStatus(HttpStatus.OK)
+    public void setResult(@PathVariable("issueId") final long issueId, @RequestBody final VoteRequestResultDTO resultDTO) {
+        voteService.setResult(issueId, resultDTO.voteResult());
     }
 }

@@ -1,6 +1,6 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.IssueRequestRevealedDTO;
+import de.muenchen.issuepoker.entities.dto.VoteRequestRevealedDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestResultDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
@@ -50,7 +50,7 @@ public class VoteController {
 
     @PostMapping("revealed")
     @ResponseStatus(HttpStatus.OK)
-    public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final IssueRequestRevealedDTO revealedDTO) {
+    public void setRevealed(@PathVariable("issueId") final long issueId, @RequestBody final VoteRequestRevealedDTO revealedDTO) {
         voteService.setRevealed(issueId, revealedDTO.revealed());
     }
 

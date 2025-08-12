@@ -1,6 +1,6 @@
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
-export function setVotesRevealed(
+export function setVoteRevealed(
   issueId: string,
   revealed: boolean
 ): Promise<void> {

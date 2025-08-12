@@ -51,6 +51,7 @@ const headers = [
   { key: "id", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
+  { key: "voteResult", title: "Ergebnis", sortable: false },
 ];
 const itemsPerPageOptions = [
   { value: 5, title: "5" },

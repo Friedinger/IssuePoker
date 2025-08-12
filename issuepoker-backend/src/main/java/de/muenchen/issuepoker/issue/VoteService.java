@@ -41,7 +41,7 @@ public class VoteService {
         if (issue.isRevealed()) {
             allVotings = votes.stream().map(Vote::getVoting).toList();
         }
-        return new VotesDTO(userVoting, votes.size(), allVotings);
+        return new VotesDTO(userVoting, allVotings, votes.size(), issue.getVoteResult());
     }
 
     @PreAuthorize(Authorities.IS_USER)

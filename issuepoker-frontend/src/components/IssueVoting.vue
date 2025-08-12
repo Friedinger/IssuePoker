@@ -83,7 +83,10 @@
         @yes="resetVotes()"
       />
     </v-col>
-    <v-col cols="auto">Anzahl Stimmen: {{ votes.votingCount }}</v-col>
+    <v-col cols="auto">
+      <p>Anzahl Stimmen: {{ votes.voteCount }}</p>
+      <p>Ergebnis: {{ votes.voteResult || "-" }}</p>
+    </v-col>
   </v-row>
 </template>
 
@@ -117,11 +120,7 @@ const notLoggedInMessage: SnackbarState = {
 const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
-const votes = ref<Votes>({
-  userVoting: undefined,
-  votingCount: 0,
-  allVotings: undefined,
-});
+const votes = ref<Votes>({ voteCount: 0 });
 const voteCounts = ref<Record<string, number>>({});
 const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);

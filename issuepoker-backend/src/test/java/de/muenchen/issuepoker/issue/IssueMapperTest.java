@@ -55,7 +55,7 @@ public class IssueMapperTest {
         void givenRequestDTO_thenReturnIssue() {
             final IssueRequestDTO requestDTO = new IssueRequestDTO("TestTitle", "TestDescription");
             final Issue result = issueMapper.toEntity(requestDTO);
-            assertThat(result).usingRecursiveComparison().ignoringFields("id", "votes", "revealed").isEqualTo(requestDTO);
+            assertThat(result).usingRecursiveComparison().ignoringFields("id", "votes", "revealed", "voteResult").isEqualTo(requestDTO);
         }
     }
 }

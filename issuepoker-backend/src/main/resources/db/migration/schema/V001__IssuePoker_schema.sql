@@ -6,6 +6,7 @@ CREATE TABLE issue
     title       VARCHAR(255) NOT NULL,
     description VARCHAR(65535),
     revealed    BOOLEAN      NOT NULL,
+    vote_result INT,
     CONSTRAINT pk_issue PRIMARY KEY (id)
 );
 

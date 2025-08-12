@@ -76,6 +76,7 @@ public class VoteService {
         final List<Vote> votes = new ArrayList<>(issue.getVotes());
         issue.getVotes().clear();
         voteRepository.deleteAll(votes);
+        setRevealed(issueId, false);
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)

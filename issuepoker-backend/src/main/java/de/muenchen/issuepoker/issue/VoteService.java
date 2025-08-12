@@ -91,6 +91,9 @@ public class VoteService {
     public void setResult(final long issueId, final Integer voteResult) {
         log.info("Set Vote Result for Issue with ID {} to {}", issueId, voteResult);
         final Issue issue = getIssue(issueId);
+        if (!issue.isRevealed()) {
+            throw new GoneException("Issue %d is not revealed, so setting the vote result is not available".formatted(issue.getId()));
+        }
         issue.setVoteResult(voteResult);
         issueService.saveIssue(issue);
     }

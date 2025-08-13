@@ -17,7 +17,7 @@
                 contain
                 height="auto"
                 max-width="50"
-                src="@/assets/IssuePoker Icon.svg"
+                src="@/assets/IssuePoker_Icon.svg"
               />
               <v-toolbar-title class="font-weight-bold">
                 <span class="text-white">Issue</span>

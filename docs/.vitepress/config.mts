@@ -24,7 +24,8 @@ const vitepressConfig = defineConfig({
       {
         text: "Docs",
         items: [
-          { text: "Data model", link: "/datamodel" },
+          { text: "Development", link: "/development/" },
+          { text: "Data model", link: "/data-model/" },
           {
             text: "Repository",
             link: "https://github.com/Friedinger/IssuePoker",
@@ -33,6 +34,7 @@ const vitepressConfig = defineConfig({
       },
     ],
     sidebar: [
+      { text: "Development", link: "/development/" },
       { text: "Data model", link: "/datamodel" },
       { text: "Repository", link: "https://github.com/Friedinger/IssuePoker" },
     ],
@@ -53,6 +55,7 @@ const vitepressConfig = defineConfig({
       provider: "local",
     },
   },
+  ignoreDeadLinks: "localhostLinks",
   markdown: {
     image: {
       lazyLoading: true,

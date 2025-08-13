@@ -5,7 +5,7 @@
         <v-img
           class="my-3"
           height="200"
-          src="@/assets/IssuePoker Logo Light.svg"
+          src="@/assets/IssuePoker_Logo_Light.svg"
         />
       </v-col>
       <v-col>

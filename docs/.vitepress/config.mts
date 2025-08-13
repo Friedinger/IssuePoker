@@ -18,7 +18,7 @@ const vitepressConfig = defineConfig({
   lastUpdated: true,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
-    logo: "/assets/IssuePoker Icon.svg",
+    logo: "/IssuePoker Icon.svg",
     nav: [
       { text: "Home", link: "/" },
       {

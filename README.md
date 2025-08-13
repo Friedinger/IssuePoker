@@ -33,9 +33,9 @@
 [license-shield]: https://img.shields.io/github/license/Friedinger/IssuePoker?style=for-the-badge
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/public/IssuePoker%20Logo%20Dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="docs/public/IssuePoker%20Logo%20Light.svg">
-  <img alt="Mein Logo" src="docs/public/IssuePoker%20Logo%20Light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/public/IssuePoker_Logo_Dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/public/IssuePoker_Logo_Light.svg">
+  <img alt="IssuePoker Logo" src="docs/public/IssuePoker_Logo_Light.svg">
 </picture>
 
 # IssuePoker

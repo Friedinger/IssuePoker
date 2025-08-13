@@ -29,7 +29,9 @@
             stacked
             @click="vote(votingOption)"
           >
-            <v-row>{{ votingOption }}</v-row>
+            <v-row
+              ><span class="votingOption">{{ votingOption }}</span></v-row
+            >
             <v-row>
               <v-icon v-if="votes.userVoting === votingOption">
                 {{ mdiAccount }}
@@ -228,6 +230,9 @@ function isAdmin(): boolean {
 </script>
 
 <style scoped>
+.votingOption {
+  font-size: 1.5rem;
+}
 /*noinspection CssUnusedSymbol*/
 .userVoting {
   background: #5e73c9;

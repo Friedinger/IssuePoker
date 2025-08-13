@@ -7,8 +7,8 @@ hero:
   text: "Vote your GitHub Issues for Scrum"
   tagline: "This is the default template for writing documentation in RefArch applications"
   image:
-    light: /assets/IssuePoker Logo Light.svg
-    dark: /assets/IssuePoker Logo Dark.svg
+    light: /IssuePoker Logo Light.svg
+    dark: /IssuePoker Logo Dark.svg
     alt: IssuePoker Logo
   actions:
     - theme: brand

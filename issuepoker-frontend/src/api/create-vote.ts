@@ -1,8 +1,6 @@
-import type Votes from "@/types/Votes.ts";
-
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils.ts";
 
-export function createVote(issueId: string, voting: number): Promise<Votes> {
+export function createVote(issueId: string, voting: number): Promise<void> {
   return fetch(
     `api/backend-service/issues/${issueId}/votes`,
     postConfig({
@@ -11,7 +9,7 @@ export function createVote(issueId: string, voting: number): Promise<Votes> {
   )
     .then((response) => {
       defaultResponseHandler(response);
-      return response.json();
+      return;
     })
     .catch((err) => {
       defaultResponseHandler(err);

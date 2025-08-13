@@ -138,12 +138,11 @@ import {
 } from "@mdi/js";
 import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 
 import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
-import { getVotes } from "@/api/fetch-votes.ts";
 import { setVoteResult } from "@/api/set-vote-result.ts";
 import { setVoteRevealed } from "@/api/set-vote-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
@@ -168,25 +167,48 @@ const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);
 const deleteDialog = ref(false);
 
+let eventSource: EventSource | null = null;
+
+onMounted(() => {
+  if (props.issue.id) {
+    fetchVotes();
+  } else {
+    snackbarStore.showMessage({
+      message: "Das Issue hat keine ID, kann keine Votes laden.",
+      level: STATUS_INDICATORS.ERROR,
+      show: true,
+    });
+  }
+});
+
 watch(
   () => props.issue,
   () => fetchVotes()
 );
+
+onUnmounted(() => {
+  if (eventSource) eventSource.close();
+});
 
 function fetchVotes() {
   if (!getUser.value) {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
   }
-  getVotes(props.issue.id)
-    .then((content: Votes) => {
-      votes.value = content;
-      revealed.value = isDefined(content.allVotings);
-      countVotes();
-    })
-    .catch((error) => {
-      snackbarStore.showMessage(error);
-    });
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource(
+    `api/backend-service/issues/${props.issue.id}/votes`
+  );
+  eventSource.addEventListener("votes", (event) => {
+    const content = JSON.parse(event.data);
+    votes.value = content;
+    revealed.value = isDefined(content.allVotings);
+    countVotes();
+  });
+  eventSource.onerror = () => {
+    eventSource?.close();
+    setTimeout(fetchVotes, 1000);
+  };
 }
 
 function vote(voting: number) {
@@ -194,34 +216,29 @@ function vote(voting: number) {
     setVoteResult(
       props.issue.id,
       voting === votes.value.voteResult ? undefined : voting
-    )
-      .then(() => fetchVotes())
-      .catch((error) => snackbarStore.showMessage(error));
+    ).catch((error) => snackbarStore.showMessage(error));
   } else if (votes.value?.userVoting != voting) {
-    createVote(props.issue.id, voting)
-      .then((content: Votes) => {
-        votes.value = content;
-        countVotes();
-      })
-      .catch((error) => snackbarStore.showMessage(error));
+    createVote(props.issue.id, voting).catch((error) =>
+      snackbarStore.showMessage(error)
+    );
   } else {
-    deleteVote(props.issue.id)
-      .then(() => fetchVotes())
-      .catch((error) => snackbarStore.showMessage(error));
+    deleteVote(props.issue.id).catch((error) =>
+      snackbarStore.showMessage(error)
+    );
   }
 }
 
 function toggleRevealed() {
-  setVoteRevealed(props.issue.id, !revealed.value)
-    .then(() => fetchVotes())
-    .catch((error) => snackbarStore.showMessage(error));
+  setVoteRevealed(props.issue.id, !revealed.value).catch((error) =>
+    snackbarStore.showMessage(error)
+  );
 }
 
 function resetVotes() {
   deleteDialog.value = false;
-  deleteAllVotes(props.issue.id)
-    .then(() => fetchVotes())
-    .catch((error) => snackbarStore.showMessage(error));
+  deleteAllVotes(props.issue.id).catch((error) =>
+    snackbarStore.showMessage(error)
+  );
 }
 
 function countVotes() {

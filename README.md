@@ -38,7 +38,7 @@
   <img alt="IssuePoker Logo" src="docs/public/IssuePoker_Logo_Light.svg">
 </picture>
 
-# IssuePoker
+# IssuePoker - Vote your GitHub Issues for Scrum
 
 [![Documentation][documentation-shield]][documentation]
 [![New issue][new-issue-shield]][new-issue]

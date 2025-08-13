@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "IssuePoker"
   text: "Vote your GitHub Issues for Scrum"
-  tagline: "This is the default template for writing documentation in RefArch applications"
+  tagline: "A web application for planning and estimating software development issues."
   image:
     light: /IssuePoker_Logo_Light.svg
     dark: /IssuePoker_Logo_Dark.svg
@@ -16,7 +16,7 @@ hero:
       link: https://github.com/Friedinger/IssuePoker
     - theme: alt
       text: 💾 Data model
-      link: /datamodel
+      link: /data-model
 #features:
 #  - icon: 1️⃣
 #    title: Title 1

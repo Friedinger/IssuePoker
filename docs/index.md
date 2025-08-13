@@ -16,7 +16,7 @@ hero:
       link: https://github.com/Friedinger/IssuePoker
     - theme: alt
       text: 💾 Data model
-      link: /data-model
+      link: /data-model/
 #features:
 #  - icon: 1️⃣
 #    title: Title 1

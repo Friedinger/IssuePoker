@@ -3,12 +3,31 @@
     <v-col><h2>Pokern</h2></v-col>
   </v-row>
   <v-row class="mt-0">
-    <v-col>
-      <p v-if="!votes.userVoting">Klicke auf einen Wert um dafür zu stimmen.</p>
-      <p v-else>
-        Klicke auf einen anderen Wert um die Stimme zu ändern oder auf den
-        Aktuellen um die Stimme zurückzunehmen.
+    <v-col v-if="!revealed">
+      <p v-if="!votes.userVoting">
+        Die Abstimmung läuft. Klicke auf einen Wert um dafür zu stimmen.
       </p>
+      <p v-else>
+        Die Abstimmung läuft. Klicke auf einen anderen Wert um die Stimme zu
+        ändern oder auf den Aktuellen um die Stimme zurückzunehmen.
+      </p>
+    </v-col>
+    <v-col v-else-if="isAdmin()">
+      <p v-if="!votes.voteResult">
+        Die Abstimmung ist beendet. Klicke auf einen Wert um diesen als Ergebnis
+        zu setzen.
+      </p>
+      <p v-else>
+        Klicke auf einen anderen Wert um das Ergebnis zu ändern oder auf das
+        Aktuelle um es zurückzunehmen.
+      </p>
+    </v-col>
+    <v-col v-else>
+      <p v-if="!votes.voteResult">
+        Die Abstimmung ist beendet. Bitte warte bis ein Admin das Ergebnis
+        setzt.
+      </p>
+      <p v-else>Die Abstimmung ist beendet. Ein Ergebnis wurde festgelegt.</p>
     </v-col>
   </v-row>
   <v-row class="flex-nowrap overflow-x-auto">

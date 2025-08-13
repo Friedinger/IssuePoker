@@ -25,6 +25,7 @@ public class Issue {
     @OneToMany
     private List<Vote> votes;
     @NotNull private boolean revealed = false;
+    private Integer voteResult;
 
     public Vote getVoteByUser(final String username) {
         return votes.stream().filter(vote -> username.equals(vote.getUsername())).findFirst()

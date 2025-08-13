@@ -111,7 +111,8 @@ public class IssueIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(List.of(new IssueSummaryDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getVotes().size())),
+                            new PageImpl<>(List.of(
+                                    new IssueSummaryDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getVotes().size(), testIssue.getVoteResult())),
                                     PageRequest.of(0, 10), 1))));
         }
     }

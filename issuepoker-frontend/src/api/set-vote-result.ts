@@ -1,13 +1,13 @@
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
-export function setVotesRevealed(
+export function setVoteResult(
   issueId: string,
-  revealed: boolean
+  voteResult?: number
 ): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issueId}/votes/revealed`,
+    `api/backend-service/issues/${issueId}/votes/result`,
     postConfig({
-      revealed: revealed,
+      voteResult: voteResult,
     })
   )
     .then((response) => {

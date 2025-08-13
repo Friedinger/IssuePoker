@@ -41,7 +41,7 @@ public class VoteService {
         if (issue.isRevealed()) {
             allVotings = votes.stream().map(Vote::getVoting).toList();
         }
-        return new VotesDTO(userVoting, votes.size(), allVotings);
+        return new VotesDTO(userVoting, allVotings, votes.size(), issue.getVoteResult());
     }
 
     @PreAuthorize(Authorities.IS_USER)
@@ -81,8 +81,23 @@ public class VoteService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public void setRevealed(final long issueId, final boolean revealed) {
+        log.info("Set Revealed for Issue with ID {} to {}", issueId, revealed);
         final Issue issue = getIssue(issueId);
         issue.setRevealed(revealed);
+        if (!revealed) {
+            issue.setVoteResult(null);
+        }
+        issueService.saveIssue(issue);
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public void setResult(final long issueId, final Integer voteResult) {
+        log.info("Set Vote Result for Issue with ID {} to {}", issueId, voteResult);
+        final Issue issue = getIssue(issueId);
+        if (!issue.isRevealed()) {
+            throw new GoneException("Issue %d is not revealed, so setting the vote result is not available".formatted(issue.getId()));
+        }
+        issue.setVoteResult(voteResult);
         issueService.saveIssue(issue);
     }
 

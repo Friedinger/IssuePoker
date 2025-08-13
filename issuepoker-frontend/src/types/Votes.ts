@@ -1,5 +1,6 @@
 export default interface Votes {
   userVoting?: number;
-  votingCount: number;
   allVotings?: number[];
+  voteCount: number;
+  voteResult?: number;
 }

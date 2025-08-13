@@ -3,12 +3,31 @@
     <v-col><h2>Pokern</h2></v-col>
   </v-row>
   <v-row class="mt-0">
-    <v-col>
-      <p v-if="!votes.userVoting">Klicke auf einen Wert um dafür zu stimmen.</p>
-      <p v-else>
-        Klicke auf einen anderen Wert um die Stimme zu ändern oder auf den
-        Aktuellen um die Stimme zurückzunehmen.
+    <v-col v-if="!revealed">
+      <p v-if="!votes.userVoting">
+        Die Abstimmung läuft. Klicke auf einen Wert um dafür zu stimmen.
       </p>
+      <p v-else>
+        Die Abstimmung läuft. Klicke auf einen anderen Wert um die Stimme zu
+        ändern oder auf den Aktuellen um die Stimme zurückzunehmen.
+      </p>
+    </v-col>
+    <v-col v-else-if="isAdmin()">
+      <p v-if="!votes.voteResult">
+        Die Abstimmung ist beendet. Klicke auf einen Wert um diesen als Ergebnis
+        zu setzen.
+      </p>
+      <p v-else>
+        Klicke auf einen anderen Wert um das Ergebnis zu ändern oder auf das
+        Aktuelle um es zurückzunehmen.
+      </p>
+    </v-col>
+    <v-col v-else>
+      <p v-if="!votes.voteResult">
+        Die Abstimmung ist beendet. Bitte warte bis ein Admin das Ergebnis
+        setzt.
+      </p>
+      <p v-else>Die Abstimmung ist beendet. Ein Ergebnis wurde festgelegt.</p>
     </v-col>
   </v-row>
   <v-row class="flex-nowrap overflow-x-auto">
@@ -20,11 +39,26 @@
           cols="auto"
         >
           <v-btn
-            :class="votes.userVoting === votingOption ? 'userVote' : ''"
-            :disabled="revealed"
+            :class="
+              (votes.userVoting === votingOption ? 'userVoting' : '') +
+              ' ' +
+              (votes.voteResult === votingOption ? 'voteResult' : '')
+            "
+            :disabled="revealed && !isAdmin()"
+            stacked
             @click="vote(votingOption)"
           >
-            {{ votingOption }}
+            <v-row
+              ><span class="votingOption">{{ votingOption }}</span></v-row
+            >
+            <v-row>
+              <v-icon v-if="votes.userVoting === votingOption">
+                {{ mdiAccount }}
+              </v-icon>
+              <v-icon v-if="votes.voteResult === votingOption">
+                {{ mdiTrophy }}
+              </v-icon>
+            </v-row>
           </v-btn>
           <p
             v-if="revealed"
@@ -57,6 +91,7 @@
       >
         <template v-slot:activator="{ props }">
           <v-btn
+            :disabled="isDefined(votes.voteResult)"
             :icon="!revealed ? mdiEye : mdiEyeRemove"
             v-bind="props"
             @click="toggleRevealed()"
@@ -83,7 +118,10 @@
         @yes="resetVotes()"
       />
     </v-col>
-    <v-col cols="auto">Anzahl Stimmen: {{ votes.votingCount }}</v-col>
+    <v-col cols="auto">
+      <p>Anzahl Stimmen: {{ votes.voteCount }}</p>
+      <p>Ergebnis: {{ votes.voteResult || "-" }}</p>
+    </v-col>
   </v-row>
 </template>
 
@@ -91,7 +129,13 @@
 import type { SnackbarState } from "@/stores/snackbar.ts";
 import type Votes from "@/types/Votes.ts";
 
-import { mdiDelete, mdiEye, mdiEyeRemove } from "@mdi/js";
+import {
+  mdiAccount,
+  mdiDelete,
+  mdiEye,
+  mdiEyeRemove,
+  mdiTrophy,
+} from "@mdi/js";
 import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
@@ -100,7 +144,8 @@ import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
 import { getVotes } from "@/api/fetch-votes.ts";
-import { setVotesRevealed } from "@/api/set-votes-revealed.ts";
+import { setVoteResult } from "@/api/set-vote-result.ts";
+import { setVoteRevealed } from "@/api/set-vote-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -117,11 +162,7 @@ const notLoggedInMessage: SnackbarState = {
 const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
-const votes = ref<Votes>({
-  userVoting: undefined,
-  votingCount: 0,
-  allVotings: undefined,
-});
+const votes = ref<Votes>({ voteCount: 0 });
 const voteCounts = ref<Record<string, number>>({});
 const voteCountValues = ref<number[]>([]);
 const revealed = ref(false);
@@ -149,7 +190,14 @@ function fetchVotes() {
 }
 
 function vote(voting: number) {
-  if (votes.value?.userVoting != voting) {
+  if (isAdmin() && revealed.value) {
+    setVoteResult(
+      props.issue.id,
+      voting === votes.value.voteResult ? undefined : voting
+    )
+      .then(() => fetchVotes())
+      .catch((error) => snackbarStore.showMessage(error));
+  } else if (votes.value?.userVoting != voting) {
     createVote(props.issue.id, voting)
       .then((content: Votes) => {
         votes.value = content;
@@ -164,7 +212,7 @@ function vote(voting: number) {
 }
 
 function toggleRevealed() {
-  setVotesRevealed(props.issue.id, !revealed.value)
+  setVoteRevealed(props.issue.id, !revealed.value)
     .then(() => fetchVotes())
     .catch((error) => snackbarStore.showMessage(error));
 }
@@ -201,8 +249,15 @@ function isAdmin(): boolean {
 </script>
 
 <style scoped>
+.votingOption {
+  font-size: 1.5rem;
+}
 /*noinspection CssUnusedSymbol*/
-.userVote {
+.userVoting {
+  background: #5e73c9;
+}
+/*noinspection CssUnusedSymbol*/
+.voteResult {
   background: #ffcd00;
 }
 </style>

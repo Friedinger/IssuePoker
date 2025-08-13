@@ -143,6 +143,7 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { createVote } from "@/api/create-vote.ts";
 import { deleteAllVotes } from "@/api/delete-vote-all.ts";
 import { deleteVote } from "@/api/delete-vote.ts";
+import { subscribeVotes } from "@/api/fetch-votes.ts";
 import { setVoteResult } from "@/api/set-vote-result.ts";
 import { setVoteRevealed } from "@/api/set-vote-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
@@ -172,12 +173,6 @@ let eventSource: EventSource | null = null;
 onMounted(() => {
   if (props.issue.id) {
     fetchVotes();
-  } else {
-    snackbarStore.showMessage({
-      message: "Das Issue hat keine ID, kann keine Votes laden.",
-      level: STATUS_INDICATORS.ERROR,
-      show: true,
-    });
   }
 });
 
@@ -196,19 +191,15 @@ function fetchVotes() {
     return;
   }
   if (eventSource) eventSource.close();
-  eventSource = new EventSource(
-    `api/backend-service/issues/${props.issue.id}/votes`
+  eventSource = subscribeVotes(
+    props.issue.id,
+    (content) => {
+      votes.value = content;
+      revealed.value = isDefined(content.allVotings);
+      countVotes();
+    },
+    () => setTimeout(fetchVotes, 1000)
   );
-  eventSource.addEventListener("votes", (event) => {
-    const content = JSON.parse(event.data);
-    votes.value = content;
-    revealed.value = isDefined(content.allVotings);
-    countVotes();
-  });
-  eventSource.onerror = () => {
-    eventSource?.close();
-    setTimeout(fetchVotes, 1000);
-  };
 }
 
 function vote(voting: number) {

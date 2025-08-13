@@ -33,9 +33,9 @@ and [Develop](https://refarch.oss.muenchen.de/templates/develop.html) documentat
 
 5. Login one of the local accounts from keycloak migration:
 
-    - Username: `admin` Password: `admin`
-    - Username: `user1` Password: `user1`
-    - Username: `user2` Password: `user2`
+   - Username: `admin` Password: `admin`
+   - Username: `user1` Password: `user1`
+   - Username: `user2` Password: `user2`
 
    All users can view issues and vote for them, but only admins can create new issues, reveal the voting and set its result.
 

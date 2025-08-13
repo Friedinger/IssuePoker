@@ -55,6 +55,7 @@ const vitepressConfig = defineConfig({
       provider: "local",
     },
   },
+  ignoreDeadLinks: "localhostLinks",
   markdown: {
     image: {
       lazyLoading: true,

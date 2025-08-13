@@ -30,11 +30,10 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public VotesDTO getVotes(final long issueId) {
+    public VotesDTO getVotes(final long issueId, final String username) {
         log.info("Get Votes for Issue with ID {}", issueId);
         final Issue issue = getIssue(issueId);
         final List<Vote> votes = issue.getVotes();
-        final String username = AuthUtils.getUsername();
         final int userVoting = votes.stream().filter(vote -> username.equals(vote.getUsername()))
                 .findFirst().orElseGet(Vote::new).getVoting();
         List<Integer> allVotings = null;

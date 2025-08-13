@@ -1,14 +1,20 @@
-import type Votes from "@/types/Votes.ts";
+import type Votes from "@/types/Votes";
 
-import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
-
-export function getVotes(issueId: number): Promise<Votes> {
-  return fetch(`api/backend-service/issues/${issueId}/votes`, getConfig())
-    .then((response) => {
-      defaultResponseHandler(response);
-      return response.json();
-    })
-    .catch((err) => {
-      defaultResponseHandler(err);
-    });
+export function subscribeVotes(
+  issueId: number,
+  onMessage: (votes: Votes) => void,
+  onError?: () => void
+): EventSource {
+  const eventSource = new EventSource(
+    `api/backend-service/issues/${issueId}/votes`
+  );
+  eventSource.addEventListener("votes", (event) => {
+    const content = JSON.parse((event as MessageEvent).data);
+    onMessage(content);
+  });
+  eventSource.onerror = () => {
+    eventSource.close();
+    if (onError) onError();
+  };
+  return eventSource;
 }

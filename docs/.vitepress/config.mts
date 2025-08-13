@@ -11,13 +11,14 @@ const vitepressConfig = defineConfig({
       "link",
       {
         rel: "icon",
-        href: `https://assets.muenchen.de/logos/lhm/icon-lhm-muenchen-32.png`,
+        href: `/IssuePoker/favicon.ico`,
       },
     ],
   ],
   lastUpdated: true,
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
+    logo: "/assets/IssuePoker Icon.svg",
     nav: [
       { text: "Home", link: "/" },
       {

@@ -52,11 +52,13 @@ public class VoteController {
     }
 
     private void sendVotesUpdate(final long issueId) {
-        List<UserEmitter> issueEmitters = emitters.get(issueId);
-        if (issueEmitters == null) return;
-        for (UserEmitter userEmitter : issueEmitters) {
+        final List<UserEmitter> issueEmitters = emitters.get(issueId);
+        if (issueEmitters == null) {
+            return;
+        }
+        for (final UserEmitter userEmitter : issueEmitters) {
             try {
-                VotesDTO votesDTO = voteService.getVotes(issueId, userEmitter.username);
+                final VotesDTO votesDTO = voteService.getVotes(issueId, userEmitter.username);
                 userEmitter.emitter.send(SseEmitter.event().name("votes").data(votesDTO));
             } catch (IOException e) {
                 userEmitter.emitter.completeWithError(e);

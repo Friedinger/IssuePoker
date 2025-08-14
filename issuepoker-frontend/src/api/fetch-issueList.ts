@@ -7,10 +7,11 @@ import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
 export function getIssueList(
   page: number,
   size: number,
-  sortBy: SortItem[]
+  sortBy: SortItem[],
+  search: string
 ): Promise<Page<IssueSummary>> {
   return fetch(
-    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}`,
+    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}&search=${search}`,
     getConfig()
   )
     .then((response) => {

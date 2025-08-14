@@ -6,6 +6,7 @@ import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.security.Authorities;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,9 +28,18 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Page<Issue> getAllIssues(final Pageable pageRequest) {
+    public Page<Issue> getAllIssues(final String search, final Pageable pageRequest) {
         log.info("Get all Issues with Pageable {}", pageRequest);
-        return issueRepository.findAll(pageRequest);
+        return issueRepository.findAll((root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
+            if (!search.isEmpty()) {
+                final String likePattern = "%" + search + "%";
+                predicate = criteriaBuilder.or(
+                        criteriaBuilder.like(root.get("title"), likePattern),
+                        criteriaBuilder.like(root.get("description"), likePattern));
+            }
+            return predicate;
+        }, pageRequest);
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)

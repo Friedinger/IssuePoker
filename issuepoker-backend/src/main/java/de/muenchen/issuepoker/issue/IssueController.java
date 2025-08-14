@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,8 +45,9 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueSummaries(@PageableDefault(sort = "id") final Pageable pageRequest) {
-        final Page<Issue> issuePage = issueService.getAllIssues(pageRequest);
+    public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(required = false, defaultValue = "") String search,
+            @PageableDefault(sort = "id") final Pageable pageRequest) {
+        final Page<Issue> issuePage = issueService.getAllIssues(search, pageRequest);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
     }

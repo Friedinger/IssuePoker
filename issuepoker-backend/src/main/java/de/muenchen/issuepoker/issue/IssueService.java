@@ -7,6 +7,7 @@ import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.Predicate;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,10 +34,10 @@ public class IssueService {
         return issueRepository.findAll((root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
             if (!search.isEmpty()) {
-                final String likePattern = "%" + search + "%";
+                final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
                 predicate = criteriaBuilder.or(
-                        criteriaBuilder.like(root.get("title"), likePattern),
-                        criteriaBuilder.like(root.get("description"), likePattern));
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern));
             }
             return predicate;
         }, pageRequest);

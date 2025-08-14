@@ -18,6 +18,7 @@
       :items-length="totalIssues"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
+      :search="search"
       :sort-by="sortedBy"
       items-per-page-text="Issues pro Seite:"
       loading-text="Issues werden geladen... Bitte warten."
@@ -31,10 +32,12 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
+import type { LocationQueryValue } from "vue-router";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { getIssueList } from "@/api/fetch-issueList.ts";
 import {
@@ -63,10 +66,19 @@ const itemsPerPageOptions = [
 ];
 
 const { getUser } = storeToRefs(useUserStore());
+const route = useRoute();
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
 const sortedBy = ref<SortItem[]>([{ key: "id", order: "asc" }]);
+const search = ref("");
+
+onMounted(() => parseSearch(route.query.search));
+
+watch(
+  () => route.query.search,
+  (value) => parseSearch(value)
+);
 
 function fetchIssues({
   page,
@@ -79,7 +91,7 @@ function fetchIssues({
 }) {
   loading.value = true;
   sortedBy.value = sortBy;
-  getIssueList(page - 1, itemsPerPage, sortBy)
+  getIssueList(page - 1, itemsPerPage, sortBy, search.value)
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;
       loading.value = false;
@@ -88,6 +100,13 @@ function fetchIssues({
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
+}
+
+function parseSearch(value: LocationQueryValue | LocationQueryValue[]) {
+  if (Array.isArray(value)) {
+    value = value[0];
+  }
+  search.value = value || "";
 }
 
 function goToIssue(

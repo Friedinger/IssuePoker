@@ -15,9 +15,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <name>issuepoker-backend</name>
-    <description>This is the default starting project for a backend project based on the reference architecture of
-        it@M
-    </description>
+    <description>A web application for planning and estimating software development issues.</description>
     <url>https://github.com/Friedinger/IssuePoker</url>
     <licenses>
         <license>
@@ -418,7 +416,7 @@
                         <removeUnusedImports/>
                         <removeWildcardImports/>
                         <formatAnnotations/>
-                        <toggleOffOn />
+                        <toggleOffOn/>
                     </java>
                 </configuration>
                 <executions>

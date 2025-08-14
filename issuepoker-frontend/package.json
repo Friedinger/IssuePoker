@@ -1,5 +1,6 @@
 {
-  "name": "refarch-frontend",
+  "name": "issuepoker-frontend",
+  "description": "A web application for planning and estimating software development issues.",
   "version": "0.0.0",
   "type": "module",
   "private": true,

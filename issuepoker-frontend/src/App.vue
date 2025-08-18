@@ -7,7 +7,6 @@
           class="d-flex align-center justify-start"
           cols="3"
         >
-          <v-app-bar-nav-icon @click.stop="toggleDrawer()" />
           <router-link
             class="flex-fill"
             to="/"
@@ -54,25 +53,73 @@
             :icon="mdiApps"
             :tags="['global']"
           />
+          <v-btn icon>
+            <v-icon
+              :class="
+                statusGateway === 'UP' && statusBackend === 'UP' ? 'UP' : 'DOWN'
+              "
+              :icon="mdiInformationOutline"
+            />
+            <v-menu activator="parent">
+              <v-list>
+                <v-list-item>
+                  <strong>Gateway: </strong>
+                  <span :class="statusGateway">{{ statusGateway }}</span>
+                </v-list-item>
+                <v-list-item>
+                  <strong>Backend: </strong>
+                  <span :class="statusBackend">{{ statusBackend }}</span>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </v-btn>
           <v-btn
             icon
             variant="text"
           >
             <ad2-image-avatar
-              v-if="userStore.getUser !== null"
-              :username="userStore.getUser.preferred_username"
+              v-if="user"
+              :username="user.preferred_username"
             />
+            <v-menu
+              v-if="user"
+              activator="parent"
+            >
+              <v-list>
+                <v-list-item>
+                  <strong>Nutzername:</strong>
+                  {{ user.preferred_username }}
+                </v-list-item>
+                <v-list-item v-if="user.givenName">
+                  <strong>Vorname:</strong>
+                  {{ user.givenName }}
+                </v-list-item>
+                <v-list-item v-if="user.familyName">
+                  <strong>Nachname:</strong>
+                  {{ user.familyName }}
+                </v-list-item>
+                <v-list-item>
+                  <strong>Email:</strong>
+                  {{ user.email }}
+                </v-list-item>
+                <v-list-item>
+                  <strong>ID:</strong>
+                  {{ user.sub }}
+                </v-list-item>
+                <v-list-item>
+                  <strong>Rollen:</strong>
+                  {{
+                    user.authorities
+                      .map((authority) => authority.split("_")[1])
+                      .join(", ")
+                  }}
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-btn>
         </v-col>
       </v-row>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer">
-      <v-list>
-        <v-list-item :to="{ name: ROUTES_HOME }">
-          <v-list-item-title>Home</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
     <v-main>
       <v-container fluid>
         <router-view v-slot="{ Component }">
@@ -90,15 +137,15 @@ import type { VotingOptions } from "@/stores/votingOptions.ts";
 import type User from "@/types/User";
 import type { LocationQueryValue } from "vue-router";
 
-import { mdiApps, mdiMagnify } from "@mdi/js";
+import { mdiApps, mdiInformationOutline, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
-import { useToggle } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { getVotingOptions } from "@/api/fetch-votingOptions.ts";
-import { getUser } from "@/api/user-client";
+import { checkBackendHealth, checkGatewayHealth } from "@/api/health-client.ts";
+import { getUser } from "@/api/user-client.ts";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
@@ -107,25 +154,43 @@ import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
 import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
+import HealthState from "@/types/HealthState.ts";
 
 const appswitcherBaseUrl = APPSWITCHER_URL;
 const snackbarStore = useSnackbarStore();
 const userStore = useUserStore();
+const { getUser: user } = storeToRefs(userStore);
 const searchQueryStore = useSearchQueryStore();
 const { getSearchQuery } = storeToRefs(searchQueryStore);
 const votingOptionsStore = useVotingOptionsStore();
-const [drawer, toggleDrawer] = useToggle();
 const route = useRoute();
 const searchQuery = ref("");
+const statusGateway = ref("DOWN");
+const statusBackend = ref("DOWN");
 
 onMounted(() => {
-  loadUser();
+  getUser()
+    .then((user: User) => userStore.setUser(user))
+    .catch((error) => {
+      userStore.setUser(null);
+      snackbarStore.showMessage(error);
+    });
   getVotingOptions()
     .then((content: VotingOptions) =>
       votingOptionsStore.setVotingOptions(content)
     )
     .catch((error) => {
       votingOptionsStore.setVotingOptions([]);
+      snackbarStore.showMessage(error);
+    });
+  checkGatewayHealth()
+    .then((content: HealthState) => (statusGateway.value = content.status))
+    .catch((error) => {
+      snackbarStore.showMessage(error);
+    });
+  checkBackendHealth()
+    .then((content: HealthState) => (statusBackend.value = content.status))
+    .catch((error) => {
       snackbarStore.showMessage(error);
     });
   parseSearch(route.query.search);
@@ -136,21 +201,6 @@ watch(
   () => parseSearch(route.query.search)
 );
 
-/**
- * Loads UserInfo from the backend and sets it in the store.
- */
-function loadUser(): void {
-  getUser()
-    .then((user: User) => userStore.setUser(user))
-    .catch(() => {
-      // No user info received, so fallback
-      userStore.setUser(null);
-    });
-}
-
-/**
- * Navigates to the page with the search results and sends an event to trigger further searches.
- */
 function search() {
   searchQueryStore.setSearchQuery(searchQuery.value);
   if (isQueryNotEmpty()) {
@@ -172,3 +222,15 @@ function isQueryNotEmpty() {
   return searchQuery.value && searchQuery.value != "";
 }
 </script>
+
+<style scoped>
+/*noinspection CssUnusedSymbol*/
+.UP {
+  color: limegreen;
+}
+
+/*noinspection CssUnusedSymbol*/
+.DOWN {
+  color: lightcoral;
+}
+</style>

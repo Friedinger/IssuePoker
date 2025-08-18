@@ -1,6 +1,7 @@
 package de.muenchen.issuepoker.entities;
 
 import de.muenchen.issuepoker.common.NotFoundException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,10 +21,16 @@ public class Issue {
     @SequenceGenerator(name = "issue_seq_gen", sequenceName = "issue_seq", allocationSize = 1)
     @Id
     private long id;
+    @NotNull private String owner;
+    @NotNull private String repository;
     @NotNull private String title;
+
+    @NotNull @Column(length = 65_535)
     private String description;
+
     @OneToMany
     private List<Vote> votes;
+
     @NotNull private boolean revealed = false;
     private Integer voteResult;
 

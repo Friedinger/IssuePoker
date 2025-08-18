@@ -2,11 +2,13 @@ CREATE SEQUENCE IF NOT EXISTS issue_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE issue
 (
-    id          BIGINT       NOT NULL,
-    title       VARCHAR(255) NOT NULL,
-    description VARCHAR(65535),
-    revealed    BOOLEAN      NOT NULL,
-    vote_result INT,
+    id          BIGINT         NOT NULL,
+    owner       VARCHAR(255)   NOT NULL,
+    repository  VARCHAR(255)   NOT NULL,
+    title       VARCHAR(255)   NOT NULL,
+    description VARCHAR(65535) NOT NULL,
+    revealed    BOOLEAN        NOT NULL,
+    vote_result INTEGER,
     CONSTRAINT pk_issue PRIMARY KEY (id)
 );
 
@@ -14,13 +16,6 @@ CREATE TABLE issue_votes
 (
     issue_id BIGINT NOT NULL,
     votes_id UUID   NOT NULL
-);
-
-CREATE TABLE the_entity
-(
-    id             UUID       NOT NULL,
-    text_attribute VARCHAR(8) NOT NULL,
-    CONSTRAINT pk_theentity PRIMARY KEY (id)
 );
 
 CREATE TABLE vote

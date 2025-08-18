@@ -26,8 +26,6 @@
       :loading="loading"
       :search="getSearchQuery"
       :sort-by="sortedBy"
-      items-per-page-text="Issues pro Seite:"
-      loading-text="Issues werden geladen... Bitte warten."
       @update:options="fetchIssues"
       @click:row="goToIssue"
     ></v-data-table-server>
@@ -67,7 +65,7 @@ const itemsPerPageOptions = [
   { value: 25, title: "25" },
   { value: 50, title: "50" },
   { value: 100, title: "100" },
-  { value: -1, title: "Alle" },
+  { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
 ];
 
 const { getUser } = storeToRefs(useUserStore());

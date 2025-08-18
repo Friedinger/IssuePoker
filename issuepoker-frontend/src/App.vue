@@ -32,7 +32,7 @@
         >
           <v-text-field
             id="searchField"
-            v-model="query"
+            v-model="searchQuery"
             :prepend-inner-icon="mdiMagnify"
             clearable
             flat
@@ -93,6 +93,7 @@ import type { LocationQueryValue } from "vue-router";
 import { mdiApps, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { useToggle } from "@vueuse/core";
+import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -102,18 +103,20 @@ import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
 import router from "@/plugins/router.ts";
+import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar";
 import { useUserStore } from "@/stores/user";
 import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
 
-const query = ref("");
 const appswitcherBaseUrl = APPSWITCHER_URL;
-
 const snackbarStore = useSnackbarStore();
 const userStore = useUserStore();
+const searchQueryStore = useSearchQueryStore();
+const { getSearchQuery } = storeToRefs(searchQueryStore);
 const votingOptionsStore = useVotingOptionsStore();
 const [drawer, toggleDrawer] = useToggle();
 const route = useRoute();
+const searchQuery = ref("");
 
 onMounted(() => {
   loadUser();
@@ -129,8 +132,8 @@ onMounted(() => {
 });
 
 watch(
-  () => route.query.search,
-  (value) => parseSearch(value)
+  () => route.fullPath,
+  () => parseSearch(route.query.search)
 );
 
 /**
@@ -148,19 +151,24 @@ function loadUser(): void {
 /**
  * Navigates to the page with the search results and sends an event to trigger further searches.
  */
-
 function search() {
-  if (query.value !== "") {
-    router.push({ name: ROUTES_HOME, query: { search: query.value } });
+  searchQueryStore.setSearchQuery(searchQuery.value);
+  if (isQueryNotEmpty()) {
+    router.push({ name: ROUTES_HOME, query: { search: searchQuery.value } });
   } else {
     router.push({ name: ROUTES_HOME });
   }
 }
 
-function parseSearch(value: LocationQueryValue | LocationQueryValue[]) {
-  if (Array.isArray(value)) {
-    value = value[0];
+function parseSearch(queryValue: LocationQueryValue | LocationQueryValue[]) {
+  const query = Array.isArray(queryValue) ? queryValue[0] : queryValue;
+  searchQuery.value = query && query !== "" ? query : getSearchQuery.value;
+  if (route.name == ROUTES_HOME && isQueryNotEmpty()) {
+    router.replace({ query: { search: searchQuery.value } });
   }
-  query.value = value || "";
+}
+
+function isQueryNotEmpty() {
+  return searchQuery.value && searchQuery.value != "";
 }
 </script>

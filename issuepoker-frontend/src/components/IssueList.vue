@@ -54,6 +54,7 @@ import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const headers = [
+  { key: "repo", title: "Repository" },
   { key: "id", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
@@ -88,7 +89,10 @@ function fetchIssues({
   sortedBy.value = sortBy;
   getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
     .then((content: Page<IssueSummary>) => {
-      issues.value = content.content;
+      issues.value = content.content.map((issue) => ({
+        ...issue,
+        repo: `${issue.owner}/${issue.repository}`,
+      }));
       loading.value = false;
       totalIssues.value = content.page.totalElements;
     })

@@ -1,8 +1,14 @@
 <template>
   <v-row align="center">
-    <v-col>
-      <h1>Issues</h1>
-    </v-col>
+    <v-row align="center">
+      <v-col cols="auto"><h1>Issues</h1></v-col>
+      <v-col
+        v-if="getSearchQuery"
+        cols="auto"
+      >
+        Gefiltert nach: {{ getSearchQuery }}
+      </v-col>
+    </v-row>
     <v-col
       v-if="getUser?.authorities.includes(ROLE_ADMIN)"
       cols="auto"
@@ -18,6 +24,7 @@
       :items-length="totalIssues"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
+      :search="getSearchQuery"
       :sort-by="sortedBy"
       items-per-page-text="Issues pro Seite:"
       loading-text="Issues werden geladen... Bitte warten."
@@ -43,6 +50,7 @@ import {
   ROUTES_ISSUE_DETAIL,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
 
@@ -67,6 +75,7 @@ const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
 const sortedBy = ref<SortItem[]>([{ key: "id", order: "asc" }]);
+const { getSearchQuery } = storeToRefs(useSearchQueryStore());
 
 function fetchIssues({
   page,
@@ -79,7 +88,7 @@ function fetchIssues({
 }) {
   loading.value = true;
   sortedBy.value = sortBy;
-  getIssueList(page - 1, itemsPerPage, sortBy)
+  getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;
       loading.value = false;

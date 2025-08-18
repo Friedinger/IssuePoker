@@ -3,6 +3,8 @@ package de.muenchen.issuepoker.issue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 public class IssueServiceTest {
@@ -67,17 +70,18 @@ public class IssueServiceTest {
     @Nested
     class GetIssuesPage {
         @Test
+        @SuppressWarnings("unchecked")
         void givenPageNumberAndPageSize_thenReturnPageOfIssues() {
             final int pageNumber = 0;
             final int pageSize = 7;
             final Pageable pageRequest = PageRequest.of(pageNumber, pageSize, Sort.by("id"));
             final List<Issue> issues = List.of(new Issue(), new Issue());
             final Page<Issue> expectedPage = new PageImpl<>(issues, pageRequest, issues.size());
-            when(issueRepository.findAll(pageRequest)).thenReturn(expectedPage);
+            when(issueRepository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(expectedPage);
 
-            final Page<Issue> result = issueService.getAllIssues(pageRequest);
+            final Page<Issue> result = issueService.getAllIssues("", pageRequest);
             assertEquals(expectedPage, result);
-            verify(issueRepository, times(1)).findAll(pageRequest);
+            verify(issueRepository, times(1)).findAll(any(Specification.class), eq(pageRequest));
         }
     }
 

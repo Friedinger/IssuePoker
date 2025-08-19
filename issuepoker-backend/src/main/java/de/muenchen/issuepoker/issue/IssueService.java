@@ -5,6 +5,7 @@ import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FO
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.IssueRequest;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Locale;
@@ -22,10 +23,10 @@ public class IssueService {
     private final IssueRepository issueRepository;
 
     @PreAuthorize(Authorities.IS_USER)
-    public Issue getIssue(final long issueId) {
-        log.info("Get Issue with ID {}", issueId);
-        return issueRepository.findById(issueId)
-                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueId)));
+    public Issue getIssue(final IssueRequest issueRequest) {
+        log.info("Get Issue for {}/{} with ID {}", issueRequest.owner(), issueRequest.repository(), issueRequest.id());
+        return issueRepository.findByOwnerAndRepositoryAndId(issueRequest.owner(), issueRequest.repository(), issueRequest.id())
+                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueRequest.id())));
     }
 
     @PreAuthorize(Authorities.IS_USER)
@@ -53,6 +54,6 @@ public class IssueService {
     public void addVote(final Issue issue, final Vote vote) {
         log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
-        issueRepository.save(issue);
+        saveIssue(issue);
     }
 }

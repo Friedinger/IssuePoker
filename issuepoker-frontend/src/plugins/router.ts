@@ -19,7 +19,7 @@ const routes = [
     meta: {},
   },
   {
-    path: "/issues/:id",
+    path: "/:owner/:repository/issues/:id",
     name: ROUTES_ISSUE_DETAIL,
     component: IssueDetailsView,
   },

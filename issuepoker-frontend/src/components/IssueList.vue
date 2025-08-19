@@ -105,6 +105,13 @@ function goToIssue(
   _: MouseEvent,
   props: { item: IssueDetails; index: number }
 ) {
-  router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: props.item.id } });
+  router.push({
+    name: ROUTES_ISSUE_DETAIL,
+    params: {
+      id: props.item.id,
+      repository: props.item.repository,
+      owner: props.item.owner,
+    },
+  });
 }
 </script>

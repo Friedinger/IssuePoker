@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.dto.IssueCreateRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
-import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,7 +83,8 @@ public class IssueIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new IssueDetailsDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getDescription()))));
+                            new IssueDetailsDTO(testIssue.getId(), testIssue.getOwner(), testIssue.getRepository(), testIssue.getTitle(),
+                                    testIssue.getDescription()))));
         }
     }
 
@@ -91,14 +92,14 @@ public class IssueIntegrationTest {
     class CreateIssue {
         @Test
         void givenIssueRequest_thenSaveIssue() throws Exception {
-            final IssueRequestDTO requestDTO = new IssueRequestDTO("TitleTest", "DescriptionTitle");
+            final IssueCreateRequestDTO requestDTO = new IssueCreateRequestDTO("TitleTest", "DescriptionTitle");
             final Issue expectedIssue = issueMapper.toEntity(requestDTO);
             expectedIssue.setId(getNextIssueId());
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId() + 1, requestDTO.title(),
-                            requestDTO.description()))));
+                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId() + 1, testIssue.getOwner(),
+                            testIssue.getRepository(), requestDTO.title(), requestDTO.description()))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }

@@ -3,6 +3,7 @@ package de.muenchen.issuepoker.issue;
 import de.muenchen.issuepoker.common.GoneException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.IssueRequest;
 import de.muenchen.issuepoker.entities.dto.VoteMapper;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VotesDTO;
@@ -25,14 +26,14 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final VoteMapper voteMapper;
 
-    private Issue getIssue(final long issueId) {
-        return issueService.getIssue(issueId);
+    private Issue getIssue(final IssueRequest issueRequest) {
+        return issueService.getIssue(issueRequest);
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public VotesDTO getVotes(final long issueId, final String username) {
-        log.info("Get Votes for Issue with ID {}", issueId);
-        final Issue issue = getIssue(issueId);
+    public VotesDTO getVotes(final IssueRequest issueRequest, final String username) {
+        log.info("Get Votes for Issue with ID {}", issueRequest.id());
+        final Issue issue = getIssue(issueRequest);
         final List<Vote> votes = issue.getVotes();
         final int userVoting = votes.stream().filter(vote -> username.equals(vote.getUsername()))
                 .findFirst().orElseGet(Vote::new).getVoting();
@@ -44,11 +45,11 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public void saveVote(final long issueId, final VoteRequestDTO voteRequestDTO) {
-        log.info("Save Vote for Issue with ID {}", issueId);
+    public void saveVote(final IssueRequest issueRequest, final VoteRequestDTO voteRequestDTO) {
+        log.info("Save Vote for Issue with ID {}", issueRequest.id());
         final String username = AuthUtils.getUsername();
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);
-        final Issue issue = getIssue(issueId);
+        final Issue issue = getIssue(issueRequest);
         checkVotable(issue);
         final Optional<Vote> existing = issue.getVotes().stream()
                 .filter(issueVote -> username.equals(issueVote.getUsername())).findFirst();
@@ -58,10 +59,10 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public void deleteVote(final long issueId) {
+    public void deleteVote(final IssueRequest issueRequest) {
         final String username = AuthUtils.getUsername();
-        log.info("Delete Vote for User {} for Issue with ID {}", username, issueId);
-        final Issue issue = getIssue(issueId);
+        log.info("Delete Vote for User {} for Issue with ID {}", username, issueRequest.id());
+        final Issue issue = getIssue(issueRequest);
         checkVotable(issue);
         final Vote vote = issue.getVoteByUser(username);
         issue.getVotes().remove(vote);
@@ -69,19 +70,23 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
-    public void deleteAllVotes(final long issueId) {
-        log.info("Delete all Votes for Issue with ID {}", issueId);
-        final Issue issue = getIssue(issueId);
+    public void deleteAllVotes(final IssueRequest issueRequest) {
+        log.info("Delete all Votes for Issue with ID {}", issueRequest.id());
+        final Issue issue = getIssue(issueRequest);
         final List<Vote> votes = new ArrayList<>(issue.getVotes());
         issue.getVotes().clear();
         voteRepository.deleteAll(votes);
-        setRevealed(issueId, false);
+        setRevealed(issue, false);
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
-    public void setRevealed(final long issueId, final boolean revealed) {
-        log.info("Set Revealed for Issue with ID {} to {}", issueId, revealed);
-        final Issue issue = getIssue(issueId);
+    public void setRevealed(final IssueRequest issueRequest, final boolean revealed) {
+        log.info("Set Revealed for Issue with ID {} to {}", issueRequest.id(), revealed);
+        final Issue issue = getIssue(issueRequest);
+        setRevealed(issue, revealed);
+    }
+
+    private void setRevealed(final Issue issue, final boolean revealed) {
         issue.setRevealed(revealed);
         if (!revealed) {
             issue.setVoteResult(null);
@@ -90,9 +95,9 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
-    public void setResult(final long issueId, final Integer voteResult) {
-        log.info("Set Vote Result for Issue with ID {} to {}", issueId, voteResult);
-        final Issue issue = getIssue(issueId);
+    public void setResult(final IssueRequest issueRequest, final Integer voteResult) {
+        log.info("Set Vote Result for Issue with ID {} to {}", issueRequest.id(), voteResult);
+        final Issue issue = getIssue(issueRequest);
         if (!issue.isRevealed()) {
             throw new GoneException("Issue %d is not revealed, so setting the vote result is not available".formatted(issue.getId()));
         }

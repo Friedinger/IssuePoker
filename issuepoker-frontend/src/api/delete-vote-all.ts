@@ -1,8 +1,10 @@
+import type IssueDetails from "@/types/IssueDetails.ts";
+
 import { defaultResponseHandler, deleteConfig } from "@/api/fetch-utils.ts";
 
-export function deleteAllVotes(issueId: string): Promise<void> {
+export function deleteAllVotes(issue: IssueDetails): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issueId}/votes/all`,
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.id}/votes/all`,
     deleteConfig()
   )
     .then((response) => {

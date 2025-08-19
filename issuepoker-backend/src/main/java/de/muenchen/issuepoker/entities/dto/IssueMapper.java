@@ -12,5 +12,5 @@ public interface IssueMapper {
     IssueDetailsDTO toDetails(Issue issue);
 
     @Mapping(target = "id", ignore = true)
-    Issue toEntity(IssueRequestDTO issueRequestDTO);
+    Issue toEntity(IssueCreateRequestDTO issueCreateRequestDTO);
 }

@@ -28,32 +28,36 @@
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
+import type IssueRequest from "@/types/IssueRequest.ts";
 
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import { id } from "vuetify/locale";
 
 import { getIssue } from "@/api/fetch-issue.ts";
 import IssueVoting from "@/components/IssueVoting.vue";
 import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
 import router from "@/plugins/router.ts";
+import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
 
 onMounted(() => {
-  fetchIssue(route.params.id);
+  fetchIssue(
+    parseParams(route.params.owner, route.params.repository, route.params.id)
+  );
 });
 
 watch(
-  () => route.params.id,
-  (newId) => fetchIssue(newId)
+  () => route.params,
+  (params) =>
+    fetchIssue(parseParams(params.owner, params.repository, params.id))
 );
 
-function fetchIssue(id: string | string[]) {
-  const parsedId = Array.isArray(id) ? parseInt(id[0]) : parseInt(id);
-  getIssue(parsedId)
+function fetchIssue(request: IssueRequest) {
+  getIssue(request)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
       snackbarStore.showMessage({
@@ -62,5 +66,17 @@ function fetchIssue(id: string | string[]) {
       });
       router.push({ name: ROUTES_HOME });
     });
+}
+
+function parseParams(
+  owner: string | string[],
+  repository: string | string[],
+  id: string | string[]
+): IssueRequest {
+  return {
+    owner: Array.isArray(owner) ? owner[0] : owner,
+    repository: Array.isArray(repository) ? repository[0] : repository,
+    id: Array.isArray(id) ? parseInt(id[0]) : parseInt(id),
+  };
 }
 </script>

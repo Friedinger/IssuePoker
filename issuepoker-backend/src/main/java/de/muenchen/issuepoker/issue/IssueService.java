@@ -4,8 +4,8 @@ import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FO
 
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.IssueRequest;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Locale;
@@ -23,10 +23,10 @@ public class IssueService {
     private final IssueRepository issueRepository;
 
     @PreAuthorize(Authorities.IS_USER)
-    public Issue getIssue(final IssueRequest issueRequest) {
-        log.info("Get Issue for {}/{} with ID {}", issueRequest.owner(), issueRequest.repository(), issueRequest.id());
-        return issueRepository.findByOwnerAndRepositoryAndId(issueRequest.owner(), issueRequest.repository(), issueRequest.id())
-                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueRequest.id())));
+    public Issue getIssue(final IssueKey issueKey) {
+        log.info("Get Issue for {}/{} with ID {}", issueKey.owner(), issueKey.repository(), issueKey.id());
+        return issueRepository.findById(issueKey)
+                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueKey.id())));
     }
 
     @PreAuthorize(Authorities.IS_USER)

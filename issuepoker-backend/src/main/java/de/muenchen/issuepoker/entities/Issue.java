@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.validation.constraints.NotNull;
@@ -16,13 +17,17 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
+@IdClass(IssueKey.class)
 public class Issue {
+    @Id
+    private String owner;
+    @Id
+    private String repository;
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "issue_seq_gen")
     @SequenceGenerator(name = "issue_seq_gen", sequenceName = "issue_seq", allocationSize = 1)
     @Id
     private long id;
-    @NotNull private String owner;
-    @NotNull private String repository;
+
     @NotNull private String title;
 
     @NotNull @Column(length = 65_535)

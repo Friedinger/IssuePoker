@@ -42,7 +42,7 @@ VALUES ('123e4567-e89b-12d3-a456-426614174007', 'admin', 1),
        ('123e4567-e89b-12d3-a456-426614174008', 'user1', 5),
        ('123e4567-e89b-12d3-a456-426614174009', 'admin', 1);
 
-INSERT INTO issue_votes (issue_id, votes_id)
-VALUES (1, '123e4567-e89b-12d3-a456-426614174007'),
-       (1, '123e4567-e89b-12d3-a456-426614174008'),
-       (2, '123e4567-e89b-12d3-a456-426614174009');
+INSERT INTO issue_votes (issue_id, issue_owner, issue_repository, votes_id)
+VALUES (1, 'Friedinger', 'IssuePoker', '123e4567-e89b-12d3-a456-426614174007'),
+       (1, 'Friedinger', 'IssuePoker', '123e4567-e89b-12d3-a456-426614174008'),
+       (2, 'Friedinger', 'IssuePoker', '123e4567-e89b-12d3-a456-426614174009');

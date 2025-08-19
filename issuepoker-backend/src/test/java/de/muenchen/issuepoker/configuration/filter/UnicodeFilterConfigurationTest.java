@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import de.muenchen.issuepoker.MicroServiceApplication;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.dto.IssueCreateRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.issue.IssueRepository;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class UnicodeFilterConfigurationTest {
     void testForNfcNormalization() {
         // Given
         // Persist entity with decomposed string.
-        final IssueCreateRequestDTO requestDTO = new IssueCreateRequestDTO(TEXT_ATTRIBUTE_DECOMPOSED, "");
+        final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO(TEXT_ATTRIBUTE_DECOMPOSED, "");
 
         // When
         final IssueDetailsDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL), requestDTO, IssueDetailsDTO.class)

@@ -1,11 +1,11 @@
 package de.muenchen.issuepoker.issue;
 
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.IssueCreateRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
-import de.muenchen.issuepoker.entities.dto.IssueRequest;
+import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -36,13 +36,13 @@ public class IssueController {
     @ResponseStatus(HttpStatus.OK)
     public IssueDetailsDTO getIssue(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
+        final IssueKey issueRequest = new IssueKey(owner, repository, id);
         return issueMapper.toDetails(issueService.getIssue(issueRequest));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public IssueDetailsDTO createIssue(@Valid @RequestBody final IssueCreateRequestDTO issue) {
+    public IssueDetailsDTO createIssue(@Valid @RequestBody final IssueRequestCreateDTO issue) {
         return issueMapper.toDetails(issueService.saveIssue(issueMapper.toEntity(issue)));
     }
 

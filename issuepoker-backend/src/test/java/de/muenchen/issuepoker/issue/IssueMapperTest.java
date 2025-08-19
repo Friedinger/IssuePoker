@@ -4,9 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.dto.IssueCreateRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -53,7 +53,7 @@ public class IssueMapperTest {
     class ToEntity {
         @Test
         void givenRequestDTO_thenReturnIssue() {
-            final IssueCreateRequestDTO requestDTO = new IssueCreateRequestDTO("TestTitle", "TestDescription");
+            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TestTitle", "TestDescription");
             final Issue result = issueMapper.toEntity(requestDTO);
             assertThat(result).usingRecursiveComparison().ignoringFields("id", "votes", "revealed", "voteResult").isEqualTo(requestDTO);
         }

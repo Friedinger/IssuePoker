@@ -10,9 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.dto.IssueCreateRequestDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
+import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +92,7 @@ public class IssueIntegrationTest {
     class CreateIssue {
         @Test
         void givenIssueRequest_thenSaveIssue() throws Exception {
-            final IssueCreateRequestDTO requestDTO = new IssueCreateRequestDTO("TitleTest", "DescriptionTitle");
+            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TitleTest", "DescriptionTitle");
             final Issue expectedIssue = issueMapper.toEntity(requestDTO);
             expectedIssue.setId(getNextIssueId());
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))

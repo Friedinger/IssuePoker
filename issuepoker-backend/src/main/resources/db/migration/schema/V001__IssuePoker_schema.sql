@@ -9,13 +9,15 @@ CREATE TABLE issue
     description VARCHAR(65535) NOT NULL,
     revealed    BOOLEAN        NOT NULL,
     vote_result INTEGER,
-    CONSTRAINT pk_issue PRIMARY KEY (id)
+    CONSTRAINT pk_issue PRIMARY KEY (id, owner, repository)
 );
 
 CREATE TABLE issue_votes
 (
-    issue_id BIGINT NOT NULL,
-    votes_id UUID   NOT NULL
+    issue_id         BIGINT       NOT NULL,
+    issue_owner      VARCHAR(255) NOT NULL,
+    issue_repository VARCHAR(255) NOT NULL,
+    votes_id         UUID         NOT NULL
 );
 
 CREATE TABLE vote
@@ -30,7 +32,7 @@ ALTER TABLE issue_votes
     ADD CONSTRAINT uc_issue_votes_votes UNIQUE (votes_id);
 
 ALTER TABLE issue_votes
-    ADD CONSTRAINT fk_issvot_on_issue FOREIGN KEY (issue_id) REFERENCES issue (id);
+    ADD CONSTRAINT fk_issvot_on_issue FOREIGN KEY (issue_id, issue_owner, issue_repository) REFERENCES issue (id, owner, repository);
 
 ALTER TABLE issue_votes
     ADD CONSTRAINT fk_issvot_on_vote FOREIGN KEY (votes_id) REFERENCES vote (id);

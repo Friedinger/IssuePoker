@@ -1,6 +1,6 @@
 package de.muenchen.issuepoker.issue;
 
-import de.muenchen.issuepoker.entities.dto.IssueRequest;
+import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestResultDTO;
 import de.muenchen.issuepoker.entities.dto.VoteRequestRevealedDTO;
@@ -29,23 +29,32 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RequestMapping("/issues/{owner}/{repository}/{id}/votes")
 public class VoteController {
     private final VoteService voteService;
-    private final Map<IssueRequest, List<UserEmitter>> emitters = new ConcurrentHashMap<>();
+    private final Map<IssueKey, List<UserEmitter>> emitters = new ConcurrentHashMap<>();
+
+    @GetMapping("test")
+    @ResponseStatus(HttpStatus.OK)
+    public VotesDTO getTest(@PathVariable("owner") final String owner,
+            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        final String username = AuthUtils.getUsername();
+        return voteService.getVotes(issueKey, username);
+    }
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public SseEmitter getVotesStream(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
         final String username = AuthUtils.getUsername();
         final SseEmitter emitter = new SseEmitter();
         final UserEmitter userEmitter = new UserEmitter(emitter, username);
-        emitters.computeIfAbsent(issueRequest, k -> new CopyOnWriteArrayList<>()).add(userEmitter);
-        emitter.onCompletion(() -> emitters.get(issueRequest).remove(userEmitter));
-        emitter.onTimeout(() -> emitters.get(issueRequest).remove(userEmitter));
+        emitters.computeIfAbsent(issueKey, k -> new CopyOnWriteArrayList<>()).add(userEmitter);
+        emitter.onCompletion(() -> emitters.get(issueKey).remove(userEmitter));
+        emitter.onTimeout(() -> emitters.get(issueKey).remove(userEmitter));
         try {
             final SseEmitter.SseEventBuilder event = SseEmitter.event()
                     .name("votes")
-                    .data(voteService.getVotes(issueRequest, username));
+                    .data(voteService.getVotes(issueKey, username));
             emitter.send(event);
         } catch (IOException e) {
             emitter.completeWithError(e);
@@ -53,14 +62,14 @@ public class VoteController {
         return emitter;
     }
 
-    private void sendVotesUpdate(final IssueRequest issueRequest) {
-        final List<UserEmitter> issueEmitters = emitters.get(issueRequest);
+    private void sendVotesUpdate(final IssueKey issueKey) {
+        final List<UserEmitter> issueEmitters = emitters.get(issueKey);
         if (issueEmitters == null) {
             return;
         }
         for (final UserEmitter userEmitter : issueEmitters) {
             try {
-                final VotesDTO votesDTO = voteService.getVotes(issueRequest, userEmitter.username);
+                final VotesDTO votesDTO = voteService.getVotes(issueKey, userEmitter.username);
                 userEmitter.emitter.send(SseEmitter.event().name("votes").data(votesDTO));
             } catch (IOException e) {
                 userEmitter.emitter.completeWithError(e);
@@ -72,45 +81,45 @@ public class VoteController {
     @ResponseStatus(HttpStatus.CREATED)
     public void createVote(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
             @PathVariable("id") final long id, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
-        voteService.saveVote(issueRequest, voteRequestDTO);
-        sendVotesUpdate(issueRequest);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        voteService.saveVote(issueKey, voteRequestDTO);
+        sendVotesUpdate(issueKey);
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
     public void deleteVote(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
-        voteService.deleteVote(issueRequest);
-        sendVotesUpdate(issueRequest);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        voteService.deleteVote(issueKey);
+        sendVotesUpdate(issueKey);
     }
 
     @DeleteMapping("all")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllVotes(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
-        voteService.deleteAllVotes(issueRequest);
-        sendVotesUpdate(issueRequest);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        voteService.deleteAllVotes(issueKey);
+        sendVotesUpdate(issueKey);
     }
 
     @PostMapping("revealed")
     @ResponseStatus(HttpStatus.OK)
     public void setRevealed(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
             @PathVariable("id") final long id, @RequestBody final VoteRequestRevealedDTO revealedDTO) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
-        voteService.setRevealed(issueRequest, revealedDTO.revealed());
-        sendVotesUpdate(issueRequest);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        voteService.setRevealed(issueKey, revealedDTO.revealed());
+        sendVotesUpdate(issueKey);
     }
 
     @PostMapping("result")
     @ResponseStatus(HttpStatus.OK)
     public void setResult(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
             @PathVariable("id") final long id, @RequestBody final VoteRequestResultDTO resultDTO) {
-        final IssueRequest issueRequest = new IssueRequest(owner, repository, id);
-        voteService.setResult(issueRequest, resultDTO.voteResult());
-        sendVotesUpdate(issueRequest);
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        voteService.setResult(issueKey, resultDTO.voteResult());
+        sendVotesUpdate(issueKey);
     }
 
     private record UserEmitter(SseEmitter emitter, String username) {

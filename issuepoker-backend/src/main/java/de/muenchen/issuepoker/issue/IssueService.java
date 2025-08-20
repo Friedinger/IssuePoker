@@ -24,9 +24,9 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public Issue getIssue(final IssueKey issueKey) {
-        log.info("Get Issue for {}/{} with ID {}", issueKey.owner(), issueKey.repository(), issueKey.id());
-        return issueRepository.findById(issueKey)
-                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueKey.id())));
+        log.info("Get Issue {}/{}#{}", issueKey.owner(), issueKey.repository(), issueKey.number());
+        return issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number())
+                .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueKey.number())));
     }
 
     @PreAuthorize(Authorities.IS_USER)
@@ -46,13 +46,13 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
-        log.debug("Save Issue with id={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
+        log.debug("Save Issue with number={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
         return issueRepository.save(issue);
     }
 
     @PreAuthorize(Authorities.IS_USER)
     public void addVote(final Issue issue, final Vote vote) {
-        log.debug("Add Vote with id={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
+        log.debug("Add Vote with number={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
         saveIssue(issue);
     }

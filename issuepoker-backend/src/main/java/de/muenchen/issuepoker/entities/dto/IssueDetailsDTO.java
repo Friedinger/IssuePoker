@@ -1,9 +1,9 @@
 package de.muenchen.issuepoker.entities.dto;
 
 public record IssueDetailsDTO(
-        long id,
         String owner,
         String repository,
+        long number,
         String title,
         String description) {
 }

@@ -32,11 +32,11 @@ public class IssueController {
     private final IssueService issueService;
     private final IssueMapper issueMapper;
 
-    @GetMapping("{owner}/{repository}/{id}")
+    @GetMapping("{owner}/{repository}/{number}")
     @ResponseStatus(HttpStatus.OK)
     public IssueDetailsDTO getIssue(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueRequest = new IssueKey(owner, repository, id);
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        final IssueKey issueRequest = new IssueKey(owner, repository, number);
         return issueMapper.toDetails(issueService.getIssue(issueRequest));
     }
 
@@ -49,7 +49,7 @@ public class IssueController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(required = false, defaultValue = "") final String search,
-            @PageableDefault(sort = "id") final Pageable pageRequest) {
+            @PageableDefault(sort = "number") final Pageable pageRequest) {
         final Page<Issue> issuePage = issueService.getAllIssues(search, pageRequest);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());

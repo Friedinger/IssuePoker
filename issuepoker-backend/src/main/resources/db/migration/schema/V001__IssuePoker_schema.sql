@@ -25,6 +25,9 @@ CREATE TABLE vote
     CONSTRAINT pk_vote PRIMARY KEY (id)
 );
 
+ALTER TABLE issue
+    ADD CONSTRAINT uc_b53e2f68cd659c14465ceedc6 UNIQUE (owner, repository, number);
+
 ALTER TABLE issue_votes
     ADD CONSTRAINT uc_issue_votes_votes UNIQUE (votes_id);
 

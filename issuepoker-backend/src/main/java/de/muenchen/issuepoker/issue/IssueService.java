@@ -2,6 +2,7 @@ package de.muenchen.issuepoker.issue;
 
 import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
 
+import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
@@ -11,6 +12,7 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,7 +49,11 @@ public class IssueService {
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
         log.debug("Save Issue with number={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
-        return issueRepository.save(issue);
+        try {
+            return issueRepository.save(issue);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException("Issue already exists");
+        }
     }
 
     @PreAuthorize(Authorities.IS_USER)

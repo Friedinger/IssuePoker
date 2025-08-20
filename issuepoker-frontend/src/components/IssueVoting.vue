@@ -171,7 +171,7 @@ const deleteDialog = ref(false);
 let eventSource: EventSource | null = null;
 
 onMounted(() => {
-  if (props.issue.id) {
+  if (props.issue) {
     fetchVotes();
   }
 });

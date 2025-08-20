@@ -59,7 +59,7 @@ function save() {
   if (!valid.value) return;
   createIssue(title.value, description.value)
     .then((content: IssueDetails) =>
-      router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: content.id } })
+      router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: content.number } })
     )
     .catch((error) => snackbarStore.showMessage(error));
 }

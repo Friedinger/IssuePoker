@@ -7,7 +7,7 @@ export function setVoteResult(
   voteResult?: number
 ): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.id}/votes/result`,
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes/result`,
     postConfig({
       voteResult: voteResult,
     })

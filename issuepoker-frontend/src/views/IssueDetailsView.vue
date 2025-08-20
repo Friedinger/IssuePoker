@@ -4,7 +4,7 @@
       <v-col>
         <template v-if="issue">
           <h1>{{ issue.title }}</h1>
-          <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.id }}</p>
+          <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
         </template>
       </v-col>
       <v-col cols="auto">
@@ -28,11 +28,10 @@
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
-import type IssueRequest from "@/types/IssueRequest.ts";
+import type { RouteParamsGeneric } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
-import { id } from "vuetify/locale";
 
 import { getIssue } from "@/api/fetch-issue.ts";
 import IssueVoting from "@/components/IssueVoting.vue";
@@ -45,38 +44,39 @@ const route = useRoute();
 const issue = ref<IssueDetails>();
 
 onMounted(() => {
-  fetchIssue(
-    parseParams(route.params.owner, route.params.repository, route.params.id)
-  );
+  fetchIssue(route.params);
 });
 
 watch(
   () => route.params,
-  (params) =>
-    fetchIssue(parseParams(params.owner, params.repository, params.id))
+  (params) => fetchIssue(params)
 );
 
-function fetchIssue(request: IssueRequest) {
-  getIssue(request)
+function fetchIssue(params: RouteParamsGeneric) {
+  const { owner, repository, number } = parseParams(params);
+  getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
       snackbarStore.showMessage({
-        message: `Issue mit ID "${id}" wurde nicht gefunden.`,
+        message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
         level: STATUS_INDICATORS.WARNING,
       });
       router.push({ name: ROUTES_HOME });
     });
 }
 
-function parseParams(
-  owner: string | string[],
-  repository: string | string[],
-  id: string | string[]
-): IssueRequest {
+function parseParams(params: RouteParamsGeneric): {
+  owner: string;
+  repository: string;
+  number: number;
+} {
+  const owner = params.owner;
+  const repository = params.repository;
+  const number = params.number;
   return {
     owner: Array.isArray(owner) ? owner[0] : owner,
     repository: Array.isArray(repository) ? repository[0] : repository,
-    id: Array.isArray(id) ? parseInt(id[0]) : parseInt(id),
+    number: Array.isArray(number) ? parseInt(number[0]) : parseInt(number),
   };
 }
 </script>

@@ -55,7 +55,7 @@ import { useUserStore } from "@/stores/user.ts";
 const snackbarStore = useSnackbarStore();
 const headers = [
   { key: "repo", title: "Repository" },
-  { key: "id", title: "Nummer" },
+  { key: "number", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
   { key: "voteResult", title: "Ergebnis", sortable: false },
@@ -73,7 +73,7 @@ const { getUser } = storeToRefs(useUserStore());
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
-const sortedBy = ref<SortItem[]>([{ key: "id", order: "asc" }]);
+const sortedBy = ref<SortItem[]>([{ key: "number", order: "asc" }]);
 const { getSearchQuery } = storeToRefs(useSearchQueryStore());
 
 function fetchIssues({
@@ -108,9 +108,9 @@ function goToIssue(
   router.push({
     name: ROUTES_ISSUE_DETAIL,
     params: {
-      id: props.item.id,
-      repository: props.item.repository,
       owner: props.item.owner,
+      repository: props.item.repository,
+      number: props.item.number,
     },
   });
 }

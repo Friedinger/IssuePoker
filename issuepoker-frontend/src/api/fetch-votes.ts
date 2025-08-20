@@ -7,7 +7,7 @@ export function subscribeVotes(
   onError?: () => void
 ): EventSource {
   const eventSource = new EventSource(
-    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.id}/votes`
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes`
   );
   eventSource.addEventListener("votes", (event) => {
     const content = JSON.parse((event as MessageEvent).data);

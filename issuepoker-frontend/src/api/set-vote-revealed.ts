@@ -7,7 +7,7 @@ export function setVoteRevealed(
   revealed: boolean
 ): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.id}/votes/revealed`,
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes/revealed`,
     postConfig({
       revealed: revealed,
     })

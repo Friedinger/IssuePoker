@@ -11,8 +11,10 @@ import static org.mockito.Mockito.when;
 
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.IssueKey;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,36 +36,42 @@ public class IssueServiceTest {
     @InjectMocks
     private IssueService issueService;
 
-    private void setFields(final Issue issue) {
+    private IssueKey setFields(final Issue issue) {
+        final IssueKey issueKey = new IssueKey("TestOwner", "TestRepository", 42);
+        issue.setOwner(issueKey.owner());
+        issue.setRepository(issueKey.repository());
+        issue.setNumber(issueKey.number());
         issue.setTitle("TestTitle");
         issue.setDescription("TestDescription");
         issue.setVotes(List.of());
         issue.setRevealed(true);
+        return issueKey;
     }
 
     @Nested
     class GetIssue {
         @Test
         void givenId_thenReturnIssue() {
-            final long id = 42;
             final Issue issue = new Issue();
-            issue.setId(id);
-            setFields(issue);
-            when(issueRepository.findById(id)).thenReturn(Optional.of(issue));
+            final IssueKey issueKey = setFields(issue);
+            when(issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number()))
+                    .thenReturn(Optional.of(issue));
 
-            final Issue result = issueService.getIssue(id);
-            verify(issueRepository).findById(id);
+            final Issue result = issueService.getIssue(issueKey);
+            verify(issueRepository).findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number());
             assertThat(result).usingRecursiveComparison().isEqualTo(issue);
         }
 
         @Test
         void givenNonExistentId_thenTrowNotFoundException() {
-            final long id = 42;
-            when(issueRepository.findById(id)).thenReturn(Optional.empty());
-            final Exception exception = assertThrows(NotFoundException.class, () -> issueService.getIssue(id));
-            verify(issueRepository).findById(id);
+            final IssueKey issueKey = setFields(new Issue());
+            when(issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number()))
+                    .thenReturn(Optional.empty());
+
+            final Exception exception = assertThrows(NotFoundException.class, () -> issueService.getIssue(issueKey));
+            verify(issueRepository).findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number());
             assertEquals(NotFoundException.class, exception.getClass());
-            assertEquals(String.format("404 NOT_FOUND \"Could not find entity with id %s\"", id), exception.getMessage());
+            assertEquals(String.format("404 NOT_FOUND \"Could not find entity with id %s\"", issueKey.number()), exception.getMessage());
         }
     }
 
@@ -92,7 +100,7 @@ public class IssueServiceTest {
             final Issue issueToSave = new Issue();
             setFields(issueToSave);
             final Issue expectedIssue = new Issue();
-            expectedIssue.setId(0);
+            expectedIssue.setId(UUID.randomUUID());
             setFields(expectedIssue);
             when(issueRepository.save(issueToSave)).thenReturn(expectedIssue);
 

@@ -9,6 +9,7 @@ import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,10 +21,14 @@ public class IssueMapperTest {
 
     private Issue createIssue() {
         final Issue issue = new Issue();
-        issue.setId(42);
+        issue.setId(UUID.randomUUID());
+        issue.setOwner("TestOwner");
+        issue.setRepository("TestRepository");
+        issue.setNumber(42);
         issue.setTitle("TestTitle");
         issue.setDescription("TestDescription");
         issue.setVotes(List.of());
+        issue.setRevealed(false);
         return issue;
     }
 
@@ -34,7 +39,8 @@ public class IssueMapperTest {
             final Issue issue = createIssue();
             final IssueSummaryDTO result = issueMapper.toSummary(issue);
             assertNotNull(result);
-            assertThat(result).usingRecursiveComparison().ignoringFields("voteCount").isEqualTo(issue);
+            assertThat(result).usingRecursiveComparison().ignoringFields("voteCount")
+                    .isEqualTo(issue);
         }
     }
 
@@ -53,9 +59,12 @@ public class IssueMapperTest {
     class ToEntity {
         @Test
         void givenRequestDTO_thenReturnIssue() {
-            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TestTitle", "TestDescription");
+            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO(
+                    "TestOwner", "TestRepository", 42, "TestTitle", "TestDescription");
             final Issue result = issueMapper.toEntity(requestDTO);
-            assertThat(result).usingRecursiveComparison().ignoringFields("id", "votes", "revealed", "voteResult").isEqualTo(requestDTO);
+            assertThat(result).usingRecursiveComparison()
+                    .ignoringFields("id", "votes", "revealed", "voteResult")
+                    .isEqualTo(requestDTO);
         }
     }
 }

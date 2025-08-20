@@ -16,7 +16,7 @@ import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -56,14 +56,12 @@ public class IssueIntegrationTest {
     @Autowired
     private IssueMapper issueMapper;
 
-    private long getNextIssueId() {
-        return StreamSupport.stream(issueRepository.findAll().spliterator(), false)
-                .mapToLong(Issue::getId).max().orElse(0) + 1;
-    }
-
     @BeforeEach
     public void setUp() {
         final Issue exampleIssue = new Issue();
+        exampleIssue.setOwner("TestOwner");
+        exampleIssue.setRepository("TestRepository");
+        exampleIssue.setNumber(42);
         exampleIssue.setTitle("TestTitle");
         exampleIssue.setDescription("TestDescription");
         exampleIssue.setVotes(new ArrayList<>());
@@ -79,12 +77,14 @@ public class IssueIntegrationTest {
     class GetIssue {
         @Test
         void givenIssueId_thenReturnIssueDetails() throws Exception {
-            mockMvc.perform(get("/issues/{issueId}", testIssue.getId()).contentType(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get("/issues/{owner}/{repository}/{number}",
+                            testIssue.getOwner(), testIssue.getRepository(), testIssue.getNumber())
+                            .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new IssueDetailsDTO(testIssue.getId(), testIssue.getOwner(), testIssue.getRepository(), testIssue.getTitle(),
-                                    testIssue.getDescription()))));
+                            new IssueDetailsDTO(testIssue.getOwner(), testIssue.getRepository(), testIssue.getNumber(),
+                                    testIssue.getTitle(), testIssue.getDescription()))));
         }
     }
 
@@ -92,14 +92,15 @@ public class IssueIntegrationTest {
     class CreateIssue {
         @Test
         void givenIssueRequest_thenSaveIssue() throws Exception {
-            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TitleTest", "DescriptionTitle");
+            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TestOwner", "TestRepository", 43, "TitleTest", "DescriptionTitle");
             final Issue expectedIssue = issueMapper.toEntity(requestDTO);
-            expectedIssue.setId(getNextIssueId());
+            expectedIssue.setId(UUID.randomUUID());
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(objectMapper.writeValueAsString(new IssueDetailsDTO(testIssue.getId() + 1, testIssue.getOwner(),
-                            testIssue.getRepository(), requestDTO.title(), requestDTO.description()))));
+                    .andExpect(content().json(
+                            objectMapper.writeValueAsString(new IssueDetailsDTO(
+                                    requestDTO.owner(), requestDTO.repository(), requestDTO.number(), requestDTO.title(), requestDTO.description()))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }
@@ -113,7 +114,8 @@ public class IssueIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
                             new PageImpl<>(List.of(
-                                    new IssueSummaryDTO(testIssue.getId(), testIssue.getTitle(), testIssue.getVotes().size(), testIssue.getVoteResult())),
+                                    new IssueSummaryDTO(testIssue.getOwner(), testIssue.getRepository(), testIssue.getNumber(), testIssue.getTitle(),
+                                            testIssue.getVotes().size(), testIssue.getVoteResult())),
                                     PageRequest.of(0, 10), 1))));
         }
     }

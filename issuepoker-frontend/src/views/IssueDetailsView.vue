@@ -63,16 +63,16 @@ function fetchIssue(params: RouteParamsGeneric) {
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
-      snackbarStore.showMessage({
-        message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
-        level: STATUS_INDICATORS.WARNING,
-      });
       if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
         router.push({
           name: ROUTES_ISSUE_CREATE,
           query: { owner, repository, number },
         });
       } else {
+        snackbarStore.showMessage({
+          message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
+          level: STATUS_INDICATORS.WARNING,
+        });
         router.push({ name: ROUTES_HOME });
       }
     });

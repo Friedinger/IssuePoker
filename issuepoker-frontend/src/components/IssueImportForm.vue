@@ -37,7 +37,7 @@ import { ref } from "vue";
 import { ROUTES_ISSUE_CREATE } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 
-const props = defineProps({ isActive: Boolean });
+const props = defineProps(["isActive"]);
 const isActive = ref(props.isActive);
 const url = ref("");
 const valid = ref(false);

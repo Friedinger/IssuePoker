@@ -43,7 +43,11 @@ import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issueList.ts";
-import { ROLE_ADMIN, ROUTES_ISSUE_CREATE, ROUTES_ISSUE_DETAIL, } from "@/constants.ts";
+import {
+  ROLE_ADMIN,
+  ROUTES_ISSUE_CREATE,
+  ROUTES_ISSUE_DETAIL,
+} from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";

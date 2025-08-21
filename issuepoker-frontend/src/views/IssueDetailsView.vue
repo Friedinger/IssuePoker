@@ -35,9 +35,15 @@ import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
 import IssueVoting from "@/components/IssueVoting.vue";
-import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
+import {
+  ROLE_ADMIN,
+  ROUTES_HOME,
+  ROUTES_ISSUE_CREATE,
+  STATUS_INDICATORS,
+} from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
@@ -61,7 +67,14 @@ function fetchIssue(params: RouteParamsGeneric) {
         message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
         level: STATUS_INDICATORS.WARNING,
       });
-      router.push({ name: ROUTES_HOME });
+      if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
+        router.push({
+          name: ROUTES_ISSUE_CREATE,
+          query: { owner, repository, number },
+        });
+      } else {
+        router.push({ name: ROUTES_HOME });
+      }
     });
 }
 

@@ -71,7 +71,7 @@ import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { isDefined } from "@vueuse/core";
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import { createIssue } from "@/api/create-issue.ts";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
@@ -86,6 +86,17 @@ const number = ref(NaN);
 const title = ref("");
 const description = ref("");
 const valid = ref();
+
+const props = defineProps<{ issue?: IssueDetails }>();
+
+onMounted(() => {
+  parseProp(props.issue);
+});
+
+watch(
+  () => props.issue,
+  (issue) => parseProp(issue)
+);
 
 function save() {
   if (!valid.value) return;
@@ -140,5 +151,14 @@ function validateDescription(value: string) {
   if (value.length > 65_535)
     return "Beschreibung darf nicht länger als 65535 Zeichen sein.";
   return true;
+}
+
+function parseProp(issue?: IssueDetails) {
+  if (!issue) return;
+  owner.value = issue.owner;
+  repository.value = issue.repository;
+  number.value = issue.number;
+  title.value = issue.title;
+  description.value = issue.description;
 }
 </script>

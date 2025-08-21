@@ -14,7 +14,10 @@
     <template v-if="issue">
       <v-row>
         <v-col>
-          <p>{{ issue.description }}</p>
+          <vue-markdown
+            :options="markdownOptions"
+            :source="issue.description"
+          />
         </v-col>
       </v-row>
       <v-row>
@@ -31,6 +34,7 @@ import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
+import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
@@ -48,6 +52,9 @@ import { useUserStore } from "@/stores/user.ts";
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
+const markdownOptions = {
+  html: true,
+};
 
 onMounted(() => {
   fetchIssue(route.params);
@@ -93,3 +100,10 @@ function parseParams(params: RouteParamsGeneric): {
   };
 }
 </script>
+
+<style>
+ul,
+ol {
+  margin-left: 1.25rem;
+}
+</style>

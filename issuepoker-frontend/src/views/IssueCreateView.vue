@@ -44,6 +44,9 @@ function fetchRemote(query: LocationQuery) {
   const owner = query.owner as string;
   const repository = query.repository as string;
   const number = parseInt(query.number as string);
+  if (!owner || !repository || isNaN(number)) {
+    return;
+  }
   getIssueRemote(owner, repository, number)
     .then((content: IssueRemote) => {
       if (content.pull_request) {

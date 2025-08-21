@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { mount, VueWrapper } from "@vue/test-utils";
 import { createPinia } from "pinia";
 import { describe, expect, it, vi } from "vitest";
 import { createVuetify } from "vuetify";
@@ -7,10 +7,14 @@ import * as directives from "vuetify/directives";
 
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
-import { ROUTES_ISSUE_DETAIL } from "../../src/constants";
+import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "../../src/constants";
 
 vi.mock("@/api/create-issue.ts", () => ({
-  createIssue: vi.fn().mockResolvedValue({ id: 42 }),
+  createIssue: vi.fn().mockResolvedValue({
+    owner: "Mock Owner",
+    repository: "Mock Repository",
+    number: 43,
+  }),
 }));
 vi.mock("@/plugins/router.ts", () => ({
   default: { push: vi.fn() },
@@ -33,56 +37,67 @@ function factory() {
   });
 }
 
+function findField(
+  wrapper: VueWrapper<IssueCreateForm>,
+  componentName: string,
+  label: string
+) {
+  if (componentName === "VBtn") {
+    return wrapper
+      .findAllComponents({ name: "VBtn" })
+      .find((b) => b.text().trim() === label);
+  }
+  return wrapper
+    .findAllComponents({ name: componentName })
+    .find((c) => c.props("label") === label);
+}
+
+function getFormFields(wrapper: VueWrapper<IssueCreateForm>) {
+  return {
+    saveBtn: findField(wrapper, "VBtn", "Speichern"),
+    cancelBtn: findField(wrapper, "VBtn", "Abbrechen"),
+    ownerField: findField(wrapper, "VTextField", "Besitzer"),
+    repoField: findField(wrapper, "VTextField", "Repository"),
+    numberField: findField(wrapper, "VNumberInput", "Nummer"),
+    titleField: findField(wrapper, "VTextField", "Titel"),
+    descriptionField: findField(wrapper, "VTextarea", "Beschreibung"),
+  };
+}
+
 describe("IssueCreateForm", () => {
   it("showsInputFields", () => {
     const wrapper = factory();
-    expect(
-      wrapper
-        .findComponent({ name: "VTextField", props: "label=Besitzer" })
-        .exists()
-    ).toBe(true);
-    expect(
-      wrapper
-        .findComponent({ name: "VTextField", props: "label=Repository" })
-        .exists()
-    ).toBe(true);
-    expect(
-      wrapper
-        .findComponent({ name: "VNumberInput", props: "label=Nummer" })
-        .exists()
-    ).toBe(true);
-    expect(
-      wrapper
-        .findComponent({ name: "VTextField", props: "label=Titel" })
-        .exists()
-    ).toBe(true);
-    expect(
-      wrapper
-        .findComponent({ name: "VTextarea", props: "label=Beschreibung" })
-        .exists()
-    ).toBe(true);
+    const { ownerField, repoField, numberField, titleField, descriptionField } =
+      getFormFields(wrapper);
+
+    expect(ownerField).toBeTruthy();
+    expect(repoField).toBeTruthy();
+    expect(numberField).toBeTruthy();
+    expect(titleField).toBeTruthy();
+    expect(descriptionField).toBeTruthy();
   });
 
   it("showsButtons", () => {
     const wrapper = factory();
-    const saveBtn = wrapper.findComponent({
-      name: "VBtn",
-      props: "label=Speichern,type=submit",
-    });
-    expect(saveBtn.exists()).toBe(true);
-    const cancelBtn = wrapper.findComponent({
-      name: "VBtn",
-      props: "label=Abbrechen",
-    });
-    expect(cancelBtn.exists()).toBe(true);
-    expect(cancelBtn.props("to")).toEqual({ name: "home" });
+    const { saveBtn, cancelBtn } = getFormFields(wrapper);
+
+    expect(saveBtn).toBeTruthy();
+    expect(saveBtn?.attributes("type")).toEqual("submit");
+    expect(cancelBtn).toBeTruthy();
+    expect(cancelBtn?.props("to")).toEqual({ name: ROUTES_HOME });
   });
 
   it("deactivatesSubmitButton", async () => {
     const wrapper = factory();
-    const saveBtn = wrapper.findComponent({ name: "VBtn" });
-    const titleField = wrapper.findComponent({ name: "VTextField" });
-    const descriptionField = wrapper.findComponent({ name: "VTextarea" });
+    const {
+      saveBtn,
+      ownerField,
+      repoField,
+      numberField,
+      titleField,
+      descriptionField,
+    } = getFormFields(wrapper);
+
     await wrapper.vm.$nextTick();
     expect(saveBtn.props("disabled")).toBe(true);
 
@@ -90,7 +105,19 @@ describe("IssueCreateForm", () => {
     await wrapper.vm.$nextTick();
     expect(saveBtn.props("disabled")).toBe(true);
 
-    await titleField.setValue("Test Issue");
+    await ownerField.setValue("Test Owner");
+    await wrapper.vm.$nextTick();
+    expect(saveBtn.props("disabled")).toBe(true);
+
+    await repoField.setValue("Test Repository");
+    await wrapper.vm.$nextTick();
+    expect(saveBtn.props("disabled")).toBe(true);
+
+    await numberField.setValue(42);
+    await wrapper.vm.$nextTick();
+    expect(saveBtn.props("disabled")).toBe(true);
+
+    await titleField.setValue("Test Title");
     await wrapper.vm.$nextTick();
     expect(saveBtn.props("disabled")).toBe(false);
 
@@ -100,19 +127,37 @@ describe("IssueCreateForm", () => {
 
   it("submitCallsApiAndRedirectsDetails", async () => {
     const wrapper = factory();
-    const titleField = wrapper.findComponent({ name: "VTextField" });
-    const descriptionField = wrapper.findComponent({ name: "VTextarea" });
-    const saveBtn = wrapper.findComponent({ name: "VBtn" });
+    const {
+      saveBtn,
+      ownerField,
+      repoField,
+      numberField,
+      titleField,
+      descriptionField,
+    } = getFormFields(wrapper);
 
-    await titleField.setValue("TestTitle");
-    await descriptionField.setValue("TestDescription");
+    await ownerField.setValue("Test Owner");
+    await repoField.setValue("Test Repository");
+    await numberField.setValue(42);
+    await titleField.setValue("Test Title");
+    await descriptionField.setValue("Test Description");
     await wrapper.vm.$nextTick();
 
     await saveBtn.trigger("click");
-    expect(createIssue).toHaveBeenCalledWith("TestTitle", "TestDescription");
+    expect(createIssue).toHaveBeenCalledWith(
+      "Test Owner",
+      "Test Repository",
+      42,
+      "Test Title",
+      "Test Description"
+    );
     expect(router.push).toHaveBeenCalledWith({
       name: ROUTES_ISSUE_DETAIL,
-      params: { id: 42 },
+      params: {
+        owner: "Mock Owner",
+        repository: "Mock Repository",
+        number: 43,
+      },
     });
   });
 });

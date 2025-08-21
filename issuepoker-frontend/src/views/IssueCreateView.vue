@@ -28,9 +28,9 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { IssueRemote } from "@/types/IssueRemote.ts";
 import type { LocationQuery } from "vue-router";
-import { useRoute } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { getIssueRemote } from "@/api/fetch-issues-remote.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";

@@ -26,7 +26,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public Issue getIssue(final IssueKey issueKey) {
-        log.info("Get Issue {}/{}#{}", issueKey.owner(), issueKey.repository(), issueKey.number());
+        log.info("Get Issue {}", issueKey);
         return issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number())
                 .orElseThrow(() -> new NotFoundException(String.format(MSG_NOT_FOUND, issueKey.number())));
     }

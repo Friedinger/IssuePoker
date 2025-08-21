@@ -9,7 +9,7 @@ import de.muenchen.issuepoker.MicroServiceApplication;
 import de.muenchen.issuepoker.TestConstants;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueRequestDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.issue.IssueRepository;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
@@ -61,12 +61,15 @@ class UnicodeFilterConfigurationTest {
     void testForNfcNormalization() {
         // Given
         // Persist entity with decomposed string.
-        final IssueRequestDTO requestDTO = new IssueRequestDTO(TEXT_ATTRIBUTE_DECOMPOSED, "");
+        final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO(
+                "TestOwner", "TestRepository", 1, TEXT_ATTRIBUTE_DECOMPOSED, "TestDescription");
 
         // When
-        final IssueDetailsDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL), requestDTO, IssueDetailsDTO.class)
-                .getBody();
-        final Issue issue = issueRepository.findById(response.id()).orElse(null);
+        final IssueDetailsDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL),
+                requestDTO, IssueDetailsDTO.class).getBody();
+        assert response != null;
+        final Issue issue = issueRepository.findByOwnerAndRepositoryAndNumber(
+                response.owner(), response.repository(), response.number()).orElse(null);
 
         // Then
         // Check whether response contains a composed string.
@@ -75,6 +78,7 @@ class UnicodeFilterConfigurationTest {
         assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), response.title().length());
 
         // Check persisted entity contains a composed string via JPA repository.
+        assert issue != null;
         assertNotNull(issue.getTitle());
         assertEquals(TEXT_ATTRIBUTE_COMPOSED, issue.getTitle());
         assertEquals(TEXT_ATTRIBUTE_COMPOSED.length(), issue.getTitle().length());

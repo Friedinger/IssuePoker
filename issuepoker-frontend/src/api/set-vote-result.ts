@@ -1,11 +1,13 @@
+import type IssueDetails from "@/types/IssueDetails.ts";
+
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
 export function setVoteResult(
-  issueId: string,
+  issue: IssueDetails,
   voteResult?: number
 ): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issueId}/votes/result`,
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes/result`,
     postConfig({
       voteResult: voteResult,
     })

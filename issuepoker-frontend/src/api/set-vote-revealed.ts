@@ -1,11 +1,13 @@
+import type IssueDetails from "@/types/IssueDetails.ts";
+
 import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
 
 export function setVoteRevealed(
-  issueId: string,
+  issue: IssueDetails,
   revealed: boolean
 ): Promise<void> {
   return fetch(
-    `api/backend-service/issues/${issueId}/votes/revealed`,
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes/revealed`,
     postConfig({
       revealed: revealed,
     })

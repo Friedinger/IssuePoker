@@ -16,15 +16,14 @@ const routes = [
     path: "/",
     name: ROUTES_HOME,
     component: HomeView,
-    meta: {},
   },
   {
-    path: "/issues/:id",
+    path: "/:owner/:repository/issues/:number",
     name: ROUTES_ISSUE_DETAIL,
     component: IssueDetailsView,
   },
   {
-    path: "/issues/new",
+    path: "/new",
     name: ROUTES_ISSUE_CREATE,
     component: IssuesCreateView,
     beforeEnter: () => {

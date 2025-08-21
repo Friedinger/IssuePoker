@@ -171,7 +171,7 @@ const deleteDialog = ref(false);
 let eventSource: EventSource | null = null;
 
 onMounted(() => {
-  if (props.issue.id) {
+  if (props.issue) {
     fetchVotes();
   }
 });
@@ -192,7 +192,7 @@ function fetchVotes() {
   }
   if (eventSource) eventSource.close();
   eventSource = subscribeVotes(
-    props.issue.id,
+    props.issue,
     (content) => {
       votes.value = content;
       revealed.value = isDefined(content.allVotings);
@@ -205,29 +205,27 @@ function fetchVotes() {
 function vote(voting: number) {
   if (isAdmin() && revealed.value) {
     setVoteResult(
-      props.issue.id,
+      props.issue,
       voting === votes.value.voteResult ? undefined : voting
     ).catch((error) => snackbarStore.showMessage(error));
   } else if (votes.value?.userVoting != voting) {
-    createVote(props.issue.id, voting).catch((error) =>
+    createVote(props.issue, voting).catch((error) =>
       snackbarStore.showMessage(error)
     );
   } else {
-    deleteVote(props.issue.id).catch((error) =>
-      snackbarStore.showMessage(error)
-    );
+    deleteVote(props.issue).catch((error) => snackbarStore.showMessage(error));
   }
 }
 
 function toggleRevealed() {
-  setVoteRevealed(props.issue.id, !revealed.value).catch((error) =>
+  setVoteRevealed(props.issue, !revealed.value).catch((error) =>
     snackbarStore.showMessage(error)
   );
 }
 
 function resetVotes() {
   deleteDialog.value = false;
-  deleteAllVotes(props.issue.id).catch((error) =>
+  deleteAllVotes(props.issue).catch((error) =>
     snackbarStore.showMessage(error)
   );
 }
@@ -260,10 +258,12 @@ function isAdmin(): boolean {
 .votingOption {
   font-size: 1.5rem;
 }
+
 /*noinspection CssUnusedSymbol*/
 .userVoting {
   background: #5e73c9;
 }
+
 /*noinspection CssUnusedSymbol*/
 .voteResult {
   background: #ffcd00;

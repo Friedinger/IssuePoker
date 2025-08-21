@@ -1,5 +1,7 @@
 export default interface IssueSummary {
-  id: number;
+  owner: string;
+  repository: string;
+  number: number;
   title: string;
   voteCount: number;
   voteResult?: number;

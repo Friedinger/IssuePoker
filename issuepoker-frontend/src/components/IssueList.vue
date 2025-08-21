@@ -54,7 +54,8 @@ import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const headers = [
-  { key: "id", title: "Nummer" },
+  { key: "repo", title: "Repository" },
+  { key: "number", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
   { key: "voteResult", title: "Ergebnis", sortable: false },
@@ -72,7 +73,7 @@ const { getUser } = storeToRefs(useUserStore());
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
-const sortedBy = ref<SortItem[]>([{ key: "id", order: "asc" }]);
+const sortedBy = ref<SortItem[]>([{ key: "number", order: "asc" }]);
 const { getSearchQuery } = storeToRefs(useSearchQueryStore());
 
 function fetchIssues({
@@ -88,7 +89,10 @@ function fetchIssues({
   sortedBy.value = sortBy;
   getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
     .then((content: Page<IssueSummary>) => {
-      issues.value = content.content;
+      issues.value = content.content.map((issue) => ({
+        ...issue,
+        repo: `${issue.owner}/${issue.repository}`,
+      }));
       loading.value = false;
       totalIssues.value = content.page.totalElements;
     })
@@ -101,6 +105,13 @@ function goToIssue(
   _: MouseEvent,
   props: { item: IssueDetails; index: number }
 ) {
-  router.push({ name: ROUTES_ISSUE_DETAIL, params: { id: props.item.id } });
+  router.push({
+    name: ROUTES_ISSUE_DETAIL,
+    params: {
+      owner: props.item.owner,
+      repository: props.item.repository,
+      number: props.item.number,
+    },
+  });
 }
 </script>

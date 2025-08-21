@@ -1,5 +1,7 @@
 export default interface IssueDetails {
-  id: number;
+  owner: string;
+  repository: string;
+  number: number;
   title: string;
   description: string;
 }

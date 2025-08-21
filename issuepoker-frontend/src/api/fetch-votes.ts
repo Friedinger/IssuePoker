@@ -1,12 +1,13 @@
+import type IssueDetails from "@/types/IssueDetails.ts";
 import type Votes from "@/types/Votes";
 
 export function subscribeVotes(
-  issueId: number,
+  issue: IssueDetails,
   onMessage: (votes: Votes) => void,
   onError?: () => void
 ): EventSource {
   const eventSource = new EventSource(
-    `api/backend-service/issues/${issueId}/votes`
+    `api/backend-service/issues/${issue.owner}/${issue.repository}/${issue.number}/votes`
   );
   eventSource.addEventListener("votes", (event) => {
     const content = JSON.parse((event as MessageEvent).data);

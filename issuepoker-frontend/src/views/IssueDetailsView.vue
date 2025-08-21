@@ -2,62 +2,108 @@
   <v-container>
     <v-row align="center">
       <v-col>
-        <h1 v-if="issue">{{ issue.title }}</h1>
-        <h1 v-else>Issue wurde nicht gefunden</h1>
+        <template v-if="issue">
+          <h1>{{ issue.title }}</h1>
+          <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
+        </template>
       </v-col>
       <v-col cols="auto">
         <v-btn :to="{ name: ROUTES_HOME }">Zurück zur Liste</v-btn>
       </v-col>
     </v-row>
-    <v-row>
-      <v-col>
-        <p v-if="issue">{{ issue.description }}</p>
-        <p v-else>Bitte zurück zur Liste gehen.</p>
-      </v-col>
-    </v-row>
-    <v-row v-if="issue">
-      <v-col>
-        <issue-voting :issue="issue" />
-      </v-col>
-    </v-row>
+    <template v-if="issue">
+      <v-row>
+        <v-col>
+          <vue-markdown
+            :options="markdownOptions"
+            :source="issue.description"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <issue-voting :issue="issue" />
+        </v-col>
+      </v-row>
+    </template>
   </v-container>
 </template>
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
+import type { RouteParamsGeneric } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
+import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
 import IssueVoting from "@/components/IssueVoting.vue";
-import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
+import {
+  ROLE_ADMIN,
+  ROUTES_HOME,
+  ROUTES_ISSUE_CREATE,
+  STATUS_INDICATORS,
+} from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
+const markdownOptions = {
+  html: true,
+};
 
 onMounted(() => {
-  fetchIssue(route.params.id);
+  fetchIssue(route.params);
 });
 
 watch(
-  () => route.params.id,
-  (newId) => fetchIssue(newId)
+  () => route.params,
+  (params) => fetchIssue(params)
 );
 
-function fetchIssue(id: string | string[]) {
-  const parsedId = Array.isArray(id) ? parseInt(id[0]) : parseInt(id);
-  getIssue(parsedId)
+function fetchIssue(params: RouteParamsGeneric) {
+  const { owner, repository, number } = parseParams(params);
+  getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
-      snackbarStore.showMessage({
-        message: `Issue mit ID "${id}" wurde nicht gefunden.`,
-        level: STATUS_INDICATORS.WARNING,
-      });
-      router.push({ name: ROUTES_HOME });
+      if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
+        router.push({
+          name: ROUTES_ISSUE_CREATE,
+          query: { owner, repository, number },
+        });
+      } else {
+        snackbarStore.showMessage({
+          message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
+          level: STATUS_INDICATORS.WARNING,
+        });
+        router.push({ name: ROUTES_HOME });
+      }
     });
 }
+
+function parseParams(params: RouteParamsGeneric): {
+  owner: string;
+  repository: string;
+  number: number;
+} {
+  const owner = params.owner;
+  const repository = params.repository;
+  const number = params.number;
+  return {
+    owner: Array.isArray(owner) ? owner[0] : owner,
+    repository: Array.isArray(repository) ? repository[0] : repository,
+    number: Array.isArray(number) ? parseInt(number[0]) : parseInt(number),
+  };
+}
 </script>
+
+<style>
+ul,
+ol {
+  margin-left: 1.25rem;
+}
+</style>

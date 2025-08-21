@@ -80,9 +80,9 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
 
-const owner = ref<string>();
-const repository = ref<string>();
-const number = ref<number>();
+const owner = ref("");
+const repository = ref("");
+const number = ref(NaN);
 const title = ref("");
 const description = ref("");
 const valid = ref();

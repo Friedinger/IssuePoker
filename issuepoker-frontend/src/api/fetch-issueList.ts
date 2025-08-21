@@ -34,5 +34,5 @@ function toString(sortBy: SortItem[]): string {
           : (item.order ?? "asc");
       return `${item.key},${orderString}`;
     })
-    .join(",");
+    .join(";");
 }

@@ -26,6 +26,7 @@
       :loading="loading"
       :search="getSearchQuery"
       :sort-by="sortedBy"
+      multi-sort
       @update:options="fetchIssues"
       @click:row="goToIssue"
     ></v-data-table-server>
@@ -42,11 +43,7 @@ import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issueList.ts";
-import {
-  ROLE_ADMIN,
-  ROUTES_ISSUE_CREATE,
-  ROUTES_ISSUE_DETAIL,
-} from "@/constants.ts";
+import { ROLE_ADMIN, ROUTES_ISSUE_CREATE, ROUTES_ISSUE_DETAIL, } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -54,7 +51,8 @@ import { useUserStore } from "@/stores/user.ts";
 
 const snackbarStore = useSnackbarStore();
 const headers = [
-  { key: "repo", title: "Repository" },
+  { key: "owner", title: "Besitzer" },
+  { key: "repository", title: "Repository" },
   { key: "number", title: "Nummer" },
   { key: "title", title: "Titel" },
   { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
@@ -73,7 +71,11 @@ const { getUser } = storeToRefs(useUserStore());
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
-const sortedBy = ref<SortItem[]>([{ key: "number", order: "asc" }]);
+const sortedBy = ref<SortItem[]>([
+  { key: "owner", order: "asc" },
+  { key: "repository", order: "asc" },
+  { key: "number", order: "asc" },
+]);
 const { getSearchQuery } = storeToRefs(useSearchQueryStore());
 
 function fetchIssues({
@@ -89,10 +91,7 @@ function fetchIssues({
   sortedBy.value = sortBy;
   getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
     .then((content: Page<IssueSummary>) => {
-      issues.value = content.content.map((issue) => ({
-        ...issue,
-        repo: `${issue.owner}/${issue.repository}`,
-      }));
+      issues.value = content.content;
       loading.value = false;
       totalIssues.value = content.page.totalElements;
     })

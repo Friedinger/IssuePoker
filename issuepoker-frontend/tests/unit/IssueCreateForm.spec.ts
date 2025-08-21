@@ -7,6 +7,7 @@ import * as directives from "vuetify/directives";
 
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
+import { ROUTES_ISSUE_DETAIL } from "../../src/constants";
 
 vi.mock("@/api/create-issue.ts", () => ({
   createIssue: vi.fn().mockResolvedValue({ id: 42 }),
@@ -35,31 +36,45 @@ function factory() {
 describe("IssueCreateForm", () => {
   it("showsInputFields", () => {
     const wrapper = factory();
-    expect(wrapper.findComponent({ name: "VTextField" }).exists()).toBe(true);
-    expect(wrapper.findComponent({ name: "VTextarea" }).exists()).toBe(true);
+    expect(
+      wrapper
+        .findComponent({ name: "VTextField", props: "label=Besitzer" })
+        .exists()
+    ).toBe(true);
+    expect(
+      wrapper
+        .findComponent({ name: "VTextField", props: "label=Repository" })
+        .exists()
+    ).toBe(true);
+    expect(
+      wrapper
+        .findComponent({ name: "VNumberInput", props: "label=Nummer" })
+        .exists()
+    ).toBe(true);
+    expect(
+      wrapper
+        .findComponent({ name: "VTextField", props: "label=Titel" })
+        .exists()
+    ).toBe(true);
+    expect(
+      wrapper
+        .findComponent({ name: "VTextarea", props: "label=Beschreibung" })
+        .exists()
+    ).toBe(true);
   });
 
-  it("showsSubmitBtn", () => {
+  it("showsButtons", () => {
     const wrapper = factory();
     const saveBtn = wrapper.findComponent({
       name: "VBtn",
-      props: "type=submit",
+      props: "label=Speichern,type=submit",
     });
     expect(saveBtn.exists()).toBe(true);
-    expect(saveBtn.text()).toBe("Speichern");
-  });
-
-  it("showsCancelBtn", () => {
-    const wrapper = factory();
-    const saveBtn = wrapper.findComponent({
+    const cancelBtn = wrapper.findComponent({
       name: "VBtn",
-      props: "type=submit",
+      props: "label=Abbrechen",
     });
-    const cancelBtn = wrapper
-      .findAllComponents({ name: "VBtn" })
-      .find((btn) => btn.text() !== saveBtn.text());
     expect(cancelBtn.exists()).toBe(true);
-    expect(cancelBtn.text()).toBe("Abbrechen");
     expect(cancelBtn.props("to")).toEqual({ name: "home" });
   });
 
@@ -89,14 +104,14 @@ describe("IssueCreateForm", () => {
     const descriptionField = wrapper.findComponent({ name: "VTextarea" });
     const saveBtn = wrapper.findComponent({ name: "VBtn" });
 
-    await titleField.setValue("Test Issue");
-    await descriptionField.setValue("Test Beschreibung");
+    await titleField.setValue("TestTitle");
+    await descriptionField.setValue("TestDescription");
     await wrapper.vm.$nextTick();
 
     await saveBtn.trigger("click");
-    expect(createIssue).toHaveBeenCalledWith("Test Issue", "Test Beschreibung");
+    expect(createIssue).toHaveBeenCalledWith("TestTitle", "TestDescription");
     expect(router.push).toHaveBeenCalledWith({
-      name: "issueDetail",
+      name: ROUTES_ISSUE_DETAIL,
       params: { id: 42 },
     });
   });

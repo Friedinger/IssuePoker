@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/issues/{owner}/{repository}/{id}/votes")
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class VoteController {
     private final VoteService voteService;
     private final Map<IssueKey, List<UserEmitter>> emitters = new ConcurrentHashMap<>();

@@ -36,7 +36,7 @@ public class IssueServiceTest {
     @InjectMocks
     private IssueService issueService;
 
-    private IssueKey setFields(final Issue issue) {
+    private IssueKey initIssue(final Issue issue) {
         final IssueKey issueKey = new IssueKey("TestOwner", "TestRepository", 42);
         issue.setOwner(issueKey.owner());
         issue.setRepository(issueKey.repository());
@@ -53,7 +53,7 @@ public class IssueServiceTest {
         @Test
         void givenId_thenReturnIssue() {
             final Issue issue = new Issue();
-            final IssueKey issueKey = setFields(issue);
+            final IssueKey issueKey = initIssue(issue);
             when(issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number()))
                     .thenReturn(Optional.of(issue));
 
@@ -64,7 +64,7 @@ public class IssueServiceTest {
 
         @Test
         void givenNonExistentId_thenTrowNotFoundException() {
-            final IssueKey issueKey = setFields(new Issue());
+            final IssueKey issueKey = initIssue(new Issue());
             when(issueRepository.findByOwnerAndRepositoryAndNumber(issueKey.owner(), issueKey.repository(), issueKey.number()))
                     .thenReturn(Optional.empty());
 
@@ -98,10 +98,10 @@ public class IssueServiceTest {
         @Test
         void givenIssue_thenReturnIssue() {
             final Issue issueToSave = new Issue();
-            setFields(issueToSave);
+            initIssue(issueToSave);
             final Issue expectedIssue = new Issue();
             expectedIssue.setId(UUID.randomUUID());
-            setFields(expectedIssue);
+            initIssue(expectedIssue);
             when(issueRepository.save(issueToSave)).thenReturn(expectedIssue);
 
             final Issue result = issueService.saveIssue(issueToSave);

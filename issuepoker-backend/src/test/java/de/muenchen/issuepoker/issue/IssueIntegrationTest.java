@@ -77,7 +77,8 @@ public class IssueIntegrationTest {
     class GetIssue {
         @Test
         void givenIssueId_thenReturnIssueDetails() throws Exception {
-            mockMvc.perform(get("/issues/{owner}/{repository}/{number}",
+            mockMvc
+                    .perform(get("/issues/{owner}/{repository}/{number}",
                             testIssue.getOwner(), testIssue.getRepository(), testIssue.getNumber())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())

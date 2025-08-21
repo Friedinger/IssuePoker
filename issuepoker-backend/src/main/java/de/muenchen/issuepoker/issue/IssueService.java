@@ -52,7 +52,7 @@ public class IssueService {
         try {
             return issueRepository.save(issue);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("Issue already exists");
+            throw new ConflictException("Issue already exists", e);
         }
     }
 

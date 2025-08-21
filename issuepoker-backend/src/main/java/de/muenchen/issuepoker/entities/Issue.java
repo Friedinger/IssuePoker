@@ -9,6 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import java.io.Serial;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,9 @@ import lombok.Setter;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "owner", "repository", "number" }))
 public class Issue extends BaseEntity {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @NotNull private String owner;
     @NotNull private String repository;
     @NotNull private long number;

@@ -16,4 +16,8 @@ public class ConflictException extends ResponseStatusException {
     public ConflictException(final String message) {
         super(HttpStatus.CONFLICT, message);
     }
+
+    public ConflictException(final String message, final Throwable cause) {
+        super(HttpStatus.CONFLICT, message, cause);
+    }
 }

@@ -4,6 +4,17 @@
       <v-col>
         <h1>Neues Issue Erstellen</h1>
       </v-col>
+      <v-col cols="auto">
+        <v-dialog max-width="500">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-btn v-bind="activatorProps">Importieren</v-btn>
+          </template>
+
+          <template v-slot:default="{ isActive }">
+            <issue-import-form :isActive="isActive" />
+          </template>
+        </v-dialog>
+      </v-col>
     </v-row>
     <v-row>
       <v-col>
@@ -17,14 +28,14 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { IssueRemote } from "@/types/IssueRemote.ts";
 import type { LocationQuery } from "vue-router";
+import { useRoute } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
-import { useRoute } from "vue-router";
 
 import { getIssueRemote } from "@/api/fetch-issues-remote.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
-import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
-import router from "@/plugins/router.ts";
+import IssueImportForm from "@/components/IssueImportForm.vue";
+import { STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
@@ -72,7 +83,7 @@ function fetchRemote(query: LocationQuery) {
           level: STATUS_INDICATORS.WARNING,
         });
       }
-      router.push({ name: ROUTES_HOME });
+      issue.value = undefined;
     });
 }
 </script>

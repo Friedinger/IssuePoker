@@ -1,3 +1,5 @@
+import type { FilterOptions } from "@/types/FilterOptions.ts";
+import { filtersToParams } from "@/types/FilterOptions.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
@@ -8,10 +10,11 @@ export function getIssueList(
   page: number,
   size: number,
   sortBy: SortItem[],
-  search: string
+  search: string,
+  filter: FilterOptions
 ): Promise<Page<IssueSummary>> {
   return fetch(
-    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}&search=${search}`,
+    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}&search=${search}&${filtersToParams(filter)}`,
     getConfig()
   )
     .then((response) => {

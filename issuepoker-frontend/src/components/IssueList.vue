@@ -1,19 +1,65 @@
 <template>
   <v-row align="center">
-    <v-row align="center">
-      <v-col cols="auto"><h1>Issues</h1></v-col>
-      <v-col
-        v-if="getSearchQuery"
-        cols="auto"
-      >
-        Gefiltert nach: {{ getSearchQuery }}
-      </v-col>
-    </v-row>
+    <v-col><h1>Issues</h1></v-col>
     <v-col
       v-if="getUser?.authorities.includes(ROLE_ADMIN)"
       cols="auto"
     >
       <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col
+      cols="12"
+      lg="2"
+      sm="4"
+    >
+      <v-autocomplete
+        v-model="filterOwners"
+        :items="filterOptions.owners"
+        :prepend-inner-icon="mdiFilterOutline"
+        chips
+        clearable
+        density="compact"
+        hide-details
+        label="Besitzer"
+        multiple
+        variant="outlined"
+      />
+    </v-col>
+    <v-col
+      cols="12"
+      lg="2"
+      sm="4"
+    >
+      <v-autocomplete
+        v-model="filterRepositories"
+        :items="filterOptions.repositories"
+        :prepend-inner-icon="mdiFilterOutline"
+        chips
+        clearable
+        density="compact"
+        hide-details
+        label="Repository"
+        multiple
+        variant="outlined"
+      />
+    </v-col>
+    <v-col
+      cols="12"
+      sm="4"
+    >
+      <v-text-field
+        v-model="searchQuery"
+        :prepend-inner-icon="mdiMagnify"
+        clearable
+        density="compact"
+        hide-details
+        label="Suche (Titel, Beschreibung)"
+        variant="outlined"
+        @keyup.enter="search"
+        @click:clear="search"
+      />
     </v-col>
   </v-row>
   <v-row>
@@ -24,27 +70,31 @@
       :items-length="totalIssues"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
-      :search="getSearchQuery"
+      :search="searchQuery"
       :sort-by="sortedBy"
       multi-sort
       @update:options="fetchIssues"
       @click:row="goToIssue"
-    ></v-data-table-server>
+    />
   </v-row>
 </template>
 
 <script lang="ts" setup>
+import type { FilterOptions } from "@/types/FilterOptions.ts";
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
+import { mdiFilterOutline, mdiMagnify } from "@mdi/js";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
+import { getFilterOptions } from "@/api/fetch-filterOptions.ts";
 import { getIssueList } from "@/api/fetch-issueList.ts";
 import {
   ROLE_ADMIN,
+  ROUTES_HOME,
   ROUTES_ISSUE_CREATE,
   ROUTES_ISSUE_DETAIL,
 } from "@/constants.ts";
@@ -80,7 +130,27 @@ const sortedBy = ref<SortItem[]>([
   { key: "repository", order: "asc" },
   { key: "number", order: "asc" },
 ]);
-const { getSearchQuery } = storeToRefs(useSearchQueryStore());
+const searchQueryStore = useSearchQueryStore();
+const searchQuery = computed({
+  get: () => searchQueryStore.getSearchQuery,
+  set: (value) => {
+    searchQueryStore.setSearchQuery(value);
+  },
+});
+const filterOptions = ref<FilterOptions>({
+  owners: [],
+  repositories: [],
+});
+const filterOwners = ref<string[]>([]);
+const filterRepositories = ref<string[]>([]);
+
+onMounted(() => {
+  getFilterOptions()
+    .then((content: FilterOptions) => (filterOptions.value = content))
+    .catch((error) => {
+      snackbarStore.showMessage(error);
+    });
+});
 
 function fetchIssues({
   page,
@@ -93,7 +163,11 @@ function fetchIssues({
 }) {
   loading.value = true;
   sortedBy.value = sortBy;
-  getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
+  const filter: FilterOptions = {
+    owners: filterOwners.value,
+    repositories: filterRepositories.value,
+  };
+  getIssueList(page - 1, itemsPerPage, sortBy, searchQuery.value ?? "", filter)
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;
       loading.value = false;
@@ -116,5 +190,14 @@ function goToIssue(
       number: props.item.number,
     },
   });
+}
+
+function search() {
+  searchQueryStore.setSearchQuery(searchQuery.value);
+  if (searchQuery.value && searchQuery.value != "") {
+    router.push({ name: ROUTES_HOME, query: { search: searchQuery.value } });
+  } else {
+    router.push({ name: ROUTES_HOME });
+  }
 }
 </script>

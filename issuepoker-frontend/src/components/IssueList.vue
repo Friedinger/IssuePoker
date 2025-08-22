@@ -25,6 +25,7 @@
         label="Besitzer"
         multiple
         variant="outlined"
+        @update:model-value="fetchIssues"
       />
     </v-col>
     <v-col
@@ -43,6 +44,7 @@
         label="Repository"
         multiple
         variant="outlined"
+        @update:model-value="fetchIssues"
       />
     </v-col>
     <v-col
@@ -68,12 +70,14 @@
       :hover="true"
       :items="issues"
       :items-length="totalIssues"
+      :items-per-page="itemsPerPage"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
+      :page="page"
       :search="searchQuery"
-      :sort-by="sortedBy"
+      :sort-by="sortBy"
       multi-sort
-      @update:options="fetchIssues"
+      @update:options="updateOptions"
       @click:row="goToIssue"
     />
   </v-row>
@@ -125,7 +129,9 @@ const { getUser } = storeToRefs(useUserStore());
 const issues = ref<IssueSummary[]>([]);
 const loading = ref(true);
 const totalIssues = ref(0);
-const sortedBy = ref<SortItem[]>([
+const page = ref<number>(1);
+const itemsPerPage = ref<number>(10);
+const sortBy = ref<SortItem[]>([
   { key: "owner", order: "asc" },
   { key: "repository", order: "asc" },
   { key: "number", order: "asc" },
@@ -152,22 +158,18 @@ onMounted(() => {
     });
 });
 
-function fetchIssues({
-  page,
-  itemsPerPage,
-  sortBy,
-}: {
-  page: number;
-  itemsPerPage: number;
-  sortBy: SortItem[];
-}) {
+function fetchIssues() {
   loading.value = true;
-  sortedBy.value = sortBy;
-  const filter: FilterOptions = {
-    owners: filterOwners.value,
-    repositories: filterRepositories.value,
-  };
-  getIssueList(page - 1, itemsPerPage, sortBy, searchQuery.value ?? "", filter)
+  getIssueList(
+    page.value - 1,
+    itemsPerPage.value,
+    sortBy.value,
+    searchQuery.value ?? "",
+    {
+      owners: filterOwners.value,
+      repositories: filterRepositories.value,
+    }
+  )
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;
       loading.value = false;
@@ -176,6 +178,21 @@ function fetchIssues({
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
+}
+
+function updateOptions({
+  page: newPage,
+  itemsPerPage: newItemsPerPage,
+  sortBy: newSortBy,
+}: {
+  page: number;
+  itemsPerPage: number;
+  sortBy: SortItem[];
+}) {
+  page.value = newPage;
+  itemsPerPage.value = newItemsPerPage;
+  sortBy.value = newSortBy;
+  fetchIssues();
 }
 
 function goToIssue(

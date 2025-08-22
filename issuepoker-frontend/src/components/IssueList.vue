@@ -15,7 +15,7 @@
       sm="4"
     >
       <v-autocomplete
-        v-model="filterOwners"
+        v-model="filter.owners"
         :items="filterOptions.owners"
         :prepend-inner-icon="mdiFilterOutline"
         chips
@@ -34,7 +34,7 @@
       sm="4"
     >
       <v-autocomplete
-        v-model="filterRepositories"
+        v-model="filter.repositories"
         :items="filterOptions.repositories"
         :prepend-inner-icon="mdiFilterOutline"
         chips
@@ -103,6 +103,7 @@ import {
   ROUTES_ISSUE_DETAIL,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useFilterStore } from "@/stores/filter.ts";
 import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
@@ -147,8 +148,14 @@ const filterOptions = ref<FilterOptions>({
   owners: [],
   repositories: [],
 });
-const filterOwners = ref<string[]>([]);
-const filterRepositories = ref<string[]>([]);
+const filterStore = useFilterStore();
+const filter = computed({
+  get: () => filterStore.getFilter,
+  set: (value) => {
+    filterStore.setFilter(value);
+    fetchIssues();
+  },
+});
 
 onMounted(() => {
   getFilterOptions()
@@ -165,10 +172,7 @@ function fetchIssues() {
     itemsPerPage.value,
     sortBy.value,
     searchQuery.value ?? "",
-    {
-      owners: filterOwners.value,
-      repositories: filterRepositories.value,
-    }
+    filter.value
   )
     .then((content: Page<IssueSummary>) => {
       issues.value = content.content;

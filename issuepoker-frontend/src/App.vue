@@ -30,6 +30,7 @@
           cols="6"
         >
           <v-text-field
+            v-if="route.name !== ROUTES_HOME"
             id="searchField"
             v-model="searchQuery"
             :prepend-inner-icon="mdiMagnify"

@@ -3,6 +3,7 @@ package de.muenchen.issuepoker.issue;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.FilterDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
@@ -56,6 +57,11 @@ public class IssueController {
         final Page<Issue> issuePage = issueService.getAllIssues(search, pageRequest);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
+    }
+
+    @GetMapping("filterOptions")
+    public FilterDTO getFilterOptions() {
+        return issueService.getFilterOptions();
     }
 
     @GetMapping("votingOptions")

@@ -7,8 +7,10 @@ import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.FilterDTO;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.Predicate;
+import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,5 +63,12 @@ public class IssueService {
         log.debug("Add Vote with number={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
         saveIssue(issue);
+    }
+
+    @PreAuthorize(Authorities.IS_USER)
+    public FilterDTO getFilterOptions() {
+        final List<String> owners = issueRepository.findDistinctOwners().stream().sorted().toList();
+        final List<String> repositories = issueRepository.findDistinctRepositories().stream().sorted().toList();
+        return new FilterDTO(owners, repositories);
     }
 }

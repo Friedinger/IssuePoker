@@ -1,10 +1,10 @@
 import type { FilterOptions } from "@/types/FilterOptions.ts";
-import { filtersToParams } from "@/types/FilterOptions.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
 import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
+import { filtersToParams } from "@/types/FilterOptions.ts";
 
 export function getIssueList(
   page: number,

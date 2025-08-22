@@ -51,11 +51,11 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(required = false, defaultValue = "") final String search,
-            @RequestParam(required = false) final String sort, @PageableDefault final Pageable pageable) {
-        final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
-        final Page<Issue> issuePage = issueService.getAllIssues(search, pageRequest);
-        final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
+    public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(required = false, defaultValue = "") String search,
+            @RequestParam(required = false) String sort, @PageableDefault Pageable pageable, FilterDTO filter) {
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
+        Page<Issue> issuePage = issueService.getAllIssues(pageRequest, search, filter);
+        List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
     }
 

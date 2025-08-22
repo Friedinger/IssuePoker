@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
+import de.muenchen.issuepoker.entities.dto.FilterDTO;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -87,7 +88,7 @@ public class IssueServiceTest {
             final Page<Issue> expectedPage = new PageImpl<>(issues, pageRequest, issues.size());
             when(issueRepository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(expectedPage);
 
-            final Page<Issue> result = issueService.getAllIssues("", pageRequest);
+            final Page<Issue> result = issueService.getAllIssues(pageRequest, "", new FilterDTO(List.of(), List.of()));
             assertEquals(expectedPage, result);
             verify(issueRepository, times(1)).findAll(any(Specification.class), eq(pageRequest));
         }

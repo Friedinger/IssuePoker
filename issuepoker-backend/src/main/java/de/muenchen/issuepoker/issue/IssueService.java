@@ -34,15 +34,21 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Page<Issue> getAllIssues(final String search, final Pageable pageRequest) {
+    public Page<Issue> getAllIssues(final Pageable pageRequest, final String search, final FilterDTO filter) {
         log.info("Get all Issues with Pageable {}", pageRequest);
         return issueRepository.findAll((root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();
-            if (!search.isEmpty()) {
+            if (filter.owners() != null && !filter.owners().isEmpty()) {
+                predicate = criteriaBuilder.and(predicate, root.get("owner").in(filter.owners()));
+            }
+            if (filter.repositories() != null && !filter.repositories().isEmpty()) {
+                predicate = criteriaBuilder.and(predicate, root.get("repository").in(filter.repositories()));
+            }
+            if (search != null && !search.isEmpty()) {
                 final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
-                predicate = criteriaBuilder.or(
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(
                         criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern));
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern)));
             }
             return predicate;
         }, pageRequest);

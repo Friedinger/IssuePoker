@@ -7,6 +7,22 @@
     >
       <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
     </v-col>
+    <v-col cols="auto">
+      <v-tooltip
+        location="top"
+        text="Filter zurücksetzen"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            :icon="mdiRestore"
+            density="comfortable"
+            rounded="rounded"
+            v-bind="props"
+            @click="resetFilters"
+          />
+        </template>
+      </v-tooltip>
+    </v-col>
   </v-row>
   <v-row>
     <v-col
@@ -125,6 +141,8 @@ import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sor
 import {
   mdiHomeAccount,
   mdiMagnify,
+  mdiRefresh,
+  mdiRestore,
   mdiSourceRepository,
   mdiTrophy,
   mdiVote,
@@ -141,7 +159,7 @@ import {
   ROUTES_ISSUE_DETAIL,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
-import { useFilterStore } from "@/stores/filter.ts";
+import { defaultFilter, useFilterStore } from "@/stores/filter.ts";
 import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
@@ -187,10 +205,7 @@ const searchQuery = computed({
     searchQueryStore.setSearchQuery(value);
   },
 });
-const filterOptions = ref<FilterOptions>({
-  owners: [],
-  repositories: [],
-});
+const filterOptions = ref<FilterOptions>(defaultFilter);
 const filterStore = useFilterStore();
 const filter = computed({
   get: () => filterStore.getFilter,
@@ -263,5 +278,11 @@ function search() {
   } else {
     router.push({ name: ROUTES_HOME });
   }
+}
+
+function resetFilters() {
+  filterStore.resetFilter();
+  searchQueryStore.setSearchQuery("");
+  fetchIssues();
 }
 </script>

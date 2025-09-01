@@ -1,8 +1,8 @@
 export interface FilterOptions {
   owners: string[];
   repositories: string[];
-  voted?: boolean;
-  resulted?: boolean;
+  voted: boolean | null;
+  resulted: boolean | null;
 }
 
 export function filtersToParams(filterOptions: FilterOptions): string {

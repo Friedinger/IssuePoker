@@ -9,6 +9,7 @@ import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.FilterDTO;
 import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestUpdateDTO;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -91,12 +92,22 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
-        log.debug("Save Issue with number={}, title={}, description={}", issue.getId(), issue.getTitle(), issue.getDescription());
+        log.debug("Save Issue with owner={}, repository= {}, number={}, title={}, description={}", issue.getOwner(), issue.getRepository(), issue.getId(),
+                issue.getTitle(), issue.getDescription());
         try {
             return issueRepository.save(issue);
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException("Issue already exists", e);
         }
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public Issue updateIssue(final IssueRequestUpdateDTO update, final IssueKey key) {
+        log.debug("Update Issue {} to title={}, description={}", key, update.title(), update.description());
+        final Issue existingIssue = getIssue(key);
+        existingIssue.setTitle(update.title());
+        existingIssue.setDescription(update.description());
+        return issueRepository.save(existingIssue);
     }
 
     @PreAuthorize(Authorities.IS_USER)

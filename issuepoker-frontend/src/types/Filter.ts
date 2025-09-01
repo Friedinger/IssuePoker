@@ -26,8 +26,11 @@ export function filterToQuery(filter: Filter): LocationQueryRaw {
       filter.repositories.length > 0
         ? filter.repositories.join(",")
         : undefined,
-    voted: filter.voted !== null ? String(filter.voted) : undefined,
-    resulted: filter.resulted !== null ? String(filter.resulted) : undefined,
+    voted: typeof filter.voted === "boolean" ? String(filter.voted) : undefined,
+    resulted:
+      typeof filter.resulted === "boolean"
+        ? String(filter.resulted)
+        : undefined,
   };
 }
 

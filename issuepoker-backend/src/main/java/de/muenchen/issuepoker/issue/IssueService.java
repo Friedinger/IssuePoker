@@ -7,8 +7,13 @@ import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.dto.FilterDTO;
+import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
 import de.muenchen.issuepoker.security.Authorities;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,18 +37,56 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Page<Issue> getAllIssues(final String search, final Pageable pageRequest) {
+    public Page<Issue> getAllIssues(final Pageable pageRequest, final FilterDTO filter) {
         log.info("Get all Issues with Pageable {}", pageRequest);
-        return issueRepository.findAll((root, query, criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.conjunction();
-            if (!search.isEmpty()) {
-                final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
-                predicate = criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern));
-            }
-            return predicate;
-        }, pageRequest);
+        return issueRepository.findAll(
+                (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                        filterSearch(filter.search(), root, criteriaBuilder),
+                        filterOwner(filter.owners(), root, criteriaBuilder),
+                        filterRepository(filter.repositories(), root, criteriaBuilder),
+                        filterVoted(filter.voted(), root, criteriaBuilder),
+                        filterResulted(filter.resulted(), root, criteriaBuilder)),
+                pageRequest);
+    }
+
+    private Predicate filterSearch(final String search, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (search == null || search.isEmpty()) {
+            return criteriaBuilder.conjunction();
+        }
+        final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
+        return criteriaBuilder.or(
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern));
+    }
+
+    private Predicate filterOwner(final List<String> owners, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        return (owners != null && !owners.isEmpty())
+                ? root.get("owner").in(owners)
+                : criteriaBuilder.conjunction();
+    }
+
+    private Predicate filterRepository(final List<String> repositories, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        return (repositories != null && !repositories.isEmpty())
+                ? root.get("repository").in(repositories)
+                : criteriaBuilder.conjunction();
+    }
+
+    private Predicate filterVoted(final Boolean voted, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (voted == null) {
+            return criteriaBuilder.conjunction();
+        }
+        return voted
+                ? criteriaBuilder.isNotEmpty(root.get("votes"))
+                : criteriaBuilder.isEmpty(root.get("votes"));
+    }
+
+    private Predicate filterResulted(final Boolean resulted, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (resulted == null) {
+            return criteriaBuilder.conjunction();
+        }
+        return resulted
+                ? criteriaBuilder.isNotNull(root.get("voteResult"))
+                : criteriaBuilder.isNull(root.get("voteResult"));
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
@@ -61,5 +104,12 @@ public class IssueService {
         log.debug("Add Vote with number={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
         issue.getVotes().add(vote);
         saveIssue(issue);
+    }
+
+    @PreAuthorize(Authorities.IS_USER)
+    public FilterOptionsDTO getFilterOptions() {
+        final List<String> owners = issueRepository.findDistinctOwners().stream().sorted().toList();
+        final List<String> repositories = issueRepository.findDistinctRepositories().stream().sorted().toList();
+        return new FilterOptionsDTO(owners, repositories);
     }
 }

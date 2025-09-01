@@ -1,17 +1,19 @@
+import type { Filter } from "@/types/Filter.ts";
 import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
 import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
+import { filterToParams } from "@/types/Filter.ts";
 
 export function getIssueList(
   page: number,
   size: number,
   sortBy: SortItem[],
-  search: string
+  filter: Filter
 ): Promise<Page<IssueSummary>> {
   return fetch(
-    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}&search=${search}`,
+    `api/backend-service/issues?page=${page}&size=${size}&sort=${toString(sortBy)}&${filterToParams(filter)}`,
     getConfig()
   )
     .then((response) => {
@@ -34,5 +36,5 @@ function toString(sortBy: SortItem[]): string {
           : (item.order ?? "asc");
       return `${item.key},${orderString}`;
     })
-    .join(",");
+    .join(";");
 }

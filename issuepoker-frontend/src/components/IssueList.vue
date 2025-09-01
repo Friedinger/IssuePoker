@@ -1,14 +1,6 @@
 <template>
   <v-row align="center">
-    <v-row align="center">
-      <v-col cols="auto"><h1>Issues</h1></v-col>
-      <v-col
-        v-if="getSearchQuery"
-        cols="auto"
-      >
-        Gefiltert nach: {{ getSearchQuery }}
-      </v-col>
-    </v-row>
+    <v-col><h1>Issues</h1></v-col>
     <v-col
       v-if="getUser?.authorities.includes(ROLE_ADMIN)"
       cols="auto"
@@ -17,18 +9,24 @@
     </v-col>
   </v-row>
   <v-row>
+    <issue-list-filters @fetchIssues="fetchIssues" />
+  </v-row>
+  <v-row>
     <v-data-table-server
       :headers="headers"
       :hover="true"
       :items="issues"
       :items-length="totalIssues"
+      :items-per-page="itemsPerPage"
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
-      :search="getSearchQuery"
-      :sort-by="sortedBy"
-      @update:options="fetchIssues"
+      :page="page"
+      :search="getFilter.search"
+      :sort-by="sortBy"
+      multi-sort
+      @update:options="updateOptions"
       @click:row="goToIssue"
-    ></v-data-table-server>
+    />
   </v-row>
 </template>
 
@@ -42,22 +40,23 @@ import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issueList.ts";
+import IssueListFilters from "@/components/IssueListFilters.vue";
 import {
   ROLE_ADMIN,
   ROUTES_ISSUE_CREATE,
   ROUTES_ISSUE_DETAIL,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
-import { useSearchQueryStore } from "@/stores/searchQuery.ts";
+import { useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
 
-const snackbarStore = useSnackbarStore();
 const headers = [
-  { key: "repo", title: "Repository" },
+  { key: "owner", title: "Besitzer" },
+  { key: "repository", title: "Repository" },
   { key: "number", title: "Nummer" },
   { key: "title", title: "Titel" },
-  { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
+  { key: "voteCount", title: "Stimmen", sortable: false },
   { key: "voteResult", title: "Ergebnis", sortable: false },
 ];
 const itemsPerPageOptions = [
@@ -69,36 +68,52 @@ const itemsPerPageOptions = [
   { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
 ];
 
+const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
-const issues = ref<IssueSummary[]>([]);
-const loading = ref(true);
-const totalIssues = ref(0);
-const sortedBy = ref<SortItem[]>([{ key: "number", order: "asc" }]);
-const { getSearchQuery } = storeToRefs(useSearchQueryStore());
+const { getFilter } = storeToRefs(useFilterStore());
 
-function fetchIssues({
-  page,
-  itemsPerPage,
-  sortBy,
-}: {
-  page: number;
-  itemsPerPage: number;
-  sortBy: SortItem[];
-}) {
+const loading = ref(true);
+const issues = ref<IssueSummary[]>([]);
+const totalIssues = ref(0);
+const page = ref<number>(1);
+const itemsPerPage = ref<number>(10);
+const sortBy = ref<SortItem[]>([
+  { key: "owner", order: "asc" },
+  { key: "repository", order: "asc" },
+  { key: "number", order: "asc" },
+]);
+
+function fetchIssues() {
   loading.value = true;
-  sortedBy.value = sortBy;
-  getIssueList(page - 1, itemsPerPage, sortBy, getSearchQuery.value ?? "")
+  getIssueList(
+    page.value - 1,
+    itemsPerPage.value,
+    sortBy.value,
+    getFilter.value
+  )
     .then((content: Page<IssueSummary>) => {
-      issues.value = content.content.map((issue) => ({
-        ...issue,
-        repo: `${issue.owner}/${issue.repository}`,
-      }));
+      issues.value = content.content;
       loading.value = false;
       totalIssues.value = content.page.totalElements;
     })
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
+}
+
+function updateOptions({
+  page: newPage,
+  itemsPerPage: newItemsPerPage,
+  sortBy: newSortBy,
+}: {
+  page: number;
+  itemsPerPage: number;
+  sortBy: SortItem[];
+}) {
+  page.value = newPage;
+  itemsPerPage.value = newItemsPerPage;
+  sortBy.value = newSortBy;
+  fetchIssues();
 }
 
 function goToIssue(

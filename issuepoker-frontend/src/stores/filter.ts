@@ -1,10 +1,11 @@
-import type { FilterOptions } from "@/types/FilterOptions.ts";
+import type { Filter } from "@/types/Filter.ts";
 
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export function defaultFilter(): FilterOptions {
+export function defaultFilter(): Filter {
   return {
+    search: null,
     owners: [],
     repositories: [],
     voted: null,
@@ -13,13 +14,13 @@ export function defaultFilter(): FilterOptions {
 }
 
 export const useFilterStore = defineStore("filterStore", () => {
-  const filter = ref<FilterOptions>(defaultFilter());
+  const filter = ref<Filter>(defaultFilter());
 
-  const getFilter = computed((): FilterOptions => {
+  const getFilter = computed((): Filter => {
     return filter.value;
   });
 
-  function setFilter(payload: FilterOptions): void {
+  function setFilter(payload: Filter): void {
     filter.value = payload;
   }
 

@@ -6,7 +6,7 @@
         sm="4"
       >
         <v-text-field
-          v-model="searchQuery"
+          v-model="filter.search"
           :prepend-inner-icon="mdiMagnify"
           clearable
           density="compact"
@@ -107,7 +107,7 @@
   </v-col>
 </template>
 <script lang="ts" setup>
-import type { FilterOptions } from "@/types/FilterOptions.ts";
+import type { Filter } from "@/types/Filter.ts";
 
 import {
   mdiHomeAccount,
@@ -121,7 +121,6 @@ import { computed, onMounted, ref } from "vue";
 
 import { getFilterOptions } from "@/api/fetch-filterOptions.ts";
 import { defaultFilter, useFilterStore } from "@/stores/filter.ts";
-import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const selectOptions = [
@@ -132,12 +131,6 @@ const selectOptions = [
 
 const emit = defineEmits<(e: "fetchIssues") => void>();
 const snackbarStore = useSnackbarStore();
-const searchQuery = computed({
-  get: () => useSearchQueryStore().getSearchQuery,
-  set: (value) => {
-    useSearchQueryStore().setSearchQuery(value);
-  },
-});
 const filter = computed({
   get: () => useFilterStore().getFilter,
   set: (value) => {
@@ -145,11 +138,11 @@ const filter = computed({
     fetchIssues();
   },
 });
-const filterOptions = ref<FilterOptions>(defaultFilter());
+const filterOptions = ref<Filter>(defaultFilter());
 
 onMounted(() => {
   getFilterOptions()
-    .then((content: FilterOptions) => (filterOptions.value = content))
+    .then((content: Filter) => (filterOptions.value = content))
     .catch((error) => {
       snackbarStore.showMessage(error);
     });

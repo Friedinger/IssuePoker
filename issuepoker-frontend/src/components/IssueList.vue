@@ -21,7 +21,7 @@
       :items-per-page-options="itemsPerPageOptions"
       :loading="loading"
       :page="page"
-      :search="getSearchQuery"
+      :search="getFilter.search"
       :sort-by="sortBy"
       multi-sort
       @update:options="updateOptions"
@@ -48,7 +48,6 @@ import {
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useFilterStore } from "@/stores/filter.ts";
-import { useSearchQueryStore } from "@/stores/searchQuery.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useUserStore } from "@/stores/user.ts";
 
@@ -71,7 +70,6 @@ const itemsPerPageOptions = [
 
 const snackbarStore = useSnackbarStore();
 const { getUser } = storeToRefs(useUserStore());
-const { getSearchQuery } = storeToRefs(useSearchQueryStore());
 const { getFilter } = storeToRefs(useFilterStore());
 
 const loading = ref(true);
@@ -91,7 +89,6 @@ function fetchIssues() {
     page.value - 1,
     itemsPerPage.value,
     sortBy.value,
-    getSearchQuery.value || "",
     getFilter.value
   )
     .then((content: Page<IssueSummary>) => {

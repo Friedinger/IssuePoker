@@ -1,8 +1,8 @@
-import type { FilterOptions } from "@/types/FilterOptions";
+import type { Filter } from "@/types/Filter.ts";
 
 import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
 
-export function getFilterOptions(): Promise<FilterOptions> {
+export function getFilterOptions(): Promise<Filter> {
   return fetch("api/backend-service/issues/filterOptions", getConfig())
     .then((response) => {
       defaultResponseHandler(response);

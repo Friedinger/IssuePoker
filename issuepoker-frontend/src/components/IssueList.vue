@@ -7,6 +7,98 @@
     >
       <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
     </v-col>
+  </v-row>
+  <v-row>
+    <v-col>
+      <v-row>
+        <v-col
+          cols="12"
+          sm="4"
+        >
+          <v-text-field
+            v-model="searchQuery"
+            :prepend-inner-icon="mdiMagnify"
+            clearable
+            density="compact"
+            hide-details
+            label="Suche (Titel, Beschreibung)"
+            variant="outlined"
+            @keyup.enter="search"
+            @click:clear="search"
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          lg="2"
+          sm="4"
+        >
+          <v-autocomplete
+            v-model="filter.owners"
+            :items="filterOptions.owners"
+            :prepend-inner-icon="mdiHomeAccount"
+            chips
+            clearable
+            density="compact"
+            hide-details
+            label="Besitzer"
+            multiple
+            variant="outlined"
+            @update:model-value="fetchIssues"
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          lg="2"
+          sm="4"
+        >
+          <v-autocomplete
+            v-model="filter.repositories"
+            :items="filterOptions.repositories"
+            :prepend-inner-icon="mdiSourceRepository"
+            chips
+            clearable
+            density="compact"
+            hide-details
+            label="Repository"
+            multiple
+            variant="outlined"
+            @update:model-value="fetchIssues"
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          lg="2"
+          sm="4"
+        >
+          <v-select
+            v-model="filter.voted"
+            :items="selectOptions"
+            :prepend-inner-icon="mdiVote"
+            density="compact"
+            hide-details
+            label="Abgestimmt"
+            variant="outlined"
+            @update:model-value="fetchIssues"
+          />
+        </v-col>
+        <v-col
+          cols="12"
+          lg="2"
+          sm="4"
+        >
+          <v-select
+            v-model="filter.resulted"
+            :items="selectOptions"
+            :prepend-inner-icon="mdiTrophy"
+            density="compact"
+            hide-details
+            label="Ergebnis"
+            variant="outlined"
+            @update:model-value="fetchIssues"
+          />
+        </v-col>
+      </v-row>
+    </v-col>
     <v-col cols="auto">
       <v-tooltip
         location="top"
@@ -22,94 +114,6 @@
           />
         </template>
       </v-tooltip>
-    </v-col>
-  </v-row>
-  <v-row>
-    <v-col
-      cols="12"
-      sm="4"
-    >
-      <v-text-field
-        v-model="searchQuery"
-        :prepend-inner-icon="mdiMagnify"
-        clearable
-        density="compact"
-        hide-details
-        label="Suche (Titel, Beschreibung)"
-        variant="outlined"
-        @keyup.enter="search"
-        @click:clear="search"
-      />
-    </v-col>
-    <v-col
-      cols="12"
-      lg="2"
-      sm="4"
-    >
-      <v-autocomplete
-        v-model="filter.owners"
-        :items="filterOptions.owners"
-        :prepend-inner-icon="mdiHomeAccount"
-        chips
-        clearable
-        density="compact"
-        hide-details
-        label="Besitzer"
-        multiple
-        variant="outlined"
-        @update:model-value="fetchIssues"
-      />
-    </v-col>
-    <v-col
-      cols="12"
-      lg="2"
-      sm="4"
-    >
-      <v-autocomplete
-        v-model="filter.repositories"
-        :items="filterOptions.repositories"
-        :prepend-inner-icon="mdiSourceRepository"
-        chips
-        clearable
-        density="compact"
-        hide-details
-        label="Repository"
-        multiple
-        variant="outlined"
-        @update:model-value="fetchIssues"
-      />
-    </v-col>
-    <v-col
-      cols="12"
-      lg="2"
-      sm="4"
-    >
-      <v-select
-        v-model="filter.voted"
-        :items="selectOptions"
-        :prepend-inner-icon="mdiVote"
-        density="compact"
-        hide-details
-        label="Abgestimmt"
-        variant="outlined"
-        @update:model-value="fetchIssues"
-      />
-    </v-col>
-    <v-col
-      cols="12"
-      lg="2"
-      sm="4"
-    >
-      <v-select
-        v-model="filter.resulted"
-        :items="selectOptions"
-        :prepend-inner-icon="mdiTrophy"
-        density="compact"
-        hide-details
-        label="Ergebnis"
-        variant="outlined"
-        @update:model-value="fetchIssues"
-      />
     </v-col>
   </v-row>
   <v-row>
@@ -141,7 +145,6 @@ import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sor
 import {
   mdiHomeAccount,
   mdiMagnify,
-  mdiRefresh,
   mdiRestore,
   mdiSourceRepository,
   mdiTrophy,
@@ -170,7 +173,7 @@ const headers = [
   { key: "repository", title: "Repository" },
   { key: "number", title: "Nummer" },
   { key: "title", title: "Titel" },
-  { key: "voteCount", title: "Anzahl Stimmen", sortable: false },
+  { key: "voteCount", title: "Stimmen", sortable: false },
   { key: "voteResult", title: "Ergebnis", sortable: false },
 ];
 const itemsPerPageOptions = [
@@ -205,7 +208,7 @@ const searchQuery = computed({
     searchQueryStore.setSearchQuery(value);
   },
 });
-const filterOptions = ref<FilterOptions>(defaultFilter);
+const filterOptions = ref<FilterOptions>(defaultFilter());
 const filterStore = useFilterStore();
 const filter = computed({
   get: () => filterStore.getFilter,
@@ -281,7 +284,7 @@ function search() {
 }
 
 function resetFilters() {
-  filterStore.resetFilter();
+  filterStore.setFilter(defaultFilter());
   searchQueryStore.setSearchQuery("");
   fetchIssues();
 }

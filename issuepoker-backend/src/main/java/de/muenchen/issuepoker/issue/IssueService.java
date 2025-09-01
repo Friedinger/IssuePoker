@@ -44,6 +44,20 @@ public class IssueService {
             if (filter.repositories() != null && !filter.repositories().isEmpty()) {
                 predicate = criteriaBuilder.and(predicate, root.get("repository").in(filter.repositories()));
             }
+            if (filter.voted() != null) {
+                if (filter.voted()) {
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotEmpty(root.get("votes")));
+                } else {
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isEmpty(root.get("votes")));
+                }
+            }
+            if (filter.resulted() != null) {
+                if (filter.resulted()) {
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotNull(root.get("voteResult")));
+                } else {
+                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("voteResult")));
+                }
+            }
             if (search != null && !search.isEmpty()) {
                 final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
                 predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(
@@ -75,6 +89,6 @@ public class IssueService {
     public FilterDTO getFilterOptions() {
         final List<String> owners = issueRepository.findDistinctOwners().stream().sorted().toList();
         final List<String> repositories = issueRepository.findDistinctRepositories().stream().sorted().toList();
-        return new FilterDTO(owners, repositories);
+        return new FilterDTO(owners, repositories, null, null);
     }
 }

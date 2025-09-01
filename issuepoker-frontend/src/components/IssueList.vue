@@ -11,13 +11,29 @@
   <v-row>
     <v-col
       cols="12"
+      sm="4"
+    >
+      <v-text-field
+        v-model="searchQuery"
+        :prepend-inner-icon="mdiMagnify"
+        clearable
+        density="compact"
+        hide-details
+        label="Suche (Titel, Beschreibung)"
+        variant="outlined"
+        @keyup.enter="search"
+        @click:clear="search"
+      />
+    </v-col>
+    <v-col
+      cols="12"
       lg="2"
       sm="4"
     >
       <v-autocomplete
         v-model="filter.owners"
         :items="filterOptions.owners"
-        :prepend-inner-icon="mdiFilterOutline"
+        :prepend-inner-icon="mdiHomeAccount"
         chips
         clearable
         density="compact"
@@ -36,7 +52,7 @@
       <v-autocomplete
         v-model="filter.repositories"
         :items="filterOptions.repositories"
-        :prepend-inner-icon="mdiFilterOutline"
+        :prepend-inner-icon="mdiSourceRepository"
         chips
         clearable
         density="compact"
@@ -49,18 +65,34 @@
     </v-col>
     <v-col
       cols="12"
+      lg="2"
       sm="4"
     >
-      <v-text-field
-        v-model="searchQuery"
-        :prepend-inner-icon="mdiMagnify"
-        clearable
+      <v-select
+        v-model="filter.voted"
+        :items="selectOptions"
+        :prepend-inner-icon="mdiVote"
         density="compact"
         hide-details
-        label="Suche (Titel, Beschreibung)"
+        label="Abgestimmt"
         variant="outlined"
-        @keyup.enter="search"
-        @click:clear="search"
+        @update:model-value="fetchIssues"
+      />
+    </v-col>
+    <v-col
+      cols="12"
+      lg="2"
+      sm="4"
+    >
+      <v-select
+        v-model="filter.resulted"
+        :items="selectOptions"
+        :prepend-inner-icon="mdiTrophy"
+        density="compact"
+        hide-details
+        label="Ergebnis"
+        variant="outlined"
+        @update:model-value="fetchIssues"
       />
     </v-col>
   </v-row>
@@ -90,7 +122,13 @@ import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
-import { mdiFilterOutline, mdiMagnify } from "@mdi/js";
+import {
+  mdiHomeAccount,
+  mdiMagnify,
+  mdiSourceRepository,
+  mdiTrophy,
+  mdiVote,
+} from "@mdi/js";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
 
@@ -124,6 +162,11 @@ const itemsPerPageOptions = [
   { value: 50, title: "50" },
   { value: 100, title: "100" },
   { value: -1, title: "$vuetify.dataFooter.itemsPerPageAll" },
+];
+const selectOptions = [
+  { value: null, title: "Egal" },
+  { value: true, title: "Ja" },
+  { value: false, title: "Nein" },
 ];
 
 const { getUser } = storeToRefs(useUserStore());

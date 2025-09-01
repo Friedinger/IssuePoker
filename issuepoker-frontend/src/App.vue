@@ -136,12 +136,11 @@
 <script lang="ts" setup>
 import type { VotingOptions } from "@/stores/votingOptions.ts";
 import type User from "@/types/User";
-import type { LocationQueryValue } from "vue-router";
 
 import { mdiApps, mdiInformationOutline, mdiMagnify } from "@mdi/js";
 import { AppSwitcher } from "@muenchen/appswitcher-vue";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 import { getVotingOptions } from "@/api/fetch-votingOptions.ts";
@@ -197,28 +196,10 @@ onMounted(() => {
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
-  parseSearch(route.query.search);
 });
-
-watch(
-  () => route.fullPath,
-  () => parseSearch(route.query.search)
-);
 
 function search() {
   router.push({ name: ROUTES_HOME });
-}
-
-function parseSearch(queryValue: LocationQueryValue | LocationQueryValue[]) {
-  const query = Array.isArray(queryValue) ? queryValue[0] : queryValue;
-  filter.value.search = query && query !== "" ? query : filter.value.search;
-  if (route.name == ROUTES_HOME && isQueryNotEmpty()) {
-    router.replace({ query: { search: filter.value.search } });
-  }
-}
-
-function isQueryNotEmpty() {
-  return filter.value.search && filter.value.search != "";
 }
 </script>
 

@@ -1,3 +1,5 @@
+import type { LocationQuery, LocationQueryRaw } from "vue-router";
+
 export interface Filter {
   search: string | undefined;
   owners: string[];
@@ -14,4 +16,35 @@ export function filterToParams(filter: Filter): string {
   params.push(`voted=${filter.voted ?? ""}`);
   params.push(`resulted=${filter.resulted ?? ""}`);
   return params.join("&");
+}
+
+export function filterToQuery(filter: Filter): LocationQueryRaw {
+  return {
+    search: filter.search ?? undefined,
+    owners: filter.owners.length > 0 ? filter.owners.join(",") : undefined,
+    repositories:
+      filter.repositories.length > 0
+        ? filter.repositories.join(",")
+        : undefined,
+    voted: filter.voted !== null ? String(filter.voted) : undefined,
+    resulted: filter.resulted !== null ? String(filter.resulted) : undefined,
+  };
+}
+
+export function filterFromQuery(query: LocationQuery): Filter {
+  return {
+    search: (query.search as string) || undefined,
+    owners: query.owners ? (query.owners as string).split(",") : [],
+    repositories: query.repositories
+      ? (query.repositories as string).split(",")
+      : [],
+    voted:
+      query.voted === "true" ? true : query.voted === "false" ? false : null,
+    resulted:
+      query.resulted === "true"
+        ? true
+        : query.resulted === "false"
+          ? false
+          : null,
+  };
 }

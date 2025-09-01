@@ -13,8 +13,7 @@
           hide-details
           label="Suche (Titel, Beschreibung)"
           variant="outlined"
-          @keyup.enter="search"
-          @click:clear="search"
+          @update:model-value="setQuery"
         />
       </v-col>
       <v-col
@@ -108,6 +107,7 @@
 </template>
 <script lang="ts" setup>
 import type { Filter } from "@/types/Filter.ts";
+import type { LocationQuery } from "vue-router";
 
 import {
   mdiHomeAccount,
@@ -117,11 +117,14 @@ import {
   mdiTrophy,
   mdiVote,
 } from "@mdi/js";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 
 import { getFilterOptions } from "@/api/fetch-filterOptions.ts";
+import router from "@/plugins/router.ts";
 import { defaultFilter, useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { filterFromQuery, filterToQuery } from "@/types/Filter.ts";
 
 const selectOptions = [
   { value: null, title: "Egal" },
@@ -139,6 +142,7 @@ const filter = computed({
   },
 });
 const filterOptions = ref<Filter>(defaultFilter());
+const route = useRoute();
 
 onMounted(() => {
   getFilterOptions()
@@ -146,23 +150,31 @@ onMounted(() => {
     .catch((error) => {
       snackbarStore.showMessage(error);
     });
+  parseQuery(route.query);
+  setQuery();
 });
 
-function search() {
-  // if (searchQuery.value && searchQuery.value != "") {
-  //   router.push({ name: ROUTES_HOME, query: { search: searchQuery.value } });
-  // } else {
-  //   router.push({ name: ROUTES_HOME });
-  // }
+watch(
+  () => route.fullPath,
+  () => parseQuery(route.query)
+);
+
+function fetchIssues() {
+  setQuery();
+  emit("fetchIssues");
 }
 
 function resetFilters() {
   filter.value = defaultFilter();
-  searchQuery.value = "";
   fetchIssues();
 }
 
-function fetchIssues() {
-  emit("fetchIssues");
+function setQuery() {
+  router.replace({ query: filterToQuery(filter.value) });
+}
+
+function parseQuery(query: LocationQuery) {
+  if (Object.keys(query).length === 0) return;
+  filter.value = filterFromQuery(query);
 }
 </script>

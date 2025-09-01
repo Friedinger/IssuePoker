@@ -61,6 +61,7 @@
       >
         <v-select
           v-model="filter.voted"
+          :clearable="isDefined(filter.voted)"
           :items="selectOptions"
           :prepend-inner-icon="mdiVote"
           density="compact"
@@ -77,6 +78,7 @@
       >
         <v-select
           v-model="filter.resulted"
+          :clearable="isDefined(filter.resulted)"
           :items="selectOptions"
           :prepend-inner-icon="mdiTrophy"
           density="compact"
@@ -107,24 +109,18 @@
 </template>
 <script lang="ts" setup>
 import type { Filter } from "@/types/Filter.ts";
+import { filterFromQuery, filterToQuery } from "@/types/Filter.ts";
 import type { LocationQuery } from "vue-router";
-
-import {
-  mdiHomeAccount,
-  mdiMagnify,
-  mdiRestore,
-  mdiSourceRepository,
-  mdiTrophy,
-  mdiVote,
-} from "@mdi/js";
-import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+
+import { mdiHomeAccount, mdiMagnify, mdiRestore, mdiSourceRepository, mdiTrophy, mdiVote, } from "@mdi/js";
+import { isDefined } from "@vueuse/core";
+import { computed, onMounted, ref, watch } from "vue";
 
 import { getFilterOptions } from "@/api/fetch-filterOptions.ts";
 import router from "@/plugins/router.ts";
 import { defaultFilter, useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { filterFromQuery, filterToQuery } from "@/types/Filter.ts";
 
 const selectOptions = [
   { value: null, title: "Egal" },

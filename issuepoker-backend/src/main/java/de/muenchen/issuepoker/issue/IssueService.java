@@ -9,7 +9,9 @@ import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.FilterDTO;
 import de.muenchen.issuepoker.security.Authorities;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -36,36 +38,54 @@ public class IssueService {
     @PreAuthorize(Authorities.IS_USER)
     public Page<Issue> getAllIssues(final Pageable pageRequest, final String search, final FilterDTO filter) {
         log.info("Get all Issues with Pageable {}", pageRequest);
-        return issueRepository.findAll((root, query, criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.conjunction();
-            if (filter.owners() != null && !filter.owners().isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, root.get("owner").in(filter.owners()));
-            }
-            if (filter.repositories() != null && !filter.repositories().isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, root.get("repository").in(filter.repositories()));
-            }
-            if (filter.voted() != null) {
-                if (filter.voted()) {
-                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotEmpty(root.get("votes")));
-                } else {
-                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isEmpty(root.get("votes")));
-                }
-            }
-            if (filter.resulted() != null) {
-                if (filter.resulted()) {
-                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotNull(root.get("voteResult")));
-                } else {
-                    predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNull(root.get("voteResult")));
-                }
-            }
-            if (search != null && !search.isEmpty()) {
-                final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.or(
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
-                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern)));
-            }
-            return predicate;
-        }, pageRequest);
+        return issueRepository.findAll(
+                (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                        filterOwner(filter, root, criteriaBuilder),
+                        filterRepository(filter, root, criteriaBuilder),
+                        filterVoted(filter, root, criteriaBuilder),
+                        filterResulted(filter, root, criteriaBuilder),
+                        filterSearch(search, root, criteriaBuilder)),
+                pageRequest);
+    }
+
+    private Predicate filterSearch(final String search, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (search == null || search.isEmpty()) {
+            return criteriaBuilder.conjunction();
+        }
+        final String likePattern = "%" + search.toLowerCase(Locale.ROOT) + "%";
+        return criteriaBuilder.or(
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), likePattern),
+                criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), likePattern));
+    }
+
+    private Predicate filterOwner(final FilterDTO filter, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        return (filter.owners() != null && !filter.owners().isEmpty())
+                ? root.get("owner").in(filter.owners())
+                : criteriaBuilder.conjunction();
+    }
+
+    private Predicate filterRepository(final FilterDTO filter, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        return (filter.repositories() != null && !filter.repositories().isEmpty())
+                ? root.get("repository").in(filter.repositories())
+                : criteriaBuilder.conjunction();
+    }
+
+    private Predicate filterVoted(final FilterDTO filter, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (filter.voted() == null) {
+            return criteriaBuilder.conjunction();
+        }
+        return filter.voted()
+                ? criteriaBuilder.isNotEmpty(root.get("votes"))
+                : criteriaBuilder.isEmpty(root.get("votes"));
+    }
+
+    private Predicate filterResulted(final FilterDTO filter, final Root<Issue> root, final CriteriaBuilder criteriaBuilder) {
+        if (filter.resulted() == null) {
+            return criteriaBuilder.conjunction();
+        }
+        return filter.resulted()
+                ? criteriaBuilder.isNotNull(root.get("voteResult"))
+                : criteriaBuilder.isNull(root.get("voteResult"));
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)

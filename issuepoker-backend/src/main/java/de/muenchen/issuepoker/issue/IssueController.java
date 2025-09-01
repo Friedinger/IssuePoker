@@ -4,6 +4,7 @@ import de.muenchen.issuepoker.entities.Issue;
 import de.muenchen.issuepoker.entities.IssueKey;
 import de.muenchen.issuepoker.entities.Vote;
 import de.muenchen.issuepoker.entities.dto.FilterDTO;
+import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
@@ -51,16 +52,16 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueSummaries(@RequestParam(required = false, defaultValue = "") final String search,
-            @RequestParam(required = false) final String sort, @PageableDefault final Pageable pageable, final FilterDTO filter) {
+    public Page<IssueSummaryDTO> getIssueSummaries(@PageableDefault final Pageable pageable,
+            @RequestParam(required = false) final String sort, final FilterDTO filter) {
         final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
-        final Page<Issue> issuePage = issueService.getAllIssues(pageRequest, search, filter);
+        final Page<Issue> issuePage = issueService.getAllIssues(pageRequest, filter);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
     }
 
     @GetMapping("filterOptions")
-    public FilterDTO getFilterOptions() {
+    public FilterOptionsDTO getFilterOptions() {
         return issueService.getFilterOptions();
     }
 

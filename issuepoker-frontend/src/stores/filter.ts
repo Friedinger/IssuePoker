@@ -5,11 +5,11 @@ import { computed, ref } from "vue";
 
 export function defaultFilter(): Filter {
   return {
-    search: null,
+    search: undefined,
     owners: [],
     repositories: [],
-    voted: null,
-    resulted: null,
+    voted: undefined,
+    resulted: undefined,
   };
 }
 

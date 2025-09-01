@@ -4,8 +4,8 @@ export interface Filter {
   search: string | undefined;
   owners: string[];
   repositories: string[];
-  voted: boolean | null;
-  resulted: boolean | null;
+  voted: boolean | undefined;
+  resulted: boolean | undefined;
 }
 
 export function filterToParams(filter: Filter): string {
@@ -38,13 +38,13 @@ export function filterFromQuery(query: LocationQuery): Filter {
     repositories: query.repositories
       ? (query.repositories as string).split(",")
       : [],
-    voted:
-      query.voted === "true" ? true : query.voted === "false" ? false : null,
-    resulted:
-      query.resulted === "true"
-        ? true
-        : query.resulted === "false"
-          ? false
-          : null,
+    voted: parseBooleanQueryParam(query.voted),
+    resulted: parseBooleanQueryParam(query.resulted),
   };
+}
+
+function parseBooleanQueryParam(param: unknown): boolean | undefined {
+  if (param === "true") return true;
+  if (param === "false") return false;
+  return undefined;
 }

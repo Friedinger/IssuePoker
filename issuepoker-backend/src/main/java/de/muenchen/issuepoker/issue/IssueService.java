@@ -110,6 +110,13 @@ public class IssueService {
         return issueRepository.save(existingIssue);
     }
 
+    @PreAuthorize(Authorities.IS_ADMIN)
+    public void deleteIssue(final IssueKey key) {
+        log.debug("Delete Issue {}", key);
+        final Issue issue = getIssue(key);
+        issueRepository.deleteById(issue.getId());
+    }
+
     @PreAuthorize(Authorities.IS_USER)
     public void addVote(final Issue issue, final Vote vote) {
         log.debug("Add Vote with number={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());

@@ -2,7 +2,7 @@
   <v-row align="center">
     <v-col><h1>Issues</h1></v-col>
     <v-col
-      v-if="getUser?.authorities.includes(ROLE_ADMIN)"
+      v-if="isAdmin()"
       cols="auto"
     >
       <v-btn :to="{ name: ROUTES_ISSUE_NEW }">Neues Issue</v-btn>
@@ -41,15 +41,11 @@ import { ref } from "vue";
 
 import { getIssueList } from "@/api/fetch-issueList.ts";
 import IssueListFilters from "@/components/IssueListFilters.vue";
-import {
-  ROLE_ADMIN,
-  ROUTES_ISSUE_DETAIL,
-  ROUTES_ISSUE_NEW,
-} from "@/constants.ts";
+import { ROUTES_ISSUE_DETAIL, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { useUserStore } from "@/stores/user.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 
 const headers = [
   { key: "owner", title: "Besitzer" },
@@ -69,7 +65,6 @@ const itemsPerPageOptions = [
 ];
 
 const snackbarStore = useSnackbarStore();
-const { getUser } = storeToRefs(useUserStore());
 const { getFilter } = storeToRefs(useFilterStore());
 
 const loading = ref(true);

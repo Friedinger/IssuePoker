@@ -147,10 +147,10 @@ import { subscribeVotes } from "@/api/fetch-votes.ts";
 import { setVoteResult } from "@/api/set-vote-result.ts";
 import { setVoteRevealed } from "@/api/set-vote-revealed.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
-import { ROLE_ADMIN, STATUS_INDICATORS } from "@/constants.ts";
+import { STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { useUserStore } from "@/stores/user.ts";
 import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
+import { isAdmin, isLoggedIn } from "@/util/userUtils.ts";
 
 const { getVotingOptions } = storeToRefs(useVotingOptionsStore());
 const notLoggedInMessage: SnackbarState = {
@@ -160,7 +160,6 @@ const notLoggedInMessage: SnackbarState = {
 };
 
 const snackbarStore = useSnackbarStore();
-const { getUser } = storeToRefs(useUserStore());
 const props = defineProps(["issue"]);
 const votes = ref<Votes>({ voteCount: 0 });
 const voteCounts = ref<Record<string, number>>({});
@@ -186,7 +185,7 @@ onUnmounted(() => {
 });
 
 function fetchVotes() {
-  if (!getUser.value) {
+  if (!isLoggedIn()) {
     snackbarStore.showMessage(notLoggedInMessage);
     return;
   }
@@ -244,13 +243,6 @@ function countVotes() {
     voteCountValues.value[getVotingOptions.value.indexOf(parseInt(voting))] =
       count;
   });
-}
-
-function isAdmin(): boolean {
-  if (!getUser.value) {
-    return false;
-  }
-  return getUser.value.authorities.includes(ROLE_ADMIN);
 }
 </script>
 

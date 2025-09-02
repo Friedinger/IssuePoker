@@ -7,36 +7,7 @@
           <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
         </template>
       </v-col>
-      <v-col
-        v-if="issue"
-        cols="auto"
-      >
-        <v-tooltip
-          location="top"
-          text="Issue bearbeiten"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn
-              :icon="mdiPencil"
-              :to="{
-                name: ROUTES_ISSUE_EDIT,
-                params: {
-                  owner: issue.owner,
-                  repository: issue.repository,
-                  number: issue.number,
-                  action: 'edit',
-                },
-              }"
-              density="comfortable"
-              rounded="rounded"
-              v-bind="props"
-            />
-          </template>
-        </v-tooltip>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn :to="{ name: ROUTES_HOME }">Zurück zur Liste</v-btn>
-      </v-col>
+      <issue-details-actions :issue="issue" />
     </v-row>
     <template v-if="issue">
       <v-row>
@@ -60,29 +31,28 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
-import { mdiPencil } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
+import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
 import {
-  ROLE_ADMIN,
   ROUTES_HOME,
   ROUTES_ISSUE_EDIT,
   STATUS_INDICATORS,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { useUserStore } from "@/stores/user.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 
-const snackbarStore = useSnackbarStore();
-const route = useRoute();
-const issue = ref<IssueDetails>();
 const markdownOptions = {
   html: true,
 };
+const snackbarStore = useSnackbarStore();
+const route = useRoute();
+const issue = ref<IssueDetails>();
 
 onMounted(() => {
   fetchIssue(route.params);
@@ -98,7 +68,7 @@ function fetchIssue(params: RouteParamsGeneric) {
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
-      if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
+      if (isAdmin()) {
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },

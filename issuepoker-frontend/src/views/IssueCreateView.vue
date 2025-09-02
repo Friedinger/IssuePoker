@@ -8,7 +8,11 @@
       <v-col cols="auto">
         <v-dialog max-width="500">
           <template v-slot:activator="{ props: activatorProps }">
-            <v-btn v-bind="activatorProps">Importieren</v-btn>
+            <v-btn
+              :prepend-icon="mdiImport"
+              v-bind="activatorProps"
+              >Importieren</v-btn
+            >
           </template>
 
           <template v-slot:default="{ isActive }">
@@ -37,6 +41,7 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
+import { mdiImport } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 

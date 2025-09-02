@@ -67,6 +67,13 @@
       </v-col>
     </v-row>
   </v-form>
+  <yes-no-dialog
+    v-model="saveLeaveDialog"
+    :dialogtext="saveLeaveDialogText"
+    :dialogtitle="saveLeaveDialogTitle"
+    @no="cancel"
+    @yes="leave"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -78,11 +85,20 @@ import { onMounted, ref, watch } from "vue";
 
 import { createIssue } from "@/api/issue/create-issue.ts";
 import { updateIssue } from "@/api/issue/update-issue.ts";
+import YesNoDialog from "@/components/common/YesNoDialog.vue";
+import { useSaveLeave } from "@/composables/saveLeave.ts";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
+const {
+  cancel,
+  leave,
+  saveLeaveDialog,
+  saveLeaveDialogText,
+  saveLeaveDialogTitle,
+} = useSaveLeave(isDirty);
 
 const owner = ref("");
 const repository = ref("");
@@ -173,5 +189,15 @@ function parseProp(issue?: IssueDetails) {
   number.value = issue.number;
   title.value = issue.title;
   description.value = issue.description;
+}
+
+function isDirty(): boolean {
+  return (
+    owner.value !== (issue?.owner ?? "") ||
+    repository.value !== (issue?.repository ?? "") ||
+    number.value !== (issue?.number ?? null) ||
+    title.value !== (issue?.title ?? "") ||
+    description.value !== (issue?.description ?? "")
+  );
 }
 </script>

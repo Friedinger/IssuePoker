@@ -7,66 +7,7 @@
           <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
         </template>
       </v-col>
-      <v-col
-        v-if="issue"
-        cols="auto"
-      >
-        <v-tooltip
-          location="top"
-          text="Issue bearbeiten"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn
-              :icon="mdiPencil"
-              :to="{
-                name: ROUTES_ISSUE_EDIT,
-                params: {
-                  owner: issue.owner,
-                  repository: issue.repository,
-                  number: issue.number,
-                  action: 'edit',
-                },
-              }"
-              density="comfortable"
-              rounded="rounded"
-              v-bind="props"
-            />
-          </template>
-        </v-tooltip>
-      </v-col>
-      <v-col
-        v-if="issue"
-        cols="auto"
-      >
-        <v-tooltip
-          location="top"
-          text="Issue löschen"
-        >
-          <template v-slot:activator="{ props }">
-            <v-btn
-              :icon="mdiDelete"
-              density="comfortable"
-              rounded="rounded"
-              v-bind="props"
-              @click="deleteDialog = true"
-            />
-          </template>
-        </v-tooltip>
-        <v-dialog
-          v-model="deleteDialog"
-          max-width="500"
-        >
-          <template v-slot:default>
-            <issue-delete
-              :issue="issue"
-              @close="deleteDialog = false"
-            />
-          </template>
-        </v-dialog>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn :to="{ name: ROUTES_HOME }">Zurück zur Liste</v-btn>
-      </v-col>
+      <issue-details-actions :issue="issue" />
     </v-row>
     <template v-if="issue">
       <v-row>
@@ -90,13 +31,12 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
-import { mdiDelete, mdiPencil } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
 import { getIssue } from "@/api/fetch-issue.ts";
-import IssueDelete from "@/components/IssueDelete.vue";
+import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
 import {
   ROLE_ADMIN,
@@ -114,7 +54,6 @@ const markdownOptions = {
 const snackbarStore = useSnackbarStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
-const deleteDialog = ref(false);
 
 onMounted(() => {
   fetchIssue(route.params);

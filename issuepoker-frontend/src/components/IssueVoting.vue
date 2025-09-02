@@ -143,9 +143,9 @@ import { onMounted, onUnmounted, ref, watch } from "vue";
 import { createVote } from "@/api/vote/create-vote.ts";
 import { deleteAllVotes } from "@/api/vote/delete-vote-all.ts";
 import { deleteVote } from "@/api/vote/delete-vote.ts";
-import { fetchVotes } from "@/api/vote/subscribe-votes.ts";
 import { setVoteResult } from "@/api/vote/set-voteResult.ts";
 import { setVoteRevealed } from "@/api/vote/set-voteRevealed.ts";
+import { subscribeVotes } from "@/api/vote/subscribe-votes.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -190,7 +190,7 @@ function fetchVotes() {
     return;
   }
   if (eventSource) eventSource.close();
-  eventSource = fetchVotes(
+  eventSource = subscribeVotes(
     props.issue,
     (content) => {
       votes.value = content;

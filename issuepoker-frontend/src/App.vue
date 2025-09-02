@@ -150,7 +150,7 @@ import {
 } from "@/api/misc/health-client.ts";
 import { getUser } from "@/api/misc/user-client.ts";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
-import TheSnackbar from "@/components/TheSnackbar.vue";
+import TheSnackbar from "@/components/common/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";
 import router from "@/plugins/router.ts";
 import { useFilterStore } from "@/stores/filter.ts";

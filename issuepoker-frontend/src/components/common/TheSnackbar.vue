@@ -20,8 +20,8 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 
-import { SNACKBAR_DEFAULT_TIMEOUT, STATUS_INDICATORS } from "@/constants";
-import { useSnackbarStore } from "@/stores/snackbar";
+import { SNACKBAR_DEFAULT_TIMEOUT, STATUS_INDICATORS } from "@/constants.ts";
+import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
 

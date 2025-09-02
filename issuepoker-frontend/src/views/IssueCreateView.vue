@@ -8,7 +8,7 @@
       <v-col cols="auto">
         <v-dialog max-width="500">
           <template v-slot:activator="{ props: activatorProps }">
-            <v-btn v-bind="activatorProps">Importieren</v-btn>
+            <v-btn :prepend-icon="mdiImport" v-bind="activatorProps">Importieren</v-btn>
           </template>
 
           <template v-slot:default="{ isActive }">
@@ -45,6 +45,7 @@ import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
 import { ROUTES_ISSUE_EDIT } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { mdiImport } from "@mdi/js";
 
 const route = useRoute();
 const issue = ref<IssueDetails>();

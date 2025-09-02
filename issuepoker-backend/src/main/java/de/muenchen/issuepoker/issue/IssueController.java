@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,6 +60,13 @@ public class IssueController {
             @Valid @RequestBody final IssueRequestUpdateDTO issue) {
         final IssueKey issueKey = new IssueKey(owner, repository, number);
         return issueMapper.toDetails(issueService.updateIssue(issue, issueKey));
+    }
+
+    @DeleteMapping("{owner}/{repository}/{number}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteIssue(@PathVariable("owner") final String owner,
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        issueService.deleteIssue(new IssueKey(owner, repository, number));
     }
 
     @GetMapping

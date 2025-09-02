@@ -8,6 +8,7 @@ import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.dto.IssueMapper;
 import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.dto.IssueRequestUpdateDTO;
 import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
 import de.muenchen.issuepoker.util.SortUtil;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +50,15 @@ public class IssueController {
     @ResponseStatus(HttpStatus.CREATED)
     public IssueDetailsDTO createIssue(@Valid @RequestBody final IssueRequestCreateDTO issue) {
         return issueMapper.toDetails(issueService.saveIssue(issueMapper.toEntity(issue)));
+    }
+
+    @PatchMapping("{owner}/{repository}/{number}")
+    @ResponseStatus(HttpStatus.OK)
+    public IssueDetailsDTO updateIssue(@PathVariable("owner") final String owner,
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number,
+            @Valid @RequestBody final IssueRequestUpdateDTO issue) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
+        return issueMapper.toDetails(issueService.updateIssue(issue, issueKey));
     }
 
     @GetMapping

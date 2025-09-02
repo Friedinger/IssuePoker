@@ -2,7 +2,8 @@
   <v-container>
     <v-row align="center">
       <v-col>
-        <h1>Neues Issue Erstellen</h1>
+        <h1 v-if="action === 'edit'">Issue Bearbeiten</h1>
+        <h1 v-else>Neues Issue Erstellen</h1>
       </v-col>
       <v-col cols="auto">
         <v-dialog max-width="500">
@@ -11,14 +12,22 @@
           </template>
 
           <template v-slot:default="{ isActive }">
-            <issue-import-form :isActive="isActive" />
+            <issue-import-form
+              :isActive="isActive"
+              :issue="issue"
+              @return="setIssue"
+            />
           </template>
         </v-dialog>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <issue-create-form :issue="issue" />
+        <issue-create-form
+          :action="action === 'edit' ? 'update' : 'create'"
+          :issue="issue"
+          :keyChangeable="action === undefined"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -26,64 +35,72 @@
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
-import type { IssueRemote } from "@/types/IssueRemote.ts";
-import type { LocationQuery } from "vue-router";
+import type { RouteParamsGeneric } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getIssueRemote } from "@/api/fetch-issues-remote.ts";
+import { getIssue } from "@/api/fetch-issue.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
-import { STATUS_INDICATORS } from "@/constants.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { ROUTES_ISSUE_EDIT } from "@/constants.ts";
+import router from "@/plugins/router.ts";
 
-const snackbarStore = useSnackbarStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
+const action = ref(route.params.action);
 
 onMounted(() => {
-  fetchRemote(route.query);
+  fetchIssue(route.params);
 });
 
 watch(
-  () => route.query,
-  (query) => fetchRemote(query)
+  () => route.params,
+  (params) => fetchIssue(params)
 );
 
-function fetchRemote(query: LocationQuery) {
-  const owner = query.owner as string;
-  const repository = query.repository as string;
-  const number = parseInt(query.number as string);
-  if (!owner || !repository || isNaN(number)) {
-    return;
-  }
-  getIssueRemote(owner, repository, number)
-    .then((content: IssueRemote) => {
-      if (content.pull_request) {
-        throw new Error("Pull Requests are not supported.");
-      }
-      issue.value = {
+function fetchIssue(params: RouteParamsGeneric) {
+  const { owner, repository, number } = parseParams(params);
+  getIssue(owner, repository, number)
+    .then((content: IssueDetails) => {
+      router.push({
+        name: ROUTES_ISSUE_EDIT,
+        params: { owner, repository, number, action: "edit" },
+      });
+      issue.value = content;
+    })
+    .catch(() => {
+      router.push({
+        name: ROUTES_ISSUE_EDIT,
+        params: { owner, repository, number, action: "new" },
+      });
+      setIssue({
         owner,
         repository,
-        number: content.number,
-        title: content.title,
-        description: content.body || "",
-      };
-    })
-    .catch((e) => {
-      if (e.message === "Pull Requests are not supported.") {
-        snackbarStore.showMessage({
-          message: `"${owner}/${repository}#${number}" ist ein Pull Request und wird nicht unterstützt.`,
-          level: STATUS_INDICATORS.WARNING,
-        });
-      } else {
-        snackbarStore.showMessage({
-          message: `Remote Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
-          level: STATUS_INDICATORS.WARNING,
-        });
-      }
-      issue.value = undefined;
+        number,
+        title: "",
+        description: "",
+      });
     });
+}
+
+function setIssue(content: IssueDetails) {
+  issue.value = content;
+}
+
+function parseParams(params: RouteParamsGeneric): {
+  owner: string;
+  repository: string;
+  number: number;
+} {
+  action.value = route.params.action;
+  const owner = params.owner;
+  const repository = params.repository;
+  const number = params.number;
+  return {
+    owner: Array.isArray(owner) ? owner[0] : owner,
+    repository: Array.isArray(repository) ? repository[0] : repository,
+    number: Array.isArray(number) ? parseInt(number[0]) : parseInt(number),
+  };
 }
 </script>

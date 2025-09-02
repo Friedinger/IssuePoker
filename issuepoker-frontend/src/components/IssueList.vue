@@ -5,7 +5,7 @@
       v-if="getUser?.authorities.includes(ROLE_ADMIN)"
       cols="auto"
     >
-      <v-btn :to="{ name: ROUTES_ISSUE_CREATE }">Neues Issue</v-btn>
+      <v-btn :to="{ name: ROUTES_ISSUE_NEW }">Neues Issue</v-btn>
     </v-col>
   </v-row>
   <v-row>
@@ -43,8 +43,8 @@ import { getIssueList } from "@/api/fetch-issueList.ts";
 import IssueListFilters from "@/components/IssueListFilters.vue";
 import {
   ROLE_ADMIN,
-  ROUTES_ISSUE_CREATE,
   ROUTES_ISSUE_DETAIL,
+  ROUTES_ISSUE_NEW,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useFilterStore } from "@/stores/filter.ts";

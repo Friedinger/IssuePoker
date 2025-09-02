@@ -41,4 +41,8 @@ public class Issue extends BaseEntity {
         return votes.stream().filter(vote -> username.equals(vote.getUsername())).findFirst()
                 .orElseThrow(() -> new NotFoundException("No Vote for given Username found"));
     }
+
+    public IssueKey getIssueKey() {
+        return new IssueKey(owner, repository, number);
+    }
 }

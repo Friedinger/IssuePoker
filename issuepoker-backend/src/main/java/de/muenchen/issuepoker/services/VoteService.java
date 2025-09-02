@@ -81,7 +81,7 @@ public class VoteService {
         log.info("Set Vote Result for Issue {} to {}", issueKey, voteResult);
         final Issue issue = getIssue(issueKey);
         if (!issue.isRevealed()) {
-            throw new GoneException("Issue %s is not revealed, so setting the vote result is not available".formatted(issue.getId()));
+            throw new GoneException("Issue %s is not revealed, so setting the vote result is not available".formatted(issue.getIssueKey()));
         }
         issue.setVoteResult(voteResult);
         issueService.saveIssue(issue);
@@ -108,7 +108,7 @@ public class VoteService {
 
     private void checkVotable(final Issue issue) {
         if (issue.isRevealed()) {
-            throw new GoneException("Issue %s is already revealed, so voting is not available anymore".formatted(issue.getId()));
+            throw new GoneException("Issue %s is already revealed, so voting is not available anymore".formatted(issue.getIssueKey()));
         }
     }
 }

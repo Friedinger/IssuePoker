@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 
 @Mapper
 public interface IssueMapper {
-    @Mapping(expression = "java(issue.getVotes().size())", target = "voteCount")
+    @Mapping(expression = "java(issue.getVotes() == null ? 0 : issue.getVotes().size())", target = "voteCount")
     IssueSummaryDTO toSummary(Issue issue);
 
     IssueDetailsDTO toDetails(Issue issue);

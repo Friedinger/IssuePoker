@@ -48,7 +48,7 @@ import { useRoute } from "vue-router";
 import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
-import { ROUTES_ISSUE_EDIT } from "@/constants.ts";
+import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 
 const route = useRoute();
@@ -65,6 +65,7 @@ watch(
 );
 
 function fetchIssue(params: RouteParamsGeneric) {
+  if (route.name === ROUTES_ISSUE_NEW) return;
   const { owner, repository, number } = parseParams(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {

@@ -27,10 +27,6 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final VoteMapper voteMapper;
 
-    private Issue getIssue(final IssueKey issueKey) {
-        return issueService.getIssue(issueKey);
-    }
-
     @PreAuthorize(Authorities.IS_USER)
     public VotesDTO getVotes(final IssueKey issueKey, final String username) {
         log.info("Get Votes for Issue {}", issueKey);
@@ -81,6 +77,17 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
+    public void setResult(final IssueKey issueKey, final Integer voteResult) {
+        log.info("Set Vote Result for Issue {} to {}", issueKey, voteResult);
+        final Issue issue = getIssue(issueKey);
+        if (!issue.isRevealed()) {
+            throw new GoneException("Issue %s is not revealed, so setting the vote result is not available".formatted(issue.getId()));
+        }
+        issue.setVoteResult(voteResult);
+        issueService.saveIssue(issue);
+    }
+
+    @PreAuthorize(Authorities.IS_ADMIN)
     public void setRevealed(final IssueKey issueKey, final boolean revealed) {
         log.info("Set Revealed for Issue {} to {}", issueKey, revealed);
         final Issue issue = getIssue(issueKey);
@@ -95,15 +102,8 @@ public class VoteService {
         issueService.saveIssue(issue);
     }
 
-    @PreAuthorize(Authorities.IS_ADMIN)
-    public void setResult(final IssueKey issueKey, final Integer voteResult) {
-        log.info("Set Vote Result for Issue {} to {}", issueKey, voteResult);
-        final Issue issue = getIssue(issueKey);
-        if (!issue.isRevealed()) {
-            throw new GoneException("Issue %s is not revealed, so setting the vote result is not available".formatted(issue.getId()));
-        }
-        issue.setVoteResult(voteResult);
-        issueService.saveIssue(issue);
+    private Issue getIssue(final IssueKey issueKey) {
+        return issueService.getIssue(issueKey);
     }
 
     private void checkVotable(final Issue issue) {

@@ -39,7 +39,7 @@ public class IssueService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public Page<Issue> getAllIssues(final Pageable pageRequest, final FilterDTO filter) {
+    public Page<Issue> getIssueList(final Pageable pageRequest, final FilterDTO filter) {
         log.info("Get all Issues with Pageable {}", pageRequest);
         return issueRepository.findAll(
                 (root, query, criteriaBuilder) -> criteriaBuilder.and(

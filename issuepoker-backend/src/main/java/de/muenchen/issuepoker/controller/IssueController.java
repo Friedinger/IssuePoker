@@ -2,14 +2,14 @@ package de.muenchen.issuepoker.controller;
 
 import de.muenchen.issuepoker.entities.issue.Issue;
 import de.muenchen.issuepoker.entities.issue.IssueKey;
-import de.muenchen.issuepoker.entities.vote.Vote;
+import de.muenchen.issuepoker.entities.issue.IssueMapper;
 import de.muenchen.issuepoker.entities.issue.filter.FilterDTO;
 import de.muenchen.issuepoker.entities.issue.filter.FilterOptionsDTO;
-import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
-import de.muenchen.issuepoker.entities.issue.IssueMapper;
 import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.issue.request.IssueRequestUpdateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
+import de.muenchen.issuepoker.entities.vote.Vote;
 import de.muenchen.issuepoker.services.IssueService;
 import de.muenchen.issuepoker.util.SortUtil;
 import jakarta.validation.Valid;
@@ -48,6 +48,16 @@ public class IssueController {
         return issueMapper.toDetails(issueService.getIssue(issueRequest));
     }
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public Page<IssueSummaryDTO> getIssueList(@PageableDefault final Pageable pageable,
+            @RequestParam(required = false) final String sort, final FilterDTO filter) {
+        final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
+        final Page<Issue> issuePage = issueService.getIssueList(pageRequest, filter);
+        final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
+        return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public IssueDetailsDTO createIssue(@Valid @RequestBody final IssueRequestCreateDTO issue) {
@@ -68,16 +78,6 @@ public class IssueController {
     public void deleteIssue(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
         issueService.deleteIssue(new IssueKey(owner, repository, number));
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueSummaries(@PageableDefault final Pageable pageable,
-            @RequestParam(required = false) final String sort, final FilterDTO filter) {
-        final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
-        final Page<Issue> issuePage = issueService.getAllIssues(pageRequest, filter);
-        final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
-        return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
     }
 
     @GetMapping("filterOptions")

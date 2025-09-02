@@ -33,18 +33,9 @@ public class VoteController {
     private final VoteService voteService;
     private final Map<IssueKey, List<UserEmitter>> emitters = new ConcurrentHashMap<>();
 
-    @GetMapping("test")
-    @ResponseStatus(HttpStatus.OK)
-    public VotesDTO getTest(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
-        final String username = AuthUtils.getUsername();
-        return voteService.getVotes(issueKey, username);
-    }
-
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public SseEmitter getVotesStream(@PathVariable("owner") final String owner,
+    public SseEmitter getVotes(@PathVariable("owner") final String owner,
             @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
         final IssueKey issueKey = new IssueKey(owner, repository, id);
         final String username = AuthUtils.getUsername();
@@ -62,21 +53,6 @@ public class VoteController {
             emitter.completeWithError(e);
         }
         return emitter;
-    }
-
-    private void sendVotesUpdate(final IssueKey issueKey) {
-        final List<UserEmitter> issueEmitters = emitters.get(issueKey);
-        if (issueEmitters == null) {
-            return;
-        }
-        for (final UserEmitter userEmitter : issueEmitters) {
-            try {
-                final VotesDTO votesDTO = voteService.getVotes(issueKey, userEmitter.username);
-                userEmitter.emitter.send(SseEmitter.event().name("votes").data(votesDTO));
-            } catch (IOException e) {
-                userEmitter.emitter.completeWithError(e);
-            }
-        }
     }
 
     @PostMapping
@@ -122,6 +98,21 @@ public class VoteController {
         final IssueKey issueKey = new IssueKey(owner, repository, id);
         voteService.setResult(issueKey, resultDTO.voteResult());
         sendVotesUpdate(issueKey);
+    }
+
+    private void sendVotesUpdate(final IssueKey issueKey) {
+        final List<UserEmitter> issueEmitters = emitters.get(issueKey);
+        if (issueEmitters == null) {
+            return;
+        }
+        for (final UserEmitter userEmitter : issueEmitters) {
+            try {
+                final VotesDTO votesDTO = voteService.getVotes(issueKey, userEmitter.username);
+                userEmitter.emitter.send(SseEmitter.event().name("votes").data(votesDTO));
+            } catch (IOException e) {
+                userEmitter.emitter.completeWithError(e);
+            }
+        }
     }
 
     private record UserEmitter(SseEmitter emitter, String username) {

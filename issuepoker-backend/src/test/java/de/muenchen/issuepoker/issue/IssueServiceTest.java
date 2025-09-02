@@ -91,7 +91,7 @@ public class IssueServiceTest {
             when(issueRepository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(expectedPage);
 
             final FilterDTO filter = new FilterDTO(null, null, null, null, null);
-            final Page<Issue> result = issueService.getAllIssues(pageRequest, filter);
+            final Page<Issue> result = issueService.getIssueList(pageRequest, filter);
             assertEquals(expectedPage, result);
             verify(issueRepository, times(1)).findAll(any(Specification.class), eq(pageRequest));
         }

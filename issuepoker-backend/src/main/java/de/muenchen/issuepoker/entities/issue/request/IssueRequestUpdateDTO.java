@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.entities.dto;
+package de.muenchen.issuepoker.entities.issue.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

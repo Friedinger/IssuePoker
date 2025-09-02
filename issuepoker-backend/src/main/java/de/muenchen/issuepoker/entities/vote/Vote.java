@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.entities;
+package de.muenchen.issuepoker.entities.vote;
 
 import de.muenchen.issuepoker.common.BaseEntity;
 import jakarta.persistence.Entity;

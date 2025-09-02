@@ -1,12 +1,13 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.services;
 
 import de.muenchen.issuepoker.common.GoneException;
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.IssueKey;
-import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.VoteMapper;
-import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
-import de.muenchen.issuepoker.entities.dto.VotesDTO;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.IssueKey;
+import de.muenchen.issuepoker.entities.vote.Vote;
+import de.muenchen.issuepoker.entities.vote.VoteMapper;
+import de.muenchen.issuepoker.entities.vote.request.VoteRequestVotingDTO;
+import de.muenchen.issuepoker.entities.vote.response.VotesDTO;
+import de.muenchen.issuepoker.repositories.VoteRepository;
 import de.muenchen.issuepoker.security.AuthUtils;
 import de.muenchen.issuepoker.security.Authorities;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class VoteService {
     }
 
     @PreAuthorize(Authorities.IS_USER)
-    public void saveVote(final IssueKey issueKey, final VoteRequestDTO voteRequestDTO) {
+    public void saveVote(final IssueKey issueKey, final VoteRequestVotingDTO voteRequestDTO) {
         final String username = AuthUtils.getUsername();
         log.info("Save Vote {} for User {} for Issue {}", voteRequestDTO.voting(), username, issueKey);
         final Vote vote = voteMapper.toEntity(voteRequestDTO, username);

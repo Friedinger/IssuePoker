@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.entities.dto;
+package de.muenchen.issuepoker.entities.issue.filter;
 
 import java.util.List;
 

@@ -1,15 +1,16 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.services;
 
 import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
 
 import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.NotFoundException;
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.IssueKey;
-import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.FilterDTO;
-import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueRequestUpdateDTO;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.IssueKey;
+import de.muenchen.issuepoker.entities.vote.Vote;
+import de.muenchen.issuepoker.entities.issue.filter.FilterDTO;
+import de.muenchen.issuepoker.entities.issue.filter.FilterOptionsDTO;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestUpdateDTO;
+import de.muenchen.issuepoker.repositories.IssueRepository;
 import de.muenchen.issuepoker.security.Authorities;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;

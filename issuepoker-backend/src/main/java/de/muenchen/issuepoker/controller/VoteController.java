@@ -1,11 +1,12 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.controller;
 
-import de.muenchen.issuepoker.entities.IssueKey;
-import de.muenchen.issuepoker.entities.dto.VoteRequestDTO;
-import de.muenchen.issuepoker.entities.dto.VoteRequestResultDTO;
-import de.muenchen.issuepoker.entities.dto.VoteRequestRevealedDTO;
-import de.muenchen.issuepoker.entities.dto.VotesDTO;
+import de.muenchen.issuepoker.entities.issue.IssueKey;
+import de.muenchen.issuepoker.entities.vote.request.VoteRequestVotingDTO;
+import de.muenchen.issuepoker.entities.vote.request.VoteRequestResultDTO;
+import de.muenchen.issuepoker.entities.vote.request.VoteRequestRevealedDTO;
+import de.muenchen.issuepoker.entities.vote.response.VotesDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
+import de.muenchen.issuepoker.services.VoteService;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -81,7 +82,7 @@ public class VoteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createVote(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
-            @PathVariable("id") final long id, @Valid @RequestBody final VoteRequestDTO voteRequestDTO) {
+            @PathVariable("id") final long id, @Valid @RequestBody final VoteRequestVotingDTO voteRequestDTO) {
         final IssueKey issueKey = new IssueKey(owner, repository, id);
         voteService.saveVote(issueKey, voteRequestDTO);
         sendVotesUpdate(issueKey);

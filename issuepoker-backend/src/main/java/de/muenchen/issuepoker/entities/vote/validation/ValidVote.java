@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.entities.validation;
+package de.muenchen.issuepoker.entities.vote.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

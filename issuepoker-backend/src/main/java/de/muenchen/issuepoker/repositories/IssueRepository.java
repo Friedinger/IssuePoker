@@ -1,6 +1,6 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.repositories;
 
-import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.issue.Issue;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

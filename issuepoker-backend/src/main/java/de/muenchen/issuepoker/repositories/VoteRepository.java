@@ -1,6 +1,6 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.repositories;
 
-import de.muenchen.issuepoker.entities.Vote;
+import de.muenchen.issuepoker.entities.vote.Vote;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,6 +1,8 @@
-package de.muenchen.issuepoker.entities.dto;
+package de.muenchen.issuepoker.entities.issue;
 
-import de.muenchen.issuepoker.entities.Issue;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -10,9 +10,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import de.muenchen.issuepoker.common.NotFoundException;
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.IssueKey;
-import de.muenchen.issuepoker.entities.dto.FilterDTO;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.IssueKey;
+import de.muenchen.issuepoker.entities.issue.filter.FilterDTO;
+import de.muenchen.issuepoker.repositories.IssueRepository;
+import de.muenchen.issuepoker.services.IssueService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,15 +1,16 @@
-package de.muenchen.issuepoker.issue;
+package de.muenchen.issuepoker.controller;
 
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.IssueKey;
-import de.muenchen.issuepoker.entities.Vote;
-import de.muenchen.issuepoker.entities.dto.FilterDTO;
-import de.muenchen.issuepoker.entities.dto.FilterOptionsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueMapper;
-import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
-import de.muenchen.issuepoker.entities.dto.IssueRequestUpdateDTO;
-import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.IssueKey;
+import de.muenchen.issuepoker.entities.vote.Vote;
+import de.muenchen.issuepoker.entities.issue.filter.FilterDTO;
+import de.muenchen.issuepoker.entities.issue.filter.FilterOptionsDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
+import de.muenchen.issuepoker.entities.issue.IssueMapper;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestUpdateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
+import de.muenchen.issuepoker.services.IssueService;
 import de.muenchen.issuepoker.util.SortUtil;
 import jakarta.validation.Valid;
 import java.util.List;

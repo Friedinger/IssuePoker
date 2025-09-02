@@ -1,4 +1,4 @@
-package de.muenchen.issuepoker.entities;
+package de.muenchen.issuepoker.entities.issue;
 
 public record IssueKey(String owner, String repository, long number) {
     public static String sanitizeForLog(final String input) {

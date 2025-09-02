@@ -9,11 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.muenchen.issuepoker.TestConstants;
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueMapper;
-import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
-import de.muenchen.issuepoker.entities.dto.IssueSummaryDTO;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
+import de.muenchen.issuepoker.entities.issue.IssueMapper;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
+import de.muenchen.issuepoker.repositories.IssueRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

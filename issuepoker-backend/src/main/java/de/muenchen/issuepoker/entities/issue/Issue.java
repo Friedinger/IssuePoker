@@ -1,7 +1,8 @@
-package de.muenchen.issuepoker.entities;
+package de.muenchen.issuepoker.entities.issue;
 
 import de.muenchen.issuepoker.common.BaseEntity;
 import de.muenchen.issuepoker.common.NotFoundException;
+import de.muenchen.issuepoker.entities.vote.Vote;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

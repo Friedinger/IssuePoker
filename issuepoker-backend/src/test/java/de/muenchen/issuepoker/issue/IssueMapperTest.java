@@ -42,6 +42,43 @@ public class IssueMapperTest {
             assertThat(result).usingRecursiveComparison().ignoringFields("voteCount")
                     .isEqualTo(issue);
         }
+
+        @Test
+        void givenIssueWithVotes_thenVoteCountIsCorrect() {
+            Issue issue = createIssue();
+            issue.setVotes(List.of(new de.muenchen.issuepoker.entities.vote.Vote(), new de.muenchen.issuepoker.entities.vote.Vote()));
+            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            assertNotNull(result);
+            assertThat(result.voteCount()).isEqualTo(2);
+        }
+
+        @Test
+        void givenIssueWithNullVotes_thenVoteCountIsZero() {
+            Issue issue = createIssue();
+            issue.setVotes(null);
+            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            assertNotNull(result);
+            assertThat(result.voteCount()).isEqualTo(0);
+        }
+
+        @Test
+        void givenIssueWithEmptyFields_thenMapCorrectly() {
+            Issue issue = new Issue();
+            issue.setId(UUID.randomUUID());
+            issue.setOwner("");
+            issue.setRepository("");
+            issue.setNumber(0);
+            issue.setTitle("");
+            issue.setDescription("");
+            issue.setVotes(List.of());
+            issue.setRevealed(false);
+            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            assertNotNull(result);
+            assertThat(result.owner()).isEmpty();
+            assertThat(result.repository()).isEmpty();
+            assertThat(result.title()).isEmpty();
+            assertThat(result.voteCount()).isEqualTo(0);
+        }
     }
 
     @Nested
@@ -52,6 +89,24 @@ public class IssueMapperTest {
             final IssueDetailsDTO result = issueMapper.toDetails(issue);
             assertNotNull(result);
             assertThat(result).usingRecursiveComparison().isEqualTo(issue);
+        }
+
+        @Test
+        void givenIssueWithNullFields_thenMapCorrectly() {
+            Issue issue = new Issue();
+            issue.setId(UUID.randomUUID());
+            issue.setOwner(null);
+            issue.setRepository(null);
+            issue.setNumber(0);
+            issue.setTitle(null);
+            issue.setDescription(null);
+            issue.setVotes(null);
+            issue.setRevealed(false);
+            IssueDetailsDTO result = issueMapper.toDetails(issue);
+            assertNotNull(result);
+            assertThat(result.owner()).isNull();
+            assertThat(result.repository()).isNull();
+            assertThat(result.title()).isNull();
         }
     }
 
@@ -65,6 +120,24 @@ public class IssueMapperTest {
             assertThat(result).usingRecursiveComparison()
                     .ignoringFields("id", "votes", "revealed", "voteResult")
                     .isEqualTo(requestDTO);
+        }
+
+        @Test
+        void givenCreateDTO_thenMapToEntityCorrectly() {
+            IssueRequestCreateDTO dto = new IssueRequestCreateDTO("Owner", "Repo", 123, "Title", "Desc");
+            Issue entity = issueMapper.toEntity(dto);
+            assertNotNull(entity);
+            assertThat(entity.getOwner()).isEqualTo("Owner");
+            assertThat(entity.getRepository()).isEqualTo("Repo");
+            assertThat(entity.getNumber()).isEqualTo(123);
+            assertThat(entity.getTitle()).isEqualTo("Title");
+            assertThat(entity.getDescription()).isEqualTo("Desc");
+        }
+
+        @Test
+        void givenNullDTO_thenReturnNull() {
+            Issue entity = issueMapper.toEntity(null);
+            assertThat(entity).isNull();
         }
     }
 }

@@ -45,7 +45,7 @@ import { mdiImport } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/fetch-issue.ts";
+import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
 import { ROUTES_ISSUE_EDIT } from "@/constants.ts";

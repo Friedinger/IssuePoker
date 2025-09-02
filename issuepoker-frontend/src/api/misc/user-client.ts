@@ -1,10 +1,10 @@
-import type User from "@/types/User";
+import type User from "@/types/User.ts";
 
 import {
   defaultCatchHandler,
   defaultResponseHandler,
   getConfig,
-} from "@/api/fetch-utils";
+} from "@/api/fetch-utils.ts";
 
 /**
  * Retrieves the user data via the userinfo route of the API gateway. The SSO client must be configured so that

@@ -39,7 +39,7 @@ import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sor
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 
-import { getIssueList } from "@/api/fetch-issueList.ts";
+import { getIssueList } from "@/api/issue/get-issueList.ts";
 import IssueListFilters from "@/components/IssueListFilters.vue";
 import { ROUTES_ISSUE_DETAIL, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";

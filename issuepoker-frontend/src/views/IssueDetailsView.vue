@@ -35,7 +35,7 @@ import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/fetch-issue.ts";
+import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
 import {

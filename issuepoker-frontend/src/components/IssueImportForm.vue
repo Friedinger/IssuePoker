@@ -40,7 +40,7 @@ import { mdiCancel, mdiImport } from "@mdi/js";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { getIssueRemote } from "@/api/fetch-issues-remote.ts";
+import { getIssueRemote } from "@/api/issue/get-issue-remote.ts";
 import { ROUTES_ISSUE_EDIT, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";

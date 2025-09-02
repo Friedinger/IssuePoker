@@ -1,15 +1,15 @@
 <template>
   <v-avatar>
     <img
-      :src="avatarUrl"
       :alt="altText"
+      :src="avatarUrl"
     />
   </v-avatar>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed } from "vue";
 
-import { DefaultLhmAvatarService } from "@/api/ad2image-avatar-client";
+import { DefaultLhmAvatarService } from "@/api/misc/ad2image-avatar-client.ts";
 
 const {
   username,

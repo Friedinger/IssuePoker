@@ -3,7 +3,7 @@ import type IssueSummary from "@/types/IssueSummary.ts";
 import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
-import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
+import { defaultResponseHandler, getConfig } from "@/api/fetch-utils.ts";
 import { filterToParams } from "@/types/Filter.ts";
 
 export function getIssueList(

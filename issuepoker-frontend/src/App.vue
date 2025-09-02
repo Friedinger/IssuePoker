@@ -143,9 +143,12 @@ import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
-import { getVotingOptions } from "@/api/fetch-votingOptions.ts";
-import { checkBackendHealth, checkGatewayHealth } from "@/api/health-client.ts";
-import { getUser } from "@/api/user-client.ts";
+import { getVotingOptions } from "@/api/issue/get-votingOptions.ts";
+import {
+  checkBackendHealth,
+  checkGatewayHealth,
+} from "@/api/misc/health-client.ts";
+import { getUser } from "@/api/misc/user-client.ts";
 import Ad2ImageAvatar from "@/components/common/Ad2ImageAvatar.vue";
 import TheSnackbar from "@/components/TheSnackbar.vue";
 import { APPSWITCHER_URL, ROUTES_HOME } from "@/constants";

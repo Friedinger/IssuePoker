@@ -1,6 +1,6 @@
 import type { VotingOptions } from "@/stores/votingOptions.ts";
 
-import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
+import { defaultResponseHandler, getConfig } from "@/api/fetch-utils.ts";
 
 export function getVotingOptions(): Promise<VotingOptions> {
   return fetch(`api/backend-service/issues/votingOptions`, getConfig())

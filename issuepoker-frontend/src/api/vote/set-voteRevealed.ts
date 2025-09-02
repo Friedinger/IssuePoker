@@ -1,6 +1,6 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 
-import { defaultResponseHandler, postConfig } from "@/api/fetch-utils";
+import { defaultResponseHandler, postConfig } from "@/api/fetch-utils.ts";
 
 export function setVoteRevealed(
   issue: IssueDetails,

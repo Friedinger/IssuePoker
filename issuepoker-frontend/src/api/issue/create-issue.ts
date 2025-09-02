@@ -1,8 +1,8 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 
-import { defaultResponseHandler, patchConfig } from "@/api/fetch-utils";
+import { defaultResponseHandler, postConfig } from "@/api/fetch-utils.ts";
 
-export function updateIssue(
+export function createIssue(
   owner: string,
   repository: string,
   number: number,
@@ -10,8 +10,11 @@ export function updateIssue(
   description: string
 ): Promise<IssueDetails> {
   return fetch(
-    `api/backend-service/issues/${owner}/${repository}/${number}`,
-    patchConfig({
+    `api/backend-service/issues`,
+    postConfig({
+      owner: owner,
+      repository: repository,
+      number: number,
       title: title,
       description: description,
     })

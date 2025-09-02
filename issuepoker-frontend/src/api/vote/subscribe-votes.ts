@@ -1,5 +1,5 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
-import type Votes from "@/types/Votes";
+import type Votes from "@/types/Votes.ts";
 
 export function subscribeVotes(
   issue: IssueDetails,

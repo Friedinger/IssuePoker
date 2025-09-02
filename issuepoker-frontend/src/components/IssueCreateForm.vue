@@ -76,8 +76,8 @@ import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { isDefined } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 
-import { createIssue } from "@/api/create-issue.ts";
-import { updateIssue } from "@/api/update-issue.ts";
+import { createIssue } from "@/api/issue/create-issue.ts";
+import { updateIssue } from "@/api/issue/update-issue.ts";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";

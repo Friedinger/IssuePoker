@@ -1,6 +1,6 @@
 import type { IssueRemote } from "@/types/IssueRemote.ts";
 
-import { defaultResponseHandler } from "@/api/fetch-utils";
+import { defaultResponseHandler } from "@/api/fetch-utils.ts";
 
 export function getIssueRemote(
   owner: string,

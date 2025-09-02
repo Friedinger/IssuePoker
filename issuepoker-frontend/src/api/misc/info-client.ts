@@ -1,4 +1,4 @@
-import { defaultResponseHandler, getConfig } from "@/api/fetch-utils";
+import { defaultResponseHandler, getConfig } from "@/api/fetch-utils.ts";
 
 export interface Info {
   application: Application;

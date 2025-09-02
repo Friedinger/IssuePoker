@@ -123,7 +123,7 @@ import { isDefined } from "@vueuse/core";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getFilterOptions } from "@/api/fetch-filterOptions.ts";
+import { getFilterOptions } from "@/api/issue/get-filterOptions.ts";
 import router from "@/plugins/router.ts";
 import { defaultFilter, useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";

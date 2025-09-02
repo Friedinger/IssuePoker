@@ -7,6 +7,7 @@
       <v-col>
         <v-text-field
           v-model="owner"
+          :disabled="!keyChangeable"
           :rules="[validateOwner]"
           label="Besitzer"
         />
@@ -14,6 +15,7 @@
       <v-col>
         <v-text-field
           v-model="repository"
+          :disabled="!keyChangeable"
           :rules="[validateRepository]"
           label="Repository"
         />
@@ -21,6 +23,7 @@
       <v-col>
         <v-number-input
           v-model="number"
+          :disabled="!keyChangeable"
           :min="1"
           :rules="[validateNumber]"
           label="Nummer"
@@ -74,6 +77,7 @@ import { isDefined } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 
 import { createIssue } from "@/api/create-issue.ts";
+import { updateIssue } from "@/api/update-issue.ts";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
@@ -87,20 +91,29 @@ const title = ref("");
 const description = ref("");
 const valid = ref();
 
-const props = defineProps<{ issue?: IssueDetails }>();
+const {
+  issue,
+  keyChangeable = true,
+  action,
+} = defineProps<{
+  issue?: IssueDetails;
+  keyChangeable?: boolean;
+  action: "create" | "update";
+}>();
 
 onMounted(() => {
-  parseProp(props.issue);
+  parseProp(issue);
 });
 
 watch(
-  () => props.issue,
+  () => issue,
   (issue) => parseProp(issue)
 );
 
 function save() {
   if (!valid.value) return;
-  createIssue(
+  const request = action === "update" ? updateIssue : createIssue;
+  request(
     owner.value,
     repository.value,
     number.value,

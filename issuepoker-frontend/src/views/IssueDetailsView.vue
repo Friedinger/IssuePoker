@@ -7,6 +7,33 @@
           <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
         </template>
       </v-col>
+      <v-col
+        v-if="issue"
+        cols="auto"
+      >
+        <v-tooltip
+          location="top"
+          text="Issue bearbeiten"
+        >
+          <template v-slot:activator="{ props }">
+            <v-btn
+              :icon="mdiPencil"
+              :to="{
+                name: ROUTES_ISSUE_EDIT,
+                params: {
+                  owner: issue.owner,
+                  repository: issue.repository,
+                  number: issue.number,
+                  action: 'edit',
+                },
+              }"
+              density="comfortable"
+              rounded="rounded"
+              v-bind="props"
+            />
+          </template>
+        </v-tooltip>
+      </v-col>
       <v-col cols="auto">
         <v-btn :to="{ name: ROUTES_HOME }">Zurück zur Liste</v-btn>
       </v-col>
@@ -33,6 +60,7 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
+import { mdiPencil } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
@@ -42,7 +70,8 @@ import IssueVoting from "@/components/IssueVoting.vue";
 import {
   ROLE_ADMIN,
   ROUTES_HOME,
-  ROUTES_ISSUE_CREATE,
+  ROUTES_ISSUE_EDIT,
+  ROUTES_ISSUE_NEW,
   STATUS_INDICATORS,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
@@ -72,8 +101,8 @@ function fetchIssue(params: RouteParamsGeneric) {
     .catch(() => {
       if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
         router.push({
-          name: ROUTES_ISSUE_CREATE,
-          query: { owner, repository, number },
+          name: ROUTES_ISSUE_NEW,
+          params: { owner, repository, number },
         });
       } else {
         snackbarStore.showMessage({

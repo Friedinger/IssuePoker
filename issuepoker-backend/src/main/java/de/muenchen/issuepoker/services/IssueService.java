@@ -40,7 +40,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public Page<Issue> getIssueList(final Pageable pageRequest, final FilterDTO filter) {
-        log.info("Get all Issues with Pageable {}", pageRequest);
+        log.info("Get all Issues for page {} filtered by {}", pageRequest, filter);
         return issueRepository.findAll(
                 (root, query, criteriaBuilder) -> criteriaBuilder.and(
                         filterSearch(filter.search(), root, criteriaBuilder),
@@ -93,18 +93,17 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
-        log.debug("Save Issue with owner={}, repository= {}, number={}, title={}, description={}", issue.getOwner(), issue.getRepository(), issue.getId(),
-                issue.getTitle(), issue.getDescription());
+        log.debug("Save Issue {} with title \"{}\" and description \"{}\"", issue.getIssueKey(), issue.getTitle(), issue.getDescription());
         try {
             return issueRepository.save(issue);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException("Issue already exists", e);
+            throw new ConflictException("Issue %s already exists".formatted(issue.getIssueKey()), e);
         }
     }
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue updateIssue(final IssueRequestUpdateDTO update, final IssueKey key) {
-        log.debug("Update Issue {} to title={}, description={}", key, update.title(), update.description());
+        log.debug("Update Issue {} to title \"{}\" and description \"{}\"", key, update.title(), update.description());
         final Issue existingIssue = getIssue(key);
         existingIssue.setTitle(update.title());
         existingIssue.setDescription(update.description());
@@ -120,7 +119,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public void addVote(final Issue issue, final Vote vote) {
-        log.debug("Add Vote with number={}, username={}, voting={} to Issue {}", vote.getId(), vote.getUsername(), vote.getVoting(), issue.getId());
+        log.debug("Add Vote {} with id {} for user {} to Issue {}", vote.getVoting(), vote.getId(), vote.getUsername(), issue.getIssueKey());
         issue.getVotes().add(vote);
         saveIssue(issue);
     }

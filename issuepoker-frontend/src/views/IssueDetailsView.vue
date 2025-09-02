@@ -39,14 +39,13 @@ import { getIssue } from "@/api/fetch-issue.ts";
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
 import {
-  ROLE_ADMIN,
   ROUTES_HOME,
   ROUTES_ISSUE_EDIT,
   STATUS_INDICATORS,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { useUserStore } from "@/stores/user.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 
 const markdownOptions = {
   html: true,
@@ -69,7 +68,7 @@ function fetchIssue(params: RouteParamsGeneric) {
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
-      if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
+      if (isAdmin()) {
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },

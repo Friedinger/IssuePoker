@@ -1,6 +1,6 @@
 <template>
   <v-col
-    v-if="issue"
+    v-if="isAdmin() && issue"
     cols="auto"
   >
     <v-tooltip
@@ -27,7 +27,7 @@
     </v-tooltip>
   </v-col>
   <v-col
-    v-if="issue"
+    v-if="isAdmin() && issue"
     cols="auto"
   >
     <v-tooltip
@@ -69,6 +69,7 @@ import { ref } from "vue";
 
 import IssueDelete from "@/components/IssueDelete.vue";
 import { ROUTES_HOME, ROUTES_ISSUE_EDIT } from "@/constants.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 
 const { issue } = defineProps<{
   issue: IssueDetails | undefined;

@@ -71,7 +71,6 @@ import {
   ROLE_ADMIN,
   ROUTES_HOME,
   ROUTES_ISSUE_EDIT,
-  ROUTES_ISSUE_NEW,
   STATUS_INDICATORS,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
@@ -101,8 +100,8 @@ function fetchIssue(params: RouteParamsGeneric) {
     .catch(() => {
       if (useUserStore().getUser?.authorities.includes(ROLE_ADMIN)) {
         router.push({
-          name: ROUTES_ISSUE_NEW,
-          params: { owner, repository, number },
+          name: ROUTES_ISSUE_EDIT,
+          params: { owner, repository, number, action: "new" },
         });
       } else {
         snackbarStore.showMessage({

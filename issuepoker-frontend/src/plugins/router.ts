@@ -1,16 +1,9 @@
-import { createRouter, createWebHashHistory } from "vue-router";
-
-import {
-  ROLE_ADMIN,
-  ROUTES_HOME,
-  ROUTES_ISSUE_DETAIL,
-  ROUTES_ISSUE_EDIT,
-  ROUTES_ISSUE_NEW,
-} from "@/constants";
+import { ROLE_ADMIN, ROUTES_HOME, ROUTES_ISSUE_DETAIL, ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW, } from "@/constants";
 import { useUserStore } from "@/stores/user.ts";
 import HomeView from "@/views/HomeView.vue";
 import IssueCreateView from "@/views/IssueCreateView.vue";
 import IssueDetailsView from "@/views/IssueDetailsView.vue";
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
   {

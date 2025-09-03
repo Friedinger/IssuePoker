@@ -24,7 +24,7 @@ const routes = [
     component: IssueDetailsView,
   },
   {
-    path: "/:owner/:repository/issues/:number/:action",
+    path: "/:owner/:repository/issues/:number/:action(new|edit)",
     name: ROUTES_ISSUE_EDIT,
     component: IssueCreateView,
     beforeEnter: () => {

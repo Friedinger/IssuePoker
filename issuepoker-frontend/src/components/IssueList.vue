@@ -1,13 +1,4 @@
 <template>
-  <v-row align="center">
-    <v-col><h1>Issues</h1></v-col>
-    <v-col
-      v-if="isAdmin()"
-      cols="auto"
-    >
-      <v-btn :to="{ name: ROUTES_ISSUE_NEW }">Neues Issue</v-btn>
-    </v-col>
-  </v-row>
   <v-row>
     <issue-list-filters @fetchIssues="fetchIssues" />
   </v-row>
@@ -41,11 +32,10 @@ import { ref } from "vue";
 
 import { getIssueList } from "@/api/issue/get-issueList.ts";
 import IssueListFilters from "@/components/IssueListFilters.vue";
-import { ROUTES_ISSUE_DETAIL, ROUTES_ISSUE_NEW } from "@/constants.ts";
+import { ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useFilterStore } from "@/stores/filter.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { isAdmin } from "@/util/userUtils.ts";
 
 const headers = [
   { key: "owner", title: "Besitzer" },

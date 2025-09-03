@@ -43,18 +43,19 @@ import { useRoute } from "vue-router";
 import { getIssueRemote } from "@/api/issue/get-issue-remote.ts";
 import { ROUTES_ISSUE_EDIT, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useIssueImportStore } from "@/stores/issueImport.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const issueUrlRegex =
   /^https:\/\/github\.com\/([\w-]+)\/([\w-]+)\/issues\/(\d+)$/;
 const snackbarStore = useSnackbarStore();
+const issueImportStore = useIssueImportStore();
 const route = useRoute();
 
 const props = defineProps<{
   isActive: Ref<boolean, boolean>;
   issue?: IssueDetails;
 }>();
-const emit = defineEmits<(e: "return", value: IssueDetails) => void>();
 const isActive = ref(props.isActive);
 const issue = ref<IssueDetails | undefined>(props.issue);
 const url = ref("");
@@ -81,13 +82,13 @@ function importIssue() {
         title: content.title,
         description: content.body || "",
       };
+      issueImportStore.setIssueImport(issue.value);
       if (route.name !== ROUTES_ISSUE_EDIT) {
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },
         });
       }
-      emit("return", issue.value);
       isActive.value = false;
     })
     .catch((e) => {

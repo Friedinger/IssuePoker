@@ -18,7 +18,6 @@
             <issue-import-form
               :isActive="isActive"
               :issue="issue"
-              @return="setIssue"
             />
           </template>
         </v-dialog>
@@ -49,9 +48,11 @@ import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
 import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useIssueImportStore } from "@/stores/issueImport.ts";
 
 type Action = "edit" | "new" | undefined;
 
+const issueImportStore = useIssueImportStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
 const action = ref<Action>();
@@ -65,8 +66,14 @@ watch(
   (params) => fetchIssue(params)
 );
 
+watch(
+  () => issueImportStore.getIssueImport,
+  (imported) => importIssue(imported)
+);
+
 function fetchIssue(params: RouteParamsGeneric) {
   action.value = route.params.action as Action;
+  importIssue(issueImportStore.getIssueImport);
   if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
   const { owner, repository, number } = parseParams(params);
   getIssue(owner, repository, number)
@@ -82,18 +89,21 @@ function fetchIssue(params: RouteParamsGeneric) {
         name: ROUTES_ISSUE_EDIT,
         params: { owner, repository, number, action: "new" },
       });
-      setIssue({
+      issue.value = {
         owner,
         repository,
         number,
         title: "",
         description: "",
-      });
+      };
     });
 }
 
-function setIssue(content: IssueDetails) {
-  issue.value = content;
+function importIssue(imported: IssueDetails | null) {
+  if (imported) {
+    issue.value = imported;
+    issueImportStore.setIssueImport(null);
+  }
 }
 
 function parseParams(params: RouteParamsGeneric): {

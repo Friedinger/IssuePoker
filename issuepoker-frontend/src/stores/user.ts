@@ -3,18 +3,16 @@ import type User from "@/types/User";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export interface UserState {
-  user: User | null;
-}
+type UserState = User | null;
 
 export const useUserStore = defineStore("user", () => {
-  const user = ref<User | null>(null);
+  const user = ref<UserState>(null);
 
-  const getUser = computed((): User | null => {
+  const getUser = computed((): UserState => {
     return user.value;
   });
 
-  function setUser(payload: User | null): void {
+  function setUser(payload: UserState): void {
     user.value = payload;
   }
 

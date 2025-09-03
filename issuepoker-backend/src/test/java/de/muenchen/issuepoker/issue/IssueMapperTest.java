@@ -45,25 +45,25 @@ public class IssueMapperTest {
 
         @Test
         void givenIssueWithVotes_thenVoteCountIsCorrect() {
-            Issue issue = createIssue();
+            final Issue issue = createIssue();
             issue.setVotes(List.of(new de.muenchen.issuepoker.entities.vote.Vote(), new de.muenchen.issuepoker.entities.vote.Vote()));
-            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            final IssueSummaryDTO result = issueMapper.toSummary(issue);
             assertNotNull(result);
             assertThat(result.voteCount()).isEqualTo(2);
         }
 
         @Test
         void givenIssueWithNullVotes_thenVoteCountIsZero() {
-            Issue issue = createIssue();
+            final Issue issue = createIssue();
             issue.setVotes(null);
-            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            final IssueSummaryDTO result = issueMapper.toSummary(issue);
             assertNotNull(result);
             assertThat(result.voteCount()).isEqualTo(0);
         }
 
         @Test
         void givenIssueWithEmptyFields_thenMapCorrectly() {
-            Issue issue = new Issue();
+            final Issue issue = new Issue();
             issue.setId(UUID.randomUUID());
             issue.setOwner("");
             issue.setRepository("");
@@ -72,7 +72,7 @@ public class IssueMapperTest {
             issue.setDescription("");
             issue.setVotes(List.of());
             issue.setRevealed(false);
-            IssueSummaryDTO result = issueMapper.toSummary(issue);
+            final IssueSummaryDTO result = issueMapper.toSummary(issue);
             assertNotNull(result);
             assertThat(result.owner()).isEmpty();
             assertThat(result.repository()).isEmpty();
@@ -93,7 +93,7 @@ public class IssueMapperTest {
 
         @Test
         void givenIssueWithNullFields_thenMapCorrectly() {
-            Issue issue = new Issue();
+            final Issue issue = new Issue();
             issue.setId(UUID.randomUUID());
             issue.setOwner(null);
             issue.setRepository(null);
@@ -102,7 +102,7 @@ public class IssueMapperTest {
             issue.setDescription(null);
             issue.setVotes(null);
             issue.setRevealed(false);
-            IssueDetailsDTO result = issueMapper.toDetails(issue);
+            final IssueDetailsDTO result = issueMapper.toDetails(issue);
             assertNotNull(result);
             assertThat(result.owner()).isNull();
             assertThat(result.repository()).isNull();
@@ -124,8 +124,8 @@ public class IssueMapperTest {
 
         @Test
         void givenCreateDTO_thenMapToEntityCorrectly() {
-            IssueRequestCreateDTO dto = new IssueRequestCreateDTO("Owner", "Repo", 123, "Title", "Desc");
-            Issue entity = issueMapper.toEntity(dto);
+            final IssueRequestCreateDTO dto = new IssueRequestCreateDTO("Owner", "Repo", 123, "Title", "Desc");
+            final Issue entity = issueMapper.toEntity(dto);
             assertNotNull(entity);
             assertThat(entity.getOwner()).isEqualTo("Owner");
             assertThat(entity.getRepository()).isEqualTo("Repo");
@@ -136,7 +136,7 @@ public class IssueMapperTest {
 
         @Test
         void givenNullDTO_thenReturnNull() {
-            Issue entity = issueMapper.toEntity(null);
+            final Issue entity = issueMapper.toEntity(null);
             assertThat(entity).isNull();
         }
     }

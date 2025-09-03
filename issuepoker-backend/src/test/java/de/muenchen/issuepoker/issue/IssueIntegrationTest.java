@@ -151,41 +151,34 @@ public class IssueIntegrationTest {
         void givenSize2_Page0_thenReturnFirstTwoIssues() throws Exception {
             List<IssueSummaryDTO> expected = List.of(
                     issueMapper.toSummary(testIssues.get(0)),
-                    issueMapper.toSummary(testIssues.get(1))
-            );
+                    issueMapper.toSummary(testIssues.get(1)));
             mockMvc.perform(get("/issues").param("page", "0").param("size", "2").contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 2), 5)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 2), 5))));
         }
 
         @Test
         void givenSize2_Page1_thenReturnNextTwoIssues() throws Exception {
             List<IssueSummaryDTO> expected = List.of(
                     issueMapper.toSummary(testIssues.get(2)),
-                    issueMapper.toSummary(testIssues.get(3))
-            );
+                    issueMapper.toSummary(testIssues.get(3)));
             mockMvc.perform(get("/issues").param("page", "1").param("size", "2").contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(1, 2), 5)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(1, 2), 5))));
         }
 
         @Test
         void givenSize2_Page2_thenReturnLastIssue() throws Exception {
-            List<IssueSummaryDTO> expected = List.of(
-                    issueMapper.toSummary(testIssues.get(4))
-            );
+            List<IssueSummaryDTO> expected = List.of(issueMapper.toSummary(testIssues.get(4)));
             mockMvc.perform(get("/issues").param("page", "2").param("size", "2").contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(2, 2), 5)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(2, 2), 5))));
         }
 
         @Test
@@ -194,53 +187,52 @@ public class IssueIntegrationTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(List.of(), PageRequest.of(3, 2), 5)
-                    )));
+                            new PageImpl<>(List.of(), PageRequest.of(3, 2), 5))));
         }
 
         @Test
         void givenOwnerFilter_thenReturnFilteredIssues() throws Exception {
             String owner = testIssues.get(1).getOwner();
             List<IssueSummaryDTO> expected = List.of(issueMapper.toSummary(testIssues.get(1)));
-            mockMvc.perform(get("/issues")
+            mockMvc
+                    .perform(get("/issues")
                             .param("owners", owner)
                             .param("page", "0").param("size", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 10), 1)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 10), 1))));
         }
 
         @Test
         void givenRepositoryFilter_thenReturnFilteredIssues() throws Exception {
             String repo = testIssues.get(2).getRepository();
             List<IssueSummaryDTO> expected = List.of(issueMapper.toSummary(testIssues.get(2)));
-            mockMvc.perform(get("/issues")
+            mockMvc
+                    .perform(get("/issues")
                             .param("repositories", repo)
                             .param("page", "0").param("size", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 10), 1)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 10), 1))));
         }
 
         @Test
         void givenSearchFilter_thenReturnFilteredIssues() throws Exception {
             String search = testIssues.get(3).getTitle();
             List<IssueSummaryDTO> expected = List.of(issueMapper.toSummary(testIssues.get(3)));
-            mockMvc.perform(get("/issues")
+            mockMvc
+                    .perform(get("/issues")
                             .param("search", search)
                             .param("page", "0").param("size", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 10), 1)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 10), 1))));
         }
 
         @Test
@@ -249,15 +241,15 @@ public class IssueIntegrationTest {
                     .sorted((a, b) -> b.getTitle().compareTo(a.getTitle()))
                     .map(issueMapper::toSummary)
                     .toList();
-            mockMvc.perform(get("/issues")
+            mockMvc
+                    .perform(get("/issues")
                             .param("sort", "title,desc")
                             .param("page", "0").param("size", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 10), 5)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 10), 5))));
         }
 
         @Test
@@ -266,15 +258,15 @@ public class IssueIntegrationTest {
                     .sorted(Comparator.comparing(Issue::getOwner))
                     .map(issueMapper::toSummary)
                     .toList();
-            mockMvc.perform(get("/issues")
+            mockMvc
+                    .perform(get("/issues")
                             .param("sort", "owner,asc")
                             .param("page", "0").param("size", "10")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
-                            new PageImpl<>(expected, PageRequest.of(0, 10), 5)
-                    )));
+                            new PageImpl<>(expected, PageRequest.of(0, 10), 5))));
         }
     }
 
@@ -302,7 +294,8 @@ public class IssueIntegrationTest {
             Issue issue = testIssues.getFirst();
             IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription");
             IssueDetailsDTO expected = new IssueDetailsDTO(issue.getOwner(), issue.getRepository(), issue.getNumber(), "UpdatedTitle", "UpdatedDescription");
-            mockMvc.perform(
+            mockMvc
+                    .perform(
                             patch("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(updateDTO)))
@@ -317,10 +310,12 @@ public class IssueIntegrationTest {
         @Test
         void givenIssueId_thenDeleteIssue() throws Exception {
             Issue issue = testIssues.getFirst();
-            mockMvc.perform(delete("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())
+            mockMvc
+                    .perform(delete("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
-            mockMvc.perform(get("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())
+            mockMvc
+                    .perform(get("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().is4xxClientError());
         }

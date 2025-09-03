@@ -39,34 +39,39 @@ import org.springframework.data.domain.Sort;
 @ExtendWith(MockitoExtension.class)
 public class IssueServiceTest {
     private final List<Issue> testIssues = List.of(
-            new Issue() {{
-                setOwner("OwnerA");
-                setRepository("RepoA");
-                setNumber(1);
-                setTitle("Alpha");
-                setDescription("DescA");
-                setVotes(new ArrayList<>());
-                setRevealed(true);
-            }},
-            new Issue() {{
-                setOwner("OwnerB");
-                setRepository("RepoB");
-                setNumber(2);
-                setTitle("Beta");
-                setDescription("DescB");
-                setVotes(new ArrayList<>());
-                setRevealed(false);
-            }},
-            new Issue() {{
-                setOwner("OwnerC");
-                setRepository("RepoA");
-                setNumber(3);
-                setTitle("Gamma");
-                setDescription("DescC");
-                setVotes(new ArrayList<>());
-                setRevealed(true);
-            }}
-    );
+            new Issue() {
+                {
+                    setOwner("OwnerA");
+                    setRepository("RepoA");
+                    setNumber(1);
+                    setTitle("Alpha");
+                    setDescription("DescA");
+                    setVotes(new ArrayList<>());
+                    setRevealed(true);
+                }
+            },
+            new Issue() {
+                {
+                    setOwner("OwnerB");
+                    setRepository("RepoB");
+                    setNumber(2);
+                    setTitle("Beta");
+                    setDescription("DescB");
+                    setVotes(new ArrayList<>());
+                    setRevealed(false);
+                }
+            },
+            new Issue() {
+                {
+                    setOwner("OwnerC");
+                    setRepository("RepoA");
+                    setNumber(3);
+                    setTitle("Gamma");
+                    setDescription("DescC");
+                    setVotes(new ArrayList<>());
+                    setRevealed(true);
+                }
+            });
 
     @Mock
     private IssueRepository issueRepository;

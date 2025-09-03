@@ -4,9 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.muenchen.issuepoker.entities.issue.Issue;
-import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.issue.IssueMapper;
 import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
 import java.util.List;
 import java.util.UUID;

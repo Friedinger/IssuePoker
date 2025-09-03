@@ -10,7 +10,6 @@ public record IssueKey(String owner, String repository, long number) {
     }
 
     @Override
-    @SuppressWarnings("NullableProblems")
     public String toString() {
         return sanitizeForLog(owner + "/" + repository + "#" + number);
     }

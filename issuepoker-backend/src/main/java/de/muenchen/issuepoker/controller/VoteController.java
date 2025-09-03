@@ -1,9 +1,9 @@
 package de.muenchen.issuepoker.controller;
 
 import de.muenchen.issuepoker.entities.issue.IssueKey;
-import de.muenchen.issuepoker.entities.vote.request.VoteRequestVotingDTO;
 import de.muenchen.issuepoker.entities.vote.request.VoteRequestResultDTO;
 import de.muenchen.issuepoker.entities.vote.request.VoteRequestRevealedDTO;
+import de.muenchen.issuepoker.entities.vote.request.VoteRequestVotingDTO;
 import de.muenchen.issuepoker.entities.vote.response.VotesDTO;
 import de.muenchen.issuepoker.security.AuthUtils;
 import de.muenchen.issuepoker.services.VoteService;

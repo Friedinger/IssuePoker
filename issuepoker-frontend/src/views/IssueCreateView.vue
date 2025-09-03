@@ -27,7 +27,7 @@
     <v-row>
       <v-col>
         <issue-create-form
-          :action="action === 'edit' ? 'update' : 'create'"
+          :action="action ?? 'new'"
           :issue="issue"
           :keyChangeable="action === undefined"
         />

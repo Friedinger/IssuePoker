@@ -9,7 +9,7 @@
         />
       </v-col>
       <v-col>
-        <h1 class="text-h3 font-weight-bold mb-3 text-center">
+        <h1 class="text-h3 font-weight-bold mb-3">
           Willkommen beim Issue Poker
         </h1>
         <p>

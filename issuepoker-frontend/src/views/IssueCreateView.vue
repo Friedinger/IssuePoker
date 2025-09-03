@@ -11,10 +11,9 @@
             <v-btn
               :prepend-icon="mdiImport"
               v-bind="activatorProps"
-              >Importieren</v-btn
-            >
+              >Importieren
+            </v-btn>
           </template>
-
           <template v-slot:default="{ isActive }">
             <issue-import-form
               :isActive="isActive"
@@ -51,9 +50,11 @@ import IssueImportForm from "@/components/IssueImportForm.vue";
 import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 
+type Action = "edit" | "new" | undefined;
+
 const route = useRoute();
 const issue = ref<IssueDetails>();
-const action = ref(route.params.action);
+const action = ref<Action>();
 
 onMounted(() => {
   fetchIssue(route.params);
@@ -65,7 +66,8 @@ watch(
 );
 
 function fetchIssue(params: RouteParamsGeneric) {
-  if (route.name === ROUTES_ISSUE_NEW) return;
+  action.value = route.params.action as Action;
+  if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
   const { owner, repository, number } = parseParams(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {
@@ -99,7 +101,6 @@ function parseParams(params: RouteParamsGeneric): {
   repository: string;
   number: number;
 } {
-  action.value = route.params.action;
   const owner = params.owner;
   const repository = params.repository;
   const number = params.number;

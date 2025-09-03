@@ -8,7 +8,6 @@ import {
   ROUTES_ISSUE_NEW,
 } from "@/constants";
 import { useUserStore } from "@/stores/user.ts";
-import { isAdmin } from "@/util/userUtils.ts";
 import HomeView from "@/views/HomeView.vue";
 import IssueCreateView from "@/views/IssueCreateView.vue";
 import IssueDetailsView from "@/views/IssueDetailsView.vue";

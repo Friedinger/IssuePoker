@@ -1,6 +1,7 @@
 package de.muenchen.issuepoker.services;
 
 import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
+import static de.muenchen.issuepoker.util.LogUtil.sanitizeForLog;
 
 import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.NotFoundException;
@@ -37,13 +38,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public Page<Issue> getIssueList(final Pageable pageRequest, final FilterDTO filter) {
-        log.info(
-            "Get all Issues for page {} filtered by owner={}, repository={}, status={}",
-            pageRequest,
-            sanitizeForLog(filter.getOwner()),
-            sanitizeForLog(filter.getRepository()),
-            sanitizeForLog(filter.getStatus())
-        );
+        log.info("Get all Issues for page {} filtered by {}", pageRequest, sanitizeForLog(filter.toString()));
         return issueRepository.findAll(
                 (root, query, criteriaBuilder) -> issueFilterService.filterIssues(filter, root, criteriaBuilder),
                 pageRequest);
@@ -87,13 +82,5 @@ public class IssueService {
         final List<String> owners = issueRepository.findDistinctOwners().stream().sorted().toList();
         final List<String> repositories = issueRepository.findDistinctRepositories().stream().sorted().toList();
         return new FilterOptionsDTO(owners, repositories);
-    }
-    // Utility method to sanitize strings for logging
-    private static String sanitizeForLog(String input) {
-        if (input == null) {
-            return "";
-        }
-        // Remove CR, LF and other control chars
-        return input.replaceAll("[\\r\\n\\t]", "_");
     }
 }

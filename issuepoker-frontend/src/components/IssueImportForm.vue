@@ -69,7 +69,7 @@ function importIssue() {
   if (!valid.value) return;
   const match = url.value.match(issueUrlRegex);
   if (!match) return;
-  const [, owner, repository, number] = match;
+  const [, owner = "", repository = "", number = ""] = match;
   getIssueRemote(owner, repository, parseInt(number))
     .then((content: IssueRemote) => {
       if (content.pull_request) {

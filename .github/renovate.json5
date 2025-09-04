@@ -2,5 +2,22 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>it-at-m/refarch//refarch-tools/refarch-renovate/refarch-renovate-config.json5",
-  ]
+  ],
+  "labels": ["Type: Dependency"],
+  "commitMessagePrefix": "⬆️",
+  "commitMessageAction": "Upgrade",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["pin"],
+      "commitMessagePrefix": "📌",
+      "commitMessageAction": "Pin"
+    },
+    {
+      "matchUpdateTypes": ["rollback"],
+      "commitMessagePrefix": "⬇️",
+      "commitMessageAction": "Downgrade"
+    }
+  ],
+  "dependencyDashboardTitle": "📌 Dependency Dashboard",
+  "dependencyDashboardLabels": ["Type: Dependency"]
 }

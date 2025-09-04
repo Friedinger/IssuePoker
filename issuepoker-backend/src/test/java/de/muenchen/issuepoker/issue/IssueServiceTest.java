@@ -43,8 +43,7 @@ public class IssueServiceTest {
     private final List<Issue> testIssues = List.of(
             createIssue("OwnerA", "RepoA", 1, "Alpha", "DescA", true),
             createIssue("OwnerB", "RepoB", 2, "Beta", "DescB", false),
-            createIssue("OwnerC", "RepoA", 3, "Gamma", "DescC", true)
-    );
+            createIssue("OwnerC", "RepoA", 3, "Gamma", "DescC", true));
     @Mock
     private IssueRepository issueRepository;
     @InjectMocks

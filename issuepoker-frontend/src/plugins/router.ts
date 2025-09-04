@@ -1,12 +1,13 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import {
+  ROLE_ADMIN,
   ROUTES_HOME,
   ROUTES_ISSUE_DETAIL,
   ROUTES_ISSUE_EDIT,
   ROUTES_ISSUE_NEW,
 } from "@/constants";
-import { isAdmin } from "@/util/userUtils.ts";
+import { useUserStore } from "@/stores/user.ts";
 import HomeView from "@/views/HomeView.vue";
 import IssueCreateView from "@/views/IssueCreateView.vue";
 import IssueDetailsView from "@/views/IssueDetailsView.vue";
@@ -23,11 +24,11 @@ const routes = [
     component: IssueDetailsView,
   },
   {
-    path: "/:owner/:repository/issues/:number/:action",
+    path: "/:owner/:repository/issues/:number/:action(new|edit)",
     name: ROUTES_ISSUE_EDIT,
     component: IssueCreateView,
     beforeEnter: () => {
-      return isAdmin();
+      return useUserStore().getUser?.authorities.includes(ROLE_ADMIN);
     },
   },
   {
@@ -35,7 +36,7 @@ const routes = [
     name: ROUTES_ISSUE_NEW,
     component: IssueCreateView,
     beforeEnter: () => {
-      return isAdmin();
+      return useUserStore().getUser?.authorities.includes(ROLE_ADMIN);
     },
   },
   { path: "/:catchAll(.*)*", redirect: "/" }, // CatchAll route

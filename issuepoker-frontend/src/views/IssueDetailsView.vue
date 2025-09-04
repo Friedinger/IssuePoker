@@ -35,7 +35,7 @@ import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/fetch-issue.ts";
+import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
 import {
@@ -44,6 +44,7 @@ import {
   STATUS_INDICATORS,
 } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useIssueImportStore } from "@/stores/issueImport.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { isAdmin } from "@/util/userUtils.ts";
 
@@ -51,6 +52,7 @@ const markdownOptions = {
   html: true,
 };
 const snackbarStore = useSnackbarStore();
+const issueImportStore = useIssueImportStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
 
@@ -69,6 +71,13 @@ function fetchIssue(params: RouteParamsGeneric) {
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
       if (isAdmin()) {
+        issueImportStore.setIssueImport({
+          owner,
+          repository,
+          number,
+          title: "",
+          description: "",
+        });
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },

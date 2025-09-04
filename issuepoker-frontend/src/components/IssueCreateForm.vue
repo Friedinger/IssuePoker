@@ -51,7 +51,7 @@
     <v-row align="center">
       <v-col cols="auto">
         <v-btn
-          :disabled="!valid"
+          :disabled="!valid || (!isDirty() && action !== 'new')"
           :prepend-icon="mdiContentSave"
           type="submit"
           @click="save"
@@ -61,28 +61,44 @@
       <v-col cols="auto">
         <v-btn
           :prepend-icon="mdiCancel"
-          :to="{ name: ROUTES_HOME }"
+          :to="cancel()"
           >Abbrechen
         </v-btn>
       </v-col>
     </v-row>
   </v-form>
+  <yes-no-dialog
+    v-model="saveLeaveDialog"
+    :dialogtext="saveLeaveDialogText"
+    :dialogtitle="saveLeaveDialogTitle"
+    @no="stay"
+    @yes="leave"
+  />
 </template>
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
+import type { RouteLocationRaw } from "vue-router";
 
 import { mdiCancel, mdiContentSave } from "@mdi/js";
-import { isDefined } from "@vueuse/core";
 import { onMounted, ref, watch } from "vue";
 
-import { createIssue } from "@/api/create-issue.ts";
-import { updateIssue } from "@/api/update-issue.ts";
+import { createIssue } from "@/api/issue/create-issue.ts";
+import { updateIssue } from "@/api/issue/update-issue.ts";
+import YesNoDialog from "@/components/common/YesNoDialog.vue";
+import { useSaveLeave } from "@/composables/saveLeave.ts";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
+const {
+  cancel: stay,
+  leave,
+  saveLeaveDialog,
+  saveLeaveDialogText,
+  saveLeaveDialogTitle,
+} = useSaveLeave(isDirty);
 
 const owner = ref("");
 const repository = ref("");
@@ -90,6 +106,7 @@ const number = ref(NaN);
 const title = ref("");
 const description = ref("");
 const valid = ref();
+const saved = ref<boolean>(false);
 
 const {
   issue,
@@ -98,7 +115,7 @@ const {
 } = defineProps<{
   issue?: IssueDetails;
   keyChangeable?: boolean;
-  action: "create" | "update";
+  action: "new" | "edit";
 }>();
 
 onMounted(() => {
@@ -112,7 +129,7 @@ watch(
 
 function save() {
   if (!valid.value) return;
-  const request = action === "update" ? updateIssue : createIssue;
+  const request = action === "edit" ? updateIssue : createIssue;
   request(
     owner.value,
     repository.value,
@@ -120,16 +137,14 @@ function save() {
     title.value,
     description.value
   )
-    .then((content: IssueDetails) =>
+    .then((content: IssueDetails) => {
+      saved.value = true;
+      const { owner, repository, number } = content;
       router.push({
         name: ROUTES_ISSUE_DETAIL,
-        params: {
-          owner: content.owner,
-          repository: content.repository,
-          number: content.number,
-        },
-      })
-    )
+        params: { owner, repository, number },
+      });
+    })
     .catch((error) => snackbarStore.showMessage(error));
 }
 
@@ -147,8 +162,8 @@ function validateRepository(value: string) {
   return true;
 }
 
-function validateNumber(value: number) {
-  if (!isDefined(number)) return "Bitte eine Nummer angeben.";
+function validateNumber(value: number | null) {
+  if (value === null) return "Bitte eine Nummer angeben.";
   if (value < 1) return "Nummer muss positiv sein.";
   return true;
 }
@@ -173,5 +188,35 @@ function parseProp(issue?: IssueDetails) {
   number.value = issue.number;
   title.value = issue.title;
   description.value = issue.description;
+}
+
+function cancel(): RouteLocationRaw {
+  if (action === "edit" && issue) {
+    const { owner, repository, number } = issue;
+    return {
+      name: ROUTES_ISSUE_DETAIL,
+      params: { owner, repository, number },
+    };
+  }
+  return { name: ROUTES_HOME };
+}
+
+function isDirty(): boolean {
+  if (saved.value === true) return false;
+  const currentValues = [
+    owner.value,
+    repository.value,
+    number.value,
+    title.value,
+    description.value,
+  ];
+  const issueValues = [
+    issue?.owner ?? "",
+    issue?.repository ?? "",
+    issue?.number ?? null,
+    issue?.title ?? "",
+    issue?.description ?? "",
+  ];
+  return currentValues.some((value, index) => value !== issueValues[index]);
 }
 </script>

@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import de.muenchen.issuepoker.MicroServiceApplication;
 import de.muenchen.issuepoker.TestConstants;
-import de.muenchen.issuepoker.entities.Issue;
-import de.muenchen.issuepoker.entities.dto.IssueDetailsDTO;
-import de.muenchen.issuepoker.entities.dto.IssueRequestCreateDTO;
-import de.muenchen.issuepoker.issue.IssueRepository;
+import de.muenchen.issuepoker.entities.issue.Issue;
+import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
+import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
+import de.muenchen.issuepoker.repositories.IssueRepository;
 import java.net.URI;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

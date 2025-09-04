@@ -31,7 +31,7 @@ import type IssueDetails from "@/types/IssueDetails.ts";
 
 import { mdiCancel, mdiDelete } from "@mdi/js";
 
-import { deleteIssue } from "@/api/delete-issue.ts";
+import { deleteIssue } from "@/api/issue/delete-issue.ts";
 import { ROUTES_HOME, STATUS_INDICATORS } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";

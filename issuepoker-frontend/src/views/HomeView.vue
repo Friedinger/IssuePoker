@@ -9,7 +9,7 @@
         />
       </v-col>
       <v-col>
-        <h1 class="text-h3 font-weight-bold mb-3 text-center">
+        <h1 class="text-h3 font-weight-bold mb-3">
           Willkommen beim Issue Poker
         </h1>
         <p>
@@ -18,10 +18,42 @@
         </p>
       </v-col>
     </v-row>
+    <v-row align="center">
+      <v-col><h1>Issues</h1></v-col>
+      <v-col
+        v-if="isAdmin()"
+        cols="auto"
+      >
+        <v-btn
+          :prepend-icon="mdiNotePlus"
+          :to="{ name: ROUTES_ISSUE_NEW }"
+          >Neues Issue
+        </v-btn>
+      </v-col>
+      <v-col cols="auto">
+        <v-dialog max-width="500">
+          <template v-slot:activator="{ props: activatorProps }">
+            <v-btn
+              :prepend-icon="mdiImport"
+              v-bind="activatorProps"
+              >Issue Importieren
+            </v-btn>
+          </template>
+          <template v-slot:default="{ isActive }">
+            <issue-import-form :isActive="isActive" />
+          </template>
+        </v-dialog>
+      </v-col>
+    </v-row>
     <issue-list />
   </v-container>
 </template>
 
 <script lang="ts" setup>
+import { mdiImport, mdiNotePlus } from "@mdi/js";
+
+import IssueImportForm from "@/components/IssueImportForm.vue";
 import IssueList from "@/components/IssueList.vue";
+import { ROUTES_ISSUE_NEW } from "@/constants.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 </script>

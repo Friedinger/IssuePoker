@@ -9,7 +9,7 @@ import * as directives from "vuetify/directives";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "../../src/constants";
 
-vi.mock("@/api/create-issue.ts", () => ({
+vi.mock("@/api/issue/create-issue.ts", () => ({
   createIssue: vi.fn().mockResolvedValue({
     owner: "Mock Owner",
     repository: "Mock Repository",
@@ -21,7 +21,7 @@ vi.mock("@/plugins/router.ts", () => ({
 }));
 
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
-const { createIssue } = await import("@/api/create-issue.ts");
+const { createIssue } = await import("@/api/issue/create-issue.ts");
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
 const router = (await import("@/plugins/router.ts")).default;
 

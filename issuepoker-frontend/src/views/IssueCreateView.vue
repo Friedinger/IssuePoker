@@ -11,15 +11,13 @@
             <v-btn
               :prepend-icon="mdiImport"
               v-bind="activatorProps"
-              >Importieren</v-btn
-            >
+              >Importieren
+            </v-btn>
           </template>
-
           <template v-slot:default="{ isActive }">
             <issue-import-form
               :isActive="isActive"
               :issue="issue"
-              @return="setIssue"
             />
           </template>
         </v-dialog>
@@ -28,7 +26,7 @@
     <v-row>
       <v-col>
         <issue-create-form
-          :action="action === 'edit' ? 'update' : 'create'"
+          :action="action ?? 'new'"
           :issue="issue"
           :keyChangeable="action === undefined"
         />
@@ -45,15 +43,19 @@ import { mdiImport } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/fetch-issue.ts";
+import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
-import { ROUTES_ISSUE_EDIT } from "@/constants.ts";
+import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
+import { useIssueImportStore } from "@/stores/issueImport.ts";
 
+type Action = "edit" | "new" | undefined;
+
+const issueImportStore = useIssueImportStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
-const action = ref(route.params.action);
+const action = ref<Action>();
 
 onMounted(() => {
   fetchIssue(route.params);
@@ -64,7 +66,15 @@ watch(
   (params) => fetchIssue(params)
 );
 
+watch(
+  () => issueImportStore.getIssueImport,
+  (imported) => importIssue(imported)
+);
+
 function fetchIssue(params: RouteParamsGeneric) {
+  action.value = route.params.action as Action;
+  importIssue(issueImportStore.getIssueImport);
+  if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
   const { owner, repository, number } = parseParams(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {
@@ -79,18 +89,21 @@ function fetchIssue(params: RouteParamsGeneric) {
         name: ROUTES_ISSUE_EDIT,
         params: { owner, repository, number, action: "new" },
       });
-      setIssue({
+      issue.value = {
         owner,
         repository,
         number,
         title: "",
         description: "",
-      });
+      };
     });
 }
 
-function setIssue(content: IssueDetails) {
-  issue.value = content;
+function importIssue(imported: IssueDetails | null) {
+  if (imported) {
+    issue.value = imported;
+    issueImportStore.setIssueImport(null);
+  }
 }
 
 function parseParams(params: RouteParamsGeneric): {
@@ -98,7 +111,6 @@ function parseParams(params: RouteParamsGeneric): {
   repository: string;
   number: number;
 } {
-  action.value = route.params.action;
   const owner = params.owner;
   const repository = params.repository;
   const number = params.number;

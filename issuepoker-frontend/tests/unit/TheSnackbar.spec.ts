@@ -6,7 +6,7 @@ import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 
 // @ts-expect-error: "TS2307 cannot find module" is a false positive here
-import TheSnackbar from "@/components/TheSnackbar.vue";
+import TheSnackbar from "@/components/common/TheSnackbar.vue";
 
 const pinia = createPinia();
 const vuetify = createVuetify({

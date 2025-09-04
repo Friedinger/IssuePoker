@@ -49,6 +49,7 @@ import IssueImportForm from "@/components/IssueImportForm.vue";
 import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useIssueImportStore } from "@/stores/issueImport.ts";
+import { parseRouteParamsToIssueKey } from "@/util/parser.ts";
 
 type Action = "edit" | "new" | undefined;
 
@@ -75,7 +76,7 @@ function fetchIssue(params: RouteParamsGeneric) {
   action.value = route.params.action as Action;
   importIssue(issueImportStore.getIssueImport);
   if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
-  const { owner, repository, number } = parseParams(params);
+  const { owner, repository, number } = parseRouteParamsToIssueKey(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {
       router.push({
@@ -104,20 +105,5 @@ function importIssue(imported: IssueDetails | null) {
     issue.value = imported;
     issueImportStore.setIssueImport(null);
   }
-}
-
-function parseParams(params: RouteParamsGeneric): {
-  owner: string;
-  repository: string;
-  number: number;
-} {
-  const owner = params.owner;
-  const repository = params.repository;
-  const number = params.number;
-  return {
-    owner: Array.isArray(owner) ? owner[0] : owner,
-    repository: Array.isArray(repository) ? repository[0] : repository,
-    number: Array.isArray(number) ? parseInt(number[0]) : parseInt(number),
-  };
 }
 </script>

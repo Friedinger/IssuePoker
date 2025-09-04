@@ -46,6 +46,7 @@ import {
 import router from "@/plugins/router.ts";
 import { useIssueImportStore } from "@/stores/issueImport.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { parseRouteParamsToIssueKey } from "@/util/parser.ts";
 import { isAdmin } from "@/util/userUtils.ts";
 
 const markdownOptions = {
@@ -66,7 +67,7 @@ watch(
 );
 
 function fetchIssue(params: RouteParamsGeneric) {
-  const { owner, repository, number } = parseParams(params);
+  const { owner, repository, number } = parseRouteParamsToIssueKey(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => (issue.value = content))
     .catch(() => {
@@ -90,21 +91,6 @@ function fetchIssue(params: RouteParamsGeneric) {
         router.push({ name: ROUTES_HOME });
       }
     });
-}
-
-function parseParams(params: RouteParamsGeneric): {
-  owner: string;
-  repository: string;
-  number: number;
-} {
-  const owner = params.owner;
-  const repository = params.repository;
-  const number = params.number;
-  return {
-    owner: Array.isArray(owner) ? owner[0] : owner,
-    repository: Array.isArray(repository) ? repository[0] : repository,
-    number: Array.isArray(number) ? parseInt(number[0]) : parseInt(number),
-  };
 }
 </script>
 

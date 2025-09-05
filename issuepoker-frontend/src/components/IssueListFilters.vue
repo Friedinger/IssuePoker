@@ -130,11 +130,9 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { filterFromQuery, filterToQuery } from "@/types/Filter.ts";
 
 const selectOptions = [
-  { value: null, title: "Egal" },
   { value: true, title: "Ja" },
   { value: false, title: "Nein" },
 ];
-
 const emit = defineEmits<(e: "fetchIssues") => void>();
 const snackbarStore = useSnackbarStore();
 const filter = computed({

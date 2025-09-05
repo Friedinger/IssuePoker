@@ -85,7 +85,7 @@ function fetchIssue(params: RouteParamsGeneric) {
         });
       } else {
         snackbarStore.showMessage({
-          message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
+          message: `${owner}/${repository}#${number} wurde nicht gefunden.`,
           level: STATUS_INDICATORS.WARNING,
         });
         router.push({ name: ROUTES_HOME });

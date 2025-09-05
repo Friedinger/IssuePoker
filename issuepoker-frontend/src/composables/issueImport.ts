@@ -46,19 +46,19 @@ export function useIssueImport() {
             .then();
         }
         snackbarStore.showMessage({
-          message: `"${owner}/${repository}#${number}" wurde erfolgreich importiert.`,
+          message: `${owner}/${repository}#${number} wurde erfolgreich importiert.`,
           level: STATUS_INDICATORS.SUCCESS,
         });
       })
       .catch((e) => {
         if (e.message === "Pull Requests are not supported.") {
           snackbarStore.showMessage({
-            message: `"${owner}/${repository}#${number}" ist ein Pull Request und wird nicht unterstützt.`,
+            message: `${owner}/${repository}#${number} ist ein Pull Request und wird nicht unterstützt.`,
             level: STATUS_INDICATORS.WARNING,
           });
         } else {
           snackbarStore.showMessage({
-            message: `Remote Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
+            message: `Remote Issue ${owner}/${repository}#${number} wurde nicht gefunden.`,
             level: STATUS_INDICATORS.WARNING,
           });
         }

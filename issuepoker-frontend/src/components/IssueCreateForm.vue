@@ -110,10 +110,12 @@ const saved = ref<boolean>(false);
 
 const {
   issue,
+  originalIssue,
   keyChangeable = true,
   action,
 } = defineProps<{
   issue?: IssueDetails;
+  originalIssue?: IssueDetails;
   keyChangeable?: boolean;
   action: "new" | "edit";
 }>();
@@ -210,13 +212,13 @@ function isDirty(): boolean {
     title.value,
     description.value,
   ];
-  const issueValues = [
-    issue?.owner ?? "",
-    issue?.repository ?? "",
-    issue?.number ?? null,
-    issue?.title ?? "",
-    issue?.description ?? "",
+  const originalValues = [
+    originalIssue?.owner ?? "",
+    originalIssue?.repository ?? "",
+    originalIssue?.number ?? null,
+    originalIssue?.title ?? "",
+    originalIssue?.description ?? "",
   ];
-  return currentValues.some((value, index) => value !== issueValues[index]);
+  return currentValues.some((value, index) => value !== originalValues[index]);
 }
 </script>

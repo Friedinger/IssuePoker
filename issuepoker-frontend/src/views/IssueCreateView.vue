@@ -29,6 +29,7 @@
           :action="action ?? 'new'"
           :issue="issue"
           :keyChangeable="action === undefined"
+          :originalIssue="originalIssue"
         />
       </v-col>
     </v-row>
@@ -56,6 +57,7 @@ type Action = "edit" | "new" | undefined;
 const issueImportStore = useIssueImportStore();
 const route = useRoute();
 const issue = ref<IssueDetails>();
+const originalIssue = ref<IssueDetails>();
 const action = ref<Action>();
 
 onMounted(() => {
@@ -84,6 +86,7 @@ function fetchIssue(params: RouteParamsGeneric) {
         params: { owner, repository, number, action: "edit" },
       });
       issue.value = content;
+      originalIssue.value = issue.value;
     })
     .catch(() => {
       router.push({
@@ -97,6 +100,7 @@ function fetchIssue(params: RouteParamsGeneric) {
         title: "",
         description: "",
       };
+      originalIssue.value = issue.value;
     });
 }
 

@@ -83,6 +83,7 @@ function fetchIssues() {
     })
     .catch((error) => {
       snackbarStore.showMessage(error);
+      loading.value = false;
     });
 }
 

@@ -31,18 +31,7 @@
         </v-btn>
       </v-col>
       <v-col cols="auto">
-        <v-dialog max-width="500">
-          <template v-slot:activator="{ props: activatorProps }">
-            <v-btn
-              :prepend-icon="mdiImport"
-              v-bind="activatorProps"
-              >Issue Importieren
-            </v-btn>
-          </template>
-          <template v-slot:default="{ isActive }">
-            <issue-import-form :isActive="isActive" />
-          </template>
-        </v-dialog>
+        <issue-import-form button-text="Issue Importieren" />
       </v-col>
     </v-row>
     <issue-list />
@@ -50,7 +39,7 @@
 </template>
 
 <script lang="ts" setup>
-import { mdiImport, mdiNotePlus } from "@mdi/js";
+import { mdiNotePlus } from "@mdi/js";
 
 import IssueImportForm from "@/components/IssueImportForm.vue";
 import IssueList from "@/components/IssueList.vue";

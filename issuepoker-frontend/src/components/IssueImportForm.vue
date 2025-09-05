@@ -1,123 +1,96 @@
 <template>
-  <v-card title="Issue importieren">
-    <v-form
-      v-model="valid"
-      @submit.prevent
-    >
-      <v-card-text>
-        <v-text-field
-          v-model="url"
-          :disabled="issue !== undefined"
-          :rules="[validateUrl]"
-          label="GitHub URL"
-        />
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          :disabled="!valid"
-          :prepend-icon="mdiImport"
-          type="submit"
-          @click="importIssue"
-          >Importieren
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          :prepend-icon="mdiCancel"
-          @click="isActive = false"
-          >Abbrechen
-        </v-btn>
-      </v-card-actions>
-    </v-form>
-  </v-card>
+  <v-btn
+    :prepend-icon="mdiImport"
+    @click="open"
+    >{{ buttonText ?? "Importieren" }}
+  </v-btn>
+
+  <v-dialog
+    v-model="active"
+    max-width="500"
+  >
+    <template v-slot:default>
+      <v-card title="Issue importieren">
+        <v-form
+          v-model="valid"
+          @submit.prevent
+        >
+          <v-card-text>
+            <v-text-field
+              v-model="url"
+              :disabled="issue !== undefined"
+              :rules="[validateUrl]"
+              label="GitHub URL"
+            />
+          </v-card-text>
+          <v-card-actions>
+            <v-btn
+              :disabled="!valid"
+              :prepend-icon="mdiImport"
+              type="submit"
+              @click="runImport"
+              >Importieren
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              :prepend-icon="mdiCancel"
+              @click="active = false"
+              >Abbrechen
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </template>
+  </v-dialog>
 </template>
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
-import type { IssueRemote } from "@/types/IssueRemote.ts";
-import type { Ref } from "vue";
 
 import { mdiCancel, mdiImport } from "@mdi/js";
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { VForm } from "vuetify/components";
 
-import { getIssueRemote } from "@/api/issue/get-issue-remote.ts";
-import { ROUTES_ISSUE_EDIT, STATUS_INDICATORS } from "@/constants.ts";
-import router from "@/plugins/router.ts";
-import { useIssueImportStore } from "@/stores/issueImport.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
-
-const issueUrlRegex =
-  /^https:\/\/github\.com\/([\w-]+)\/([\w-]+)\/issues\/(\d+)$/;
-const snackbarStore = useSnackbarStore();
-const issueImportStore = useIssueImportStore();
-const route = useRoute();
+import { useIssueImport } from "@/composables/issueImport.ts";
 
 const props = defineProps<{
-  isActive: Ref<boolean, boolean>;
+  buttonText?: string;
   issue?: IssueDetails;
 }>();
-const isActive = ref(props.isActive);
+
+const active = ref<boolean>(false);
 const issue = ref<IssueDetails | undefined>(props.issue);
-const url = ref("");
-const valid = ref(false);
+
+const { url, valid, importIssue, validateUrl } = useIssueImport();
 
 onMounted(() => {
-  issueToUrl();
+  url.value = issueToUrl(issue.value);
 });
 
-function importIssue() {
-  if (!valid.value) return;
-  const match = url.value.match(issueUrlRegex);
-  if (!match) return;
-  const [, owner = "", repository = "", number = ""] = match;
-  getIssueRemote(owner, repository, parseInt(number))
-    .then((content: IssueRemote) => {
-      if (content.pull_request) {
-        throw new Error("Pull Requests are not supported.");
-      }
-      issue.value = {
-        owner,
-        repository,
-        number: content.number,
-        title: content.title,
-        description: content.body || "",
-      };
-      issueImportStore.setIssueImport(issue.value);
-      if (route.name !== ROUTES_ISSUE_EDIT) {
-        router.push({
-          name: ROUTES_ISSUE_EDIT,
-          params: { owner, repository, number, action: "new" },
-        });
-      }
-      isActive.value = false;
-    })
-    .catch((e) => {
-      if (e.message === "Pull Requests are not supported.") {
-        snackbarStore.showMessage({
-          message: `"${owner}/${repository}#${number}" ist ein Pull Request und wird nicht unterstützt.`,
-          level: STATUS_INDICATORS.WARNING,
-        });
-      } else {
-        snackbarStore.showMessage({
-          message: `Remote Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
-          level: STATUS_INDICATORS.WARNING,
-        });
-      }
-      issue.value = undefined;
-    });
-}
-
-function issueToUrl() {
-  if (!issue.value) return;
-  url.value = `https://github.com/${issue.value.owner}/${issue.value.repository}/issues/${issue.value.number}`;
-}
-
-function validateUrl(value: string) {
-  if (value.trim().length < 1) return "Bitte eine URL angeben.";
-  if (!issueUrlRegex.test(value)) {
-    return "Bitte eine gültige GitHub Issue URL angeben.";
+watch(
+  () => props.issue,
+  (prop) => {
+    issue.value = prop;
+    url.value = issueToUrl(issue.value);
   }
-  return true;
+);
+
+async function open() {
+  if (validateUrl(url.value) === true) {
+    importIssue();
+  } else {
+    active.value = true;
+  }
+}
+
+function runImport() {
+  importIssue();
+  active.value = false;
+}
+
+function issueToUrl(issue: IssueDetails | undefined) {
+  if (!issue) return "";
+  return `https://github.com/${issue.owner}/${issue.repository}/issues/${issue.number}`;
 }
 </script>
 

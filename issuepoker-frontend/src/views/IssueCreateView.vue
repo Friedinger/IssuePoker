@@ -6,21 +6,7 @@
         <h1 v-else>Neues Issue Erstellen</h1>
       </v-col>
       <v-col cols="auto">
-        <v-dialog max-width="500">
-          <template v-slot:activator="{ props: activatorProps }">
-            <v-btn
-              :prepend-icon="mdiImport"
-              v-bind="activatorProps"
-              >Importieren
-            </v-btn>
-          </template>
-          <template v-slot:default="{ isActive }">
-            <issue-import-form
-              :isActive="isActive"
-              :issue="issue"
-            />
-          </template>
-        </v-dialog>
+        <issue-import-form :issue="issue" />
       </v-col>
     </v-row>
     <v-row>
@@ -40,7 +26,6 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
-import { mdiImport } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 

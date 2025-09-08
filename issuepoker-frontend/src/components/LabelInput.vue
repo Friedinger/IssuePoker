@@ -1,12 +1,19 @@
 <template>
   <v-input v-bind="$attrs">
     <v-field
-      :active="true"
-      class="ps-4 pt-4"
+      :active="isActive()"
+      :class="[
+        'ps-4',
+        label
+          ? ['pt-4', !isActive() && 'pb-3']
+          : !isActive()
+            ? ['pt-4', 'pb-3']
+            : 'pa-2',
+      ]"
     >
       <v-field-label
         v-if="label"
-        floating
+        :floating="isActive()"
         >{{ label }}</v-field-label
       >
       <v-chip-group>
@@ -21,6 +28,7 @@
         </v-chip>
       </v-chip-group>
       <v-btn
+        :style="!isActive() && label ? `margin-left: ${label.length}ch;` : ''"
         class="align-self-center"
         density="compact"
         icon
@@ -110,12 +118,19 @@ function removeLabel(name: string) {
   const { [name]: _, ...rest } = props.modelValue;
   emit("update:modelValue", rest);
 }
+
+function isActive(): boolean {
+  return Object.keys(props.modelValue).length > 0;
+}
 </script>
 
 <style scoped>
 /*noinspection CssUnusedSymbol*/
 .v-field .v-field-label {
-  top: -10px !important;
   margin: 0;
+}
+/*noinspection CssUnusedSymbol*/
+.v-field .v-field-label--floating {
+  top: -10px !important;
 }
 </style>

@@ -85,6 +85,7 @@ function fetchIssue(params: RouteParamsGeneric) {
         number,
         title: "",
         description: "",
+        labels: {},
       };
       originalIssue.value = issue.value;
     });

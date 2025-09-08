@@ -7,8 +7,21 @@
       </v-col>
       <issue-details-actions :issue="issue" />
     </v-row>
+    <v-row v-if="issue && issue.labels && Object.keys(issue.labels).length > 0">
+      <v-col class="d-flex ga-2">
+        <template
+          v-for="(color, name) in issue.labels"
+          :key="name"
+        >
+          <v-chip :color="color">
+            {{ name }}
+          </v-chip>
+        </template>
+      </v-col>
+    </v-row>
     <v-row v-if="issue">
       <v-col
+        v-if="issue.description.trim().length > 0"
         cols="12"
         lg="6"
       >
@@ -41,6 +54,7 @@ import type { RouteParamsGeneric } from "vue-router";
 import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
+import { isEmpty } from "vuetify/lib/util";
 
 import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
@@ -85,6 +99,7 @@ function fetchIssue(params: RouteParamsGeneric) {
           number,
           title: "",
           description: "",
+          labels: {},
         });
         snackbarStore.showMessage({
           message: `${owner}/${repository}#${number} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,

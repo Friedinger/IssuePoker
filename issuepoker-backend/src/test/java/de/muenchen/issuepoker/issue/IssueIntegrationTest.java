@@ -22,6 +22,7 @@ import de.muenchen.issuepoker.services.IssueService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,6 +77,7 @@ public class IssueIntegrationTest {
             issue.setTitle("TestTitle" + i);
             issue.setDescription("TestDescription" + i);
             issue.setVotes(new ArrayList<>());
+            issue.setLabels(Map.of("TestLabel" + i, "#ffffff"));
             testIssues.add(issueRepository.save(issue));
         }
     }
@@ -97,7 +99,7 @@ public class IssueIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(objectMapper.writeValueAsString(
                             new IssueDetailsDTO(testIssues.getFirst().getOwner(), testIssues.getFirst().getRepository(), testIssues.getFirst().getNumber(),
-                                    testIssues.getFirst().getTitle(), testIssues.getFirst().getDescription()))));
+                                    testIssues.getFirst().getTitle(), testIssues.getFirst().getDescription(), testIssues.getFirst().getLabels()))));
         }
     }
 
@@ -275,7 +277,8 @@ public class IssueIntegrationTest {
     class CreateIssue {
         @Test
         void givenIssueRequest_thenSaveIssue() throws Exception {
-            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TestOwner", "TestRepository", 43, "TitleTest", "DescriptionTitle");
+            final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO("TestOwner", "TestRepository", 43, "TitleTest",
+                    "DescriptionTitle", Map.of("TestLabel", "#ffffff"));
             final Issue expectedIssue = issueMapper.toEntity(requestDTO);
             expectedIssue.setId(UUID.randomUUID());
             mockMvc.perform(post("/issues").content(objectMapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON))
@@ -283,7 +286,8 @@ public class IssueIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(
                             objectMapper.writeValueAsString(new IssueDetailsDTO(
-                                    requestDTO.owner(), requestDTO.repository(), requestDTO.number(), requestDTO.title(), requestDTO.description()))));
+                                    requestDTO.owner(), requestDTO.repository(), requestDTO.number(), requestDTO.title(), requestDTO.description(),
+                                    requestDTO.labels()))));
             issueRepository.deleteById(expectedIssue.getId());
         }
     }
@@ -293,9 +297,9 @@ public class IssueIntegrationTest {
         @Test
         void givenUpdateRequest_thenUpdateIssue() throws Exception {
             final Issue issue = testIssues.getFirst();
-            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription");
+            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription", Map.of("UpdatedLabel", "#000000"));
             final IssueDetailsDTO expected = new IssueDetailsDTO(issue.getOwner(), issue.getRepository(), issue.getNumber(), "UpdatedTitle",
-                    "UpdatedDescription");
+                    "UpdatedDescription", Map.of("UpdatedLabel", "#000000"));
             mockMvc
                     .perform(
                             patch("/issues/{owner}/{repository}/{number}", issue.getOwner(), issue.getRepository(), issue.getNumber())

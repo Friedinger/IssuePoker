@@ -21,7 +21,9 @@ import de.muenchen.issuepoker.repositories.IssueRepository;
 import de.muenchen.issuepoker.services.IssueService;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +59,7 @@ public class IssueServiceTest {
         issue.setNumber(number);
         issue.setTitle(title);
         issue.setDescription(description);
+        issue.setLabels(new HashMap<>());
         issue.setVotes(new ArrayList<>());
         issue.setRevealed(revealed);
         return issue;
@@ -195,6 +198,7 @@ public class IssueServiceTest {
             updatedIssue.setNumber(existingIssue.getNumber());
             updatedIssue.setTitle("UpdatedTitle");
             updatedIssue.setDescription("UpdatedDescription");
+            updatedIssue.setLabels(Map.of("UpdatedLabel", "#000000"));
             updatedIssue.setVotes(existingIssue.getVotes());
             updatedIssue.setRevealed(existingIssue.isRevealed());
             return updatedIssue;
@@ -203,7 +207,7 @@ public class IssueServiceTest {
         @Test
         void givenUpdateRequest_thenUpdateIssue() {
             final IssueKey key = new IssueKey(testIssues.getFirst().getOwner(), testIssues.getFirst().getRepository(), testIssues.getFirst().getNumber());
-            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription");
+            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription", Map.of("UpdatedLabel", "#000000"));
             final Issue existingIssue = testIssues.getFirst();
             final Issue updatedIssue = updateIssue(existingIssue);
             when(issueRepository.findByOwnerAndRepositoryAndNumber(key.owner(), key.repository(), key.number())).thenReturn(Optional.of(existingIssue));
@@ -211,13 +215,14 @@ public class IssueServiceTest {
             final Issue result = issueService.updateIssue(updateDTO, key);
             assertEquals("UpdatedTitle", result.getTitle());
             assertEquals("UpdatedDescription", result.getDescription());
+            assertEquals(Map.of("UpdatedLabel", "#000000"), result.getLabels());
             verify(issueRepository).save(existingIssue);
         }
 
         @Test
         void givenNonExistentIssue_thenThrowNotFoundException() {
             final IssueKey key = new IssueKey("NonExistentOwner", "NonExistentRepo", 999);
-            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription");
+            final IssueRequestUpdateDTO updateDTO = new IssueRequestUpdateDTO("UpdatedTitle", "UpdatedDescription", Map.of("UpdatedLabel", "UpdatedColor"));
             when(issueRepository.findByOwnerAndRepositoryAndNumber(key.owner(), key.repository(), key.number())).thenReturn(Optional.empty());
             assertThrows(NotFoundException.class, () -> issueService.updateIssue(updateDTO, key));
         }

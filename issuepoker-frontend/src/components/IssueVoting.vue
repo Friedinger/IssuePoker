@@ -1,8 +1,5 @@
 <template>
   <v-row>
-    <v-col><h2>Pokern</h2></v-col>
-  </v-row>
-  <v-row class="mt-0">
     <v-col v-if="!revealed">
       <p v-if="!votes.userVoting">
         Die Abstimmung läuft. Klicke auf einen Wert um dafür zu stimmen.
@@ -28,6 +25,54 @@
         setzt.
       </p>
       <p v-else>Die Abstimmung ist beendet. Ein Ergebnis wurde festgelegt.</p>
+    </v-col>
+  </v-row>
+  <v-row>
+    <v-col cols="auto">
+      <p>Anzahl Stimmen: {{ votes.voteCount }}</p>
+      <p>Ergebnis: {{ votes.voteResult || "-" }}</p>
+    </v-col>
+    <v-col
+      v-if="isAdmin()"
+      class="d-flex ga-2"
+      cols="auto"
+    >
+      <v-tooltip
+        location="top"
+        text="Stimmen anzeigen"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            :disabled="isDefined(votes.voteResult)"
+            :icon="!revealed ? mdiEye : mdiEyeRemove"
+            density="comfortable"
+            rounded="rounded"
+            v-bind="props"
+            @click="toggleRevealed()"
+          />
+        </template>
+      </v-tooltip>
+      <v-tooltip
+        location="top"
+        text="Stimmen zurücksetzen"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            :icon="mdiDelete"
+            density="comfortable"
+            rounded="rounded"
+            v-bind="props"
+            @click="deleteDialog = true"
+          />
+        </template>
+      </v-tooltip>
+      <yes-no-dialog
+        v-model="deleteDialog"
+        dialogtext="Sollen wirklich alle Stimmen dieses Issues zurückgesetzt werden?"
+        dialogtitle="Stimmen zurücksetzen"
+        @no="deleteDialog = false"
+        @yes="resetVotes()"
+      />
     </v-col>
   </v-row>
   <v-row class="flex-nowrap overflow-x-auto">
@@ -79,48 +124,6 @@
           />
         </v-col>
       </v-row>
-    </v-col>
-    <v-col
-      v-if="isAdmin()"
-      class="d-flex ga-2"
-      cols="auto"
-    >
-      <v-tooltip
-        location="top"
-        text="Stimmen anzeigen"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            :disabled="isDefined(votes.voteResult)"
-            :icon="!revealed ? mdiEye : mdiEyeRemove"
-            v-bind="props"
-            @click="toggleRevealed()"
-          />
-        </template>
-      </v-tooltip>
-      <v-tooltip
-        location="top"
-        text="Stimmen zurücksetzen"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            :icon="mdiDelete"
-            v-bind="props"
-            @click="deleteDialog = true"
-          />
-        </template>
-      </v-tooltip>
-      <yes-no-dialog
-        v-model="deleteDialog"
-        dialogtext="Sollen wirklich alle Stimmen dieses Issues zurückgesetzt werden?"
-        dialogtitle="Stimmen zurücksetzen"
-        @no="deleteDialog = false"
-        @yes="resetVotes()"
-      />
-    </v-col>
-    <v-col cols="auto">
-      <p>Anzahl Stimmen: {{ votes.voteCount }}</p>
-      <p>Ergebnis: {{ votes.voteResult || "-" }}</p>
     </v-col>
   </v-row>
 </template>

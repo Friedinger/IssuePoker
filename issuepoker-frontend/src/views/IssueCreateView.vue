@@ -62,7 +62,7 @@ watch(
 function fetchIssue(params: RouteParamsGeneric) {
   action.value = route.params.action as Action;
   importIssue(issueImportStore.getIssueImport);
-  if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
+  if (route.name === ROUTES_ISSUE_NEW) return;
   const { owner, repository, number } = parseRouteParamsToIssueKey(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {
@@ -74,6 +74,7 @@ function fetchIssue(params: RouteParamsGeneric) {
       originalIssue.value = issue.value;
     })
     .catch(() => {
+      if (issue.value) return;
       router.push({
         name: ROUTES_ISSUE_EDIT,
         params: { owner, repository, number, action: "new" },

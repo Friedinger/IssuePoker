@@ -1,6 +1,14 @@
 <template>
   <v-input v-bind="$attrs">
-    <v-field class="ps-4 pt-2 pb-2">
+    <v-field
+      :active="true"
+      class="ps-4 pt-4"
+    >
+      <v-field-label
+        v-if="label"
+        floating
+        >{{ label }}</v-field-label
+      >
       <v-chip-group>
         <v-chip
           v-for="(color, name) in modelValue"
@@ -65,7 +73,10 @@ import type { VInput } from "vuetify/components";
 import { mdiPlus } from "@mdi/js";
 import { ref } from "vue";
 
-const props = defineProps<{ modelValue: Record<string, string> }>();
+const props = defineProps<{
+  modelValue: Record<string, string>;
+  label?: string;
+}>();
 const emit =
   defineEmits<
     (e: "update:modelValue", value: Record<string, string>) => void
@@ -100,3 +111,11 @@ function removeLabel(name: string) {
   emit("update:modelValue", rest);
 }
 </script>
+
+<style scoped>
+/*noinspection CssUnusedSymbol*/
+.v-field .v-field-label {
+  top: -10px !important;
+  margin: 0;
+}
+</style>

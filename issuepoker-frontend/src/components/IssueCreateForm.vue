@@ -48,6 +48,7 @@
         <label-input
           v-model="labels"
           hide-details="auto"
+          label="Labels"
         />
       </v-col>
     </v-row>

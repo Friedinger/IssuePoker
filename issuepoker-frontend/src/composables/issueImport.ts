@@ -11,7 +11,7 @@ import { useIssueImportStore } from "@/stores/issueImport.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const issueUrlRegex =
-  /^https:\/\/github\.com\/([\w-]+)\/([\w-]+)\/issues\/(\d+)$/;
+  /^https:\/\/github\.com\/([\w-]+)\/([\w-_.]+)\/issues\/(\d+)$/;
 
 export function useIssueImport() {
   const url = ref("");

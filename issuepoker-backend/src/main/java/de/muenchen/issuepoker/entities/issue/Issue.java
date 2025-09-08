@@ -5,13 +5,16 @@ import de.muenchen.issuepoker.common.NotFoundException;
 import de.muenchen.issuepoker.entities.vote.Vote;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.MapKeyColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serial;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +33,11 @@ public class Issue extends BaseEntity {
 
     @NotNull @Column(length = 65_535)
     private String description;
+
+    @NotNull @ElementCollection
+    @MapKeyColumn(name = "label_name")
+    @Column(name = "label_color")
+    private Map<String, String> labels;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Vote> votes;

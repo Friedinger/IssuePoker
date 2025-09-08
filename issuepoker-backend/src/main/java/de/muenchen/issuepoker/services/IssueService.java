@@ -46,7 +46,8 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue saveIssue(final Issue issue) {
-        log.debug("Save Issue {} with title \"{}\" and description \"{}\"", issue.getIssueKey(), issue.getTitle(), issue.getDescription());
+        log.debug("Save Issue {} with title \"{}\" and description \"{}\" and labels \"{}\"", issue.getIssueKey(), issue.getTitle(), issue.getDescription(),
+                issue.getLabels());
         try {
             return issueRepository.save(issue);
         } catch (DataIntegrityViolationException e) {
@@ -56,7 +57,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_ADMIN)
     public Issue updateIssue(final IssueRequestUpdateDTO update, final IssueKey key) {
-        log.debug("Update Issue {} to title \"{}\" and description \"{}\"", key, update.title(), update.description());
+        log.debug("Update Issue {} to title \"{}\" and description \"{}\" and labels \"{}\"", key, update.title(), update.description(), update.labels());
         final Issue existingIssue = getIssue(key);
         existingIssue.setTitle(update.title());
         existingIssue.setDescription(update.description());

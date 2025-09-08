@@ -45,6 +45,14 @@
     </v-row>
     <v-row>
       <v-col>
+        <label-input
+          v-model="labels"
+          hide-details="auto"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
         <v-textarea
           v-model="description"
           :rules="[validateDescription]"
@@ -91,6 +99,7 @@ import { onMounted, ref, watch } from "vue";
 import { createIssue } from "@/api/issue/create-issue.ts";
 import { updateIssue } from "@/api/issue/update-issue.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
+import LabelInput from "@/components/LabelInput.vue";
 import { useSaveLeave } from "@/composables/saveLeave.ts";
 import {
   ROUTES_HOME,
@@ -113,6 +122,7 @@ const owner = ref("");
 const repository = ref("");
 const number = ref(NaN);
 const title = ref("");
+const labels = ref<Record<string, string>>({});
 const description = ref("");
 const valid = ref();
 const saved = ref<boolean>(false);
@@ -146,7 +156,8 @@ function save() {
     repository.value,
     number.value,
     title.value,
-    description.value
+    description.value,
+    labels.value
   )
     .then((content: IssueDetails) => {
       saved.value = true;
@@ -202,6 +213,7 @@ function parseProp(issue?: IssueDetails) {
   repository.value = issue.repository;
   number.value = issue.number;
   title.value = issue.title;
+  labels.value = issue.labels;
   description.value = issue.description;
 }
 
@@ -223,6 +235,7 @@ function isDirty(): boolean {
     repository.value,
     number.value,
     title.value,
+    labels.value,
     description.value,
   ];
   const originalValues = [
@@ -230,6 +243,7 @@ function isDirty(): boolean {
     originalIssue?.repository ?? "",
     originalIssue?.number ?? null,
     originalIssue?.title ?? "",
+    originalIssue?.labels ?? {},
     originalIssue?.description ?? "",
   ];
   return currentValues.some((value, index) => value !== originalValues[index]);

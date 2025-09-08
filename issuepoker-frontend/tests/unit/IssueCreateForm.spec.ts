@@ -9,6 +9,15 @@ import * as directives from "vuetify/directives";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "../../src/constants";
 
+global.ResizeObserver = class {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  observe() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  unobserve() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  disconnect() {}
+};
+
 vi.mock("@/api/issue/create-issue.ts", () => ({
   createIssue: vi.fn().mockResolvedValue({
     owner: "Mock Owner",
@@ -33,6 +42,9 @@ function factory() {
     global: {
       plugins: [pinia, vuetify],
       stubs: ["router-link"],
+    },
+    props: {
+      action: "new",
     },
   });
 }
@@ -60,6 +72,7 @@ function getFormFields(wrapper: VueWrapper<IssueCreateForm>) {
     repoField: findField(wrapper, "VTextField", "Repository"),
     numberField: findField(wrapper, "VNumberInput", "Nummer"),
     titleField: findField(wrapper, "VTextField", "Titel"),
+    labelsField: findField(wrapper, "LabelInput", undefined),
     descriptionField: findField(wrapper, "VTextarea", "Beschreibung"),
   };
 }
@@ -67,13 +80,20 @@ function getFormFields(wrapper: VueWrapper<IssueCreateForm>) {
 describe("IssueCreateForm", () => {
   it("showsInputFields", () => {
     const wrapper = factory();
-    const { ownerField, repoField, numberField, titleField, descriptionField } =
-      getFormFields(wrapper);
+    const {
+      ownerField,
+      repoField,
+      numberField,
+      titleField,
+      labelsField,
+      descriptionField,
+    } = getFormFields(wrapper);
 
     expect(ownerField).toBeTruthy();
     expect(repoField).toBeTruthy();
     expect(numberField).toBeTruthy();
     expect(titleField).toBeTruthy();
+    expect(labelsField).toBeTruthy();
     expect(descriptionField).toBeTruthy();
   });
 
@@ -133,6 +153,7 @@ describe("IssueCreateForm", () => {
       repoField,
       numberField,
       titleField,
+      labelsField,
       descriptionField,
     } = getFormFields(wrapper);
 
@@ -140,6 +161,7 @@ describe("IssueCreateForm", () => {
     await repoField.setValue("Test Repository");
     await numberField.setValue(42);
     await titleField.setValue("Test Title");
+    await labelsField.setValue({ "Test Label": "#ffffff" });
     await descriptionField.setValue("Test Description");
     await wrapper.vm.$nextTick();
 
@@ -149,7 +171,8 @@ describe("IssueCreateForm", () => {
       "Test Repository",
       42,
       "Test Title",
-      "Test Description"
+      "Test Description",
+      { "Test Label": "#ffffff" }
     );
     expect(router.push).toHaveBeenCalledWith({
       name: ROUTES_ISSUE_DETAIL,

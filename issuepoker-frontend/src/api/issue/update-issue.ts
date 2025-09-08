@@ -7,13 +7,15 @@ export function updateIssue(
   repository: string,
   number: number,
   title: string,
-  description: string
+  description: string,
+  labels: Record<string, string>
 ): Promise<IssueDetails> {
   return fetch(
     `api/backend-service/issues/${owner}/${repository}/${number}`,
     patchConfig({
       title: title,
       description: description,
+      labels: labels,
     })
   )
     .then((response) => {

@@ -12,6 +12,7 @@ import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
 import de.muenchen.issuepoker.repositories.IssueRepository;
 import java.net.URI;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -62,7 +63,8 @@ class UnicodeFilterConfigurationTest {
         // Given
         // Persist entity with decomposed string.
         final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO(
-                "TestOwner", "TestRepository", 1, TEXT_ATTRIBUTE_DECOMPOSED, "TestDescription");
+                "TestOwner", "TestRepository", 1, TEXT_ATTRIBUTE_DECOMPOSED,
+                "TestDescription", Map.of("TestLabel", "#ffffff"));
 
         // When
         final IssueDetailsDTO response = testRestTemplate.postForEntity(URI.create(ENTITY_ENDPOINT_URL),

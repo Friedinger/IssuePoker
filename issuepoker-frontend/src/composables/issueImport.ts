@@ -35,6 +35,19 @@ export function useIssueImport() {
           number: content.number,
           title: content.title,
           description: content.body || "",
+          labels: content.labels
+            .filter(
+              (label): label is { name: string; color?: string } | string =>
+                typeof label === "string" || label.name !== undefined
+            )
+            .reduce<Record<string, string>>((acc, label) => {
+              if (typeof label === "string") {
+                acc[label] = "";
+              } else {
+                acc[label.name] = "#" + label.color;
+              }
+              return acc;
+            }, {}),
         };
         issueImportStore.setIssueImport(imported);
         if (route.name !== ROUTES_ISSUE_EDIT) {

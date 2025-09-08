@@ -9,6 +9,7 @@ import de.muenchen.issuepoker.entities.issue.request.IssueRequestCreateDTO;
 import de.muenchen.issuepoker.entities.issue.response.IssueDetailsDTO;
 import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Nested;
@@ -70,6 +71,7 @@ public class IssueMapperTest {
             issue.setNumber(0);
             issue.setTitle("");
             issue.setDescription("");
+            issue.setLabels(Map.of());
             issue.setVotes(List.of());
             issue.setRevealed(false);
             final IssueSummaryDTO result = issueMapper.toSummary(issue);
@@ -115,7 +117,7 @@ public class IssueMapperTest {
         @Test
         void givenRequestDTO_thenReturnIssue() {
             final IssueRequestCreateDTO requestDTO = new IssueRequestCreateDTO(
-                    "TestOwner", "TestRepository", 42, "TestTitle", "TestDescription");
+                    "TestOwner", "TestRepository", 42, "TestTitle", "TestDescription", Map.of("TestLabel", "#ffffff"));
             final Issue result = issueMapper.toEntity(requestDTO);
             assertThat(result).usingRecursiveComparison()
                     .ignoringFields("id", "votes", "revealed", "voteResult")
@@ -124,7 +126,7 @@ public class IssueMapperTest {
 
         @Test
         void givenCreateDTO_thenMapToEntityCorrectly() {
-            final IssueRequestCreateDTO dto = new IssueRequestCreateDTO("Owner", "Repo", 123, "Title", "Desc");
+            final IssueRequestCreateDTO dto = new IssueRequestCreateDTO("Owner", "Repo", 123, "Title", "Desc", Map.of("Label", "#ffffff"));
             final Issue entity = issueMapper.toEntity(dto);
             assertNotNull(entity);
             assertThat(entity.getOwner()).isEqualTo("Owner");
@@ -132,6 +134,7 @@ public class IssueMapperTest {
             assertThat(entity.getNumber()).isEqualTo(123);
             assertThat(entity.getTitle()).isEqualTo("Title");
             assertThat(entity.getDescription()).isEqualTo("Desc");
+            assertThat(entity.getLabels()).isEqualTo(Map.of("Label", "#ffffff"));
         }
 
         @Test

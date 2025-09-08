@@ -4,4 +4,5 @@ export default interface IssueDetails {
   number: number;
   title: string;
   description: string;
+  labels: Record<string, string>;
 }

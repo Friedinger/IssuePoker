@@ -1,6 +1,7 @@
 TRUNCATE issue CASCADE;
 TRUNCATE vote CASCADE;
 TRUNCATE issue_votes CASCADE;
+TRUNCATE issue_labels CASCADE;
 
 INSERT INTO issue (id, owner, repository, number, title, description, revealed)
 VALUES (gen_random_uuid(), 'Friedinger', 'IssuePoker', 1, 'Bug Report: Login Failure', 'Users are unable to log in using their credentials.', false),
@@ -46,3 +47,47 @@ INSERT INTO issue_votes (issue_id, votes_id)
 VALUES ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), (SELECT id FROM vote WHERE username = 'admin' AND voting = 1 LIMIT 1)),
        ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), (SELECT id FROM vote WHERE username = 'user1' AND voting = 5 LIMIT 1)),
        ((SELECT id FROM issue WHERE title = 'Feature Request: Dark Mode' LIMIT 1), (SELECT id FROM vote WHERE username = 'admin' AND voting = 3 LIMIT 1));
+
+INSERT INTO issue_labels (issue_id, label_color, label_name)
+VALUES ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#800080', 'security'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#FFA500', 'performance'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#9E9E9E', 'compatibility'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Login Failure' LIMIT 1), '#795548', 'accessibility'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Dark Mode' LIMIT 1), '#00FF00', 'feature'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Dark Mode' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Dark Mode' LIMIT 1), '#795548', 'accessibility'),
+       ((SELECT id FROM issue WHERE title = 'UI Glitch: Button Overlap' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'UI Glitch: Button Overlap' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Performance Issue: Slow Loading' LIMIT 1), '#FFA500', 'performance'),
+       ((SELECT id FROM issue WHERE title = 'Performance Issue: Slow Loading' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Security Concern: Data Exposure' LIMIT 1), '#800080', 'security'),
+       ((SELECT id FROM issue WHERE title = 'Security Concern: Data Exposure' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Usability Issue: Confusing Navigation' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Compatibility Issue: Browser Support' LIMIT 1), '#9E9E9E', 'compatibility'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Export to CSV' LIMIT 1), '#00FF00', 'feature'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Email Notifications' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Email Notifications' LIMIT 1), '#800080', 'security'),
+       ((SELECT id FROM issue WHERE title = 'UI Improvement: Font Size' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Multi-language Support' LIMIT 1), '#00FF00', 'feature'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Multi-language Support' LIMIT 1), '#795548', 'accessibility'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Image Upload Error' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Performance Issue: High CPU Usage' LIMIT 1), '#FFA500', 'performance'),
+       ((SELECT id FROM issue WHERE title = 'Performance Issue: High CPU Usage' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Accessibility Issue: Screen Reader Support' LIMIT 1), '#795548', 'accessibility'),
+       ((SELECT id FROM issue WHERE title = 'Accessibility Issue: Screen Reader Support' LIMIT 1), '#00BCD4', 'documentation'),
+       ((SELECT id FROM issue WHERE title = 'Accessibility Issue: Screen Reader Support' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: User Profiles' LIMIT 1), '#00FF00', 'feature'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: User Profiles' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Payment Processing' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Payment Processing' LIMIT 1), '#FFA500', 'performance'),
+       ((SELECT id FROM issue WHERE title = 'UI Glitch: Color Contrast' LIMIT 1), '#0000FF', 'ui'),
+       ((SELECT id FROM issue WHERE title = 'UI Glitch: Color Contrast' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Feature Request: Push Notifications' LIMIT 1), '#00FF00', 'feature'),
+       ((SELECT id FROM issue WHERE title = 'Usability Issue: Search Functionality' LIMIT 1), '#FFC107', 'usability'),
+       ((SELECT id FROM issue WHERE title = 'Security Concern: Password Strength' LIMIT 1), '#800080', 'security'),
+       ((SELECT id FROM issue WHERE title = 'Security Concern: Password Strength' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Session Timeout' LIMIT 1), '#FF0000', 'bug'),
+       ((SELECT id FROM issue WHERE title = 'Bug Report: Session Timeout' LIMIT 1), '#800080', 'security');

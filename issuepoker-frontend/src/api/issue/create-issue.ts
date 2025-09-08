@@ -7,7 +7,8 @@ export function createIssue(
   repository: string,
   number: number,
   title: string,
-  description: string
+  description: string,
+  labels: Record<string, string>
 ): Promise<IssueDetails> {
   return fetch(
     `api/backend-service/issues`,
@@ -17,6 +18,7 @@ export function createIssue(
       number: number,
       title: title,
       description: description,
+      labels: labels,
     })
   )
     .then((response) => {

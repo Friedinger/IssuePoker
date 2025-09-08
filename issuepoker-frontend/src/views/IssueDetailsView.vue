@@ -7,8 +7,20 @@
       </v-col>
       <issue-details-actions :issue="issue" />
     </v-row>
+    <v-row v-if="issue && issue.labels && Object.keys(issue.labels).length > 0">
+      <v-col class="d-flex ga-2">
+        <v-chip
+          v-for="(color, name) in issue.labels"
+          :key="name"
+          :color="color"
+        >
+          {{ name }}
+        </v-chip>
+      </v-col>
+    </v-row>
     <v-row v-if="issue">
       <v-col
+        v-if="issue.description.trim().length > 0"
         cols="12"
         lg="6"
       >
@@ -85,6 +97,7 @@ function fetchIssue(params: RouteParamsGeneric) {
           number,
           title: "",
           description: "",
+          labels: {},
         });
         snackbarStore.showMessage({
           message: `${owner}/${repository}#${number} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,

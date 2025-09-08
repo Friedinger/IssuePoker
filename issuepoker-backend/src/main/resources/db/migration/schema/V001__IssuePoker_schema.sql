@@ -11,6 +11,14 @@ CREATE TABLE issue
     CONSTRAINT pk_issue PRIMARY KEY (id)
 );
 
+CREATE TABLE issue_labels
+(
+    issue_id    UUID         NOT NULL,
+    label_color VARCHAR(255) NOT NULL,
+    label_name  VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_issue_labels PRIMARY KEY (issue_id, label_name)
+);
+
 CREATE TABLE issue_votes
 (
     issue_id UUID NOT NULL,
@@ -26,10 +34,13 @@ CREATE TABLE vote
 );
 
 ALTER TABLE issue
-    ADD CONSTRAINT uc_b53e2f68cd659c14465ceedc6 UNIQUE (owner, repository, number);
+    ADD CONSTRAINT uc_3b9843abf69b9fa098b07af1e UNIQUE (owner, repository, number);
 
 ALTER TABLE issue_votes
     ADD CONSTRAINT uc_issue_votes_votes UNIQUE (votes_id);
+
+ALTER TABLE issue_labels
+    ADD CONSTRAINT fk_issue_labels_on_issue FOREIGN KEY (issue_id) REFERENCES issue (id);
 
 ALTER TABLE issue_votes
     ADD CONSTRAINT fk_issvot_on_issue FOREIGN KEY (issue_id) REFERENCES issue (id);

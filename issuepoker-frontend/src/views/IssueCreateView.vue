@@ -6,21 +6,7 @@
         <h1 v-else>Neues Issue Erstellen</h1>
       </v-col>
       <v-col cols="auto">
-        <v-dialog max-width="500">
-          <template v-slot:activator="{ props: activatorProps }">
-            <v-btn
-              :prepend-icon="mdiImport"
-              v-bind="activatorProps"
-              >Importieren
-            </v-btn>
-          </template>
-          <template v-slot:default="{ isActive }">
-            <issue-import-form
-              :isActive="isActive"
-              :issue="issue"
-            />
-          </template>
-        </v-dialog>
+        <issue-import-form :issue="issue" />
       </v-col>
     </v-row>
     <v-row>
@@ -40,7 +26,6 @@
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
-import { mdiImport } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -77,7 +62,7 @@ watch(
 function fetchIssue(params: RouteParamsGeneric) {
   action.value = route.params.action as Action;
   importIssue(issueImportStore.getIssueImport);
-  if (route.name === ROUTES_ISSUE_NEW || issue.value) return;
+  if (route.name === ROUTES_ISSUE_NEW) return;
   const { owner, repository, number } = parseRouteParamsToIssueKey(params);
   getIssue(owner, repository, number)
     .then((content: IssueDetails) => {
@@ -89,6 +74,7 @@ function fetchIssue(params: RouteParamsGeneric) {
       originalIssue.value = issue.value;
     })
     .catch(() => {
+      if (issue.value) return;
       router.push({
         name: ROUTES_ISSUE_EDIT,
         params: { owner, repository, number, action: "new" },

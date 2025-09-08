@@ -1,29 +1,36 @@
 <template>
   <v-container>
     <v-row align="center">
-      <v-col>
-        <template v-if="issue">
-          <h1>{{ issue.title }}</h1>
-          <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
-        </template>
+      <v-col v-if="issue">
+        <h1>{{ issue.title }}</h1>
+        <p>{{ issue.owner }}/{{ issue.repository }} #{{ issue.number }}</p>
       </v-col>
       <issue-details-actions :issue="issue" />
     </v-row>
-    <template v-if="issue">
-      <v-row>
-        <v-col>
-          <vue-markdown
-            :options="markdownOptions"
-            :source="issue.description"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <issue-voting :issue="issue" />
-        </v-col>
-      </v-row>
-    </template>
+    <v-row v-if="issue">
+      <v-col
+        cols="12"
+        lg="6"
+      >
+        <v-card>
+          <v-card-text>
+            <vue-markdown
+              :options="markdownOptions"
+              :source="issue.description"
+            />
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col
+        cols="12"
+        lg="6"
+      >
+        <v-card>
+          <v-card-title>Abstimmen</v-card-title>
+          <v-card-text><issue-voting :issue="issue" /></v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -79,13 +86,17 @@ function fetchIssue(params: RouteParamsGeneric) {
           title: "",
           description: "",
         });
+        snackbarStore.showMessage({
+          message: `${owner}/${repository}#${number} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,
+          level: STATUS_INDICATORS.INFO,
+        });
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },
         });
       } else {
         snackbarStore.showMessage({
-          message: `Issue "${owner}/${repository}#${number}" wurde nicht gefunden.`,
+          message: `${owner}/${repository}#${number} wurde nicht gefunden.`,
           level: STATUS_INDICATORS.WARNING,
         });
         router.push({ name: ROUTES_HOME });

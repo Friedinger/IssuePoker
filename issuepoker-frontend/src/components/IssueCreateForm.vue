@@ -87,7 +87,11 @@ import { createIssue } from "@/api/issue/create-issue.ts";
 import { updateIssue } from "@/api/issue/update-issue.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import { useSaveLeave } from "@/composables/saveLeave.ts";
-import { ROUTES_HOME, ROUTES_ISSUE_DETAIL } from "@/constants.ts";
+import {
+  ROUTES_HOME,
+  ROUTES_ISSUE_DETAIL,
+  STATUS_INDICATORS,
+} from "@/constants.ts";
 import router from "@/plugins/router.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 
@@ -145,6 +149,10 @@ function save() {
       router.push({
         name: ROUTES_ISSUE_DETAIL,
         params: { owner, repository, number },
+      });
+      snackbarStore.showMessage({
+        message: `${owner}/${repository}#${number} wurde erfolgreich ${action === "edit" ? "bearbeitet" : "angelegt"}.`,
+        level: STATUS_INDICATORS.SUCCESS,
       });
     })
     .catch((error) => snackbarStore.showMessage(error));

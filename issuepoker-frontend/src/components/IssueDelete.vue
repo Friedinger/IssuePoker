@@ -47,7 +47,7 @@ function handleDeleteIssue() {
     .then(() => {
       router.push({ name: ROUTES_HOME });
       snackbarStore.showMessage({
-        message: "Issue erfolgreich gelöscht",
+        message: `${props.issue.owner}/${props.issue.repository}#${props.issue.number} wurde erfolgreich gelöscht.`,
         level: STATUS_INDICATORS.SUCCESS,
       });
       emit("close");

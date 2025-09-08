@@ -9,6 +9,7 @@
           v-model="owner"
           :disabled="!keyChangeable"
           :rules="[validateOwner]"
+          hide-details="auto"
           label="Besitzer"
         />
       </v-col>
@@ -17,6 +18,7 @@
           v-model="repository"
           :disabled="!keyChangeable"
           :rules="[validateRepository]"
+          hide-details="auto"
           label="Repository"
         />
       </v-col>
@@ -26,6 +28,7 @@
           :disabled="!keyChangeable"
           :min="1"
           :rules="[validateNumber]"
+          hide-details="auto"
           label="Nummer"
         />
       </v-col>
@@ -35,6 +38,7 @@
         <v-text-field
           v-model="title"
           :rules="[validateTitle]"
+          hide-details="auto"
           label="Titel"
         />
       </v-col>
@@ -44,6 +48,7 @@
         <v-textarea
           v-model="description"
           :rules="[validateDescription]"
+          hide-details="auto"
           label="Beschreibung"
         />
       </v-col>

@@ -60,6 +60,7 @@ public class IssueService {
         final Issue existingIssue = getIssue(key);
         existingIssue.setTitle(update.title());
         existingIssue.setDescription(update.description());
+        existingIssue.setLabels(update.labels());
         return issueRepository.save(existingIssue);
     }
 

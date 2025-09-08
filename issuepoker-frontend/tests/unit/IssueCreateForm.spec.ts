@@ -72,7 +72,7 @@ function getFormFields(wrapper: VueWrapper<IssueCreateForm>) {
     repoField: findField(wrapper, "VTextField", "Repository"),
     numberField: findField(wrapper, "VNumberInput", "Nummer"),
     titleField: findField(wrapper, "VTextField", "Titel"),
-    labelsField: findField(wrapper, "LabelInput", undefined),
+    labelsField: findField(wrapper, "LabelInput", "Labels"),
     descriptionField: findField(wrapper, "VTextarea", "Beschreibung"),
   };
 }

@@ -79,6 +79,10 @@ function fetchIssue(params: RouteParamsGeneric) {
           title: "",
           description: "",
         });
+        snackbarStore.showMessage({
+          message: `${owner}/${repository}#${number} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,
+          level: STATUS_INDICATORS.INFO,
+        });
         router.push({
           name: ROUTES_ISSUE_EDIT,
           params: { owner, repository, number, action: "new" },

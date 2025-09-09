@@ -39,7 +39,7 @@ export function useSaveLeave(isDirty: () => boolean) {
     }
   );
 
-  function cancel(): void {
+  function stay(): void {
     saveLeaveDialog.value = false;
     if (nextRoute.value != null) {
       nextRoute.value(false);
@@ -47,6 +47,7 @@ export function useSaveLeave(isDirty: () => boolean) {
   }
 
   function leave(): void {
+    saveLeaveDialog.value = false;
     if (nextRoute.value != null) {
       nextRoute.value();
     }
@@ -58,7 +59,7 @@ export function useSaveLeave(isDirty: () => boolean) {
     saveLeaveDialog,
     isSave,
     nextRoute,
-    cancel,
+    stay,
     leave,
   };
 }

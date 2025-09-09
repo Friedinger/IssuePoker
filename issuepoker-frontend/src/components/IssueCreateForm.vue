@@ -112,7 +112,7 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 
 const snackbarStore = useSnackbarStore();
 const {
-  cancel: stay,
+  stay,
   leave,
   saveLeaveDialog,
   saveLeaveDialogText,

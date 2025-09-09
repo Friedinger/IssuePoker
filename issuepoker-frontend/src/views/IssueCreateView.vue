@@ -23,78 +23,35 @@
 </template>
 
 <script lang="ts" setup>
-import type IssueDetails from "@/types/IssueDetails.ts";
+import type IssueKey from "@/types/IssueKey.ts";
 import type { RouteParamsGeneric } from "vue-router";
 
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueCreateForm from "@/components/IssueCreateForm.vue";
 import IssueImportForm from "@/components/IssueImportForm.vue";
-import { ROUTES_ISSUE_EDIT, ROUTES_ISSUE_NEW } from "@/constants.ts";
-import router from "@/plugins/router.ts";
-import { useIssueImportStore } from "@/stores/issueImport.ts";
+import { useIssueCreate } from "@/composables/issueCreate.ts";
 import { parseRouteParamsToIssueKey } from "@/util/parser.ts";
 
 type Action = "edit" | "new" | undefined;
 
-const issueImportStore = useIssueImportStore();
 const route = useRoute();
-const issue = ref<IssueDetails>();
-const originalIssue = ref<IssueDetails>();
-const action = ref<Action>();
+const action = ref<Action>(route.params.action as Action);
+const issueKey = ref<IssueKey>();
+const { issue, originalIssue } = useIssueCreate(issueKey);
 
 onMounted(() => {
-  fetchIssue(route.params);
+  parseParams(route.params);
 });
 
 watch(
   () => route.params,
-  (params) => fetchIssue(params)
+  (params) => parseParams(params)
 );
 
-watch(
-  () => issueImportStore.getIssueImport,
-  (imported) => importIssue(imported)
-);
-
-function fetchIssue(params: RouteParamsGeneric) {
-  action.value = route.params.action as Action;
-  importIssue(issueImportStore.getIssueImport);
-  if (route.name === ROUTES_ISSUE_NEW) return;
-  const { owner, repository, number } = parseRouteParamsToIssueKey(params);
-  getIssue(owner, repository, number)
-    .then((content: IssueDetails) => {
-      router.push({
-        name: ROUTES_ISSUE_EDIT,
-        params: { owner, repository, number, action: "edit" },
-      });
-      issue.value = content;
-      originalIssue.value = issue.value;
-    })
-    .catch(() => {
-      if (issue.value) return;
-      router.push({
-        name: ROUTES_ISSUE_EDIT,
-        params: { owner, repository, number, action: "new" },
-      });
-      issue.value = {
-        owner,
-        repository,
-        number,
-        title: "",
-        description: "",
-        labels: {},
-      };
-      originalIssue.value = issue.value;
-    });
-}
-
-function importIssue(imported: IssueDetails | null) {
-  if (imported) {
-    issue.value = imported;
-    issueImportStore.setIssueImport(null);
-  }
+function parseParams(params: RouteParamsGeneric) {
+  action.value = params.action as Action;
+  issueKey.value = parseRouteParamsToIssueKey(params);
 }
 </script>

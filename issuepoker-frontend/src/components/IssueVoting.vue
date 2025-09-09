@@ -62,15 +62,15 @@
             density="comfortable"
             rounded="rounded"
             v-bind="props"
-            @click="deleteDialog = true"
+            @click="resetDialog = true"
           />
         </template>
       </v-tooltip>
       <yes-no-dialog
-        v-model="deleteDialog"
+        v-model="resetDialog"
         dialogtext="Sollen wirklich alle Stimmen dieses Issues zurückgesetzt werden?"
         dialogtitle="Stimmen zurücksetzen"
-        @no="deleteDialog = false"
+        @no="resetDialog = false"
         @yes="resetVotes()"
       />
     </v-col>
@@ -79,7 +79,7 @@
     <v-col cols="auto">
       <v-row class="flex-nowrap">
         <v-col
-          v-for="votingOption in getVotingOptions"
+          v-for="votingOption in votingOptions"
           :key="votingOption"
           cols="auto"
         >
@@ -91,7 +91,7 @@
             "
             :disabled="revealed && !isAdmin()"
             stacked
-            @click="vote(votingOption)"
+            @click="setVote(votingOption)"
           >
             <v-row
               ><span class="votingOption">{{ votingOption }}</span></v-row
@@ -116,7 +116,7 @@
       <v-row v-if="revealed">
         <v-col>
           <v-sparkline
-            v-model="voteCountValues"
+            v-model="graphValues"
             :gradient="['#FFCD00', '#334799']"
             auto-draw
             smooth="20"
@@ -129,8 +129,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { SnackbarState } from "@/stores/snackbar.ts";
-import type Votes from "@/types/Votes.ts";
+import type IssueDetails from "@/types/IssueDetails.ts";
 
 import {
   mdiAccount,
@@ -140,112 +139,44 @@ import {
   mdiTrophy,
 } from "@mdi/js";
 import { isDefined } from "@vueuse/core";
-import { storeToRefs } from "pinia";
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
-import { createVote } from "@/api/vote/create-vote.ts";
-import { deleteAllVotes } from "@/api/vote/delete-vote-all.ts";
-import { deleteVote } from "@/api/vote/delete-vote.ts";
-import { setVoteResult } from "@/api/vote/set-voteResult.ts";
-import { setVoteRevealed } from "@/api/vote/set-voteRevealed.ts";
-import { subscribeVotes } from "@/api/vote/subscribe-votes.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
-import { STATUS_INDICATORS } from "@/constants.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
-import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
-import { isAdmin, isLoggedIn } from "@/util/userUtils.ts";
+import { useIssueVoting } from "@/composables/issueVoting.ts";
+import { isAdmin } from "@/util/userUtils.ts";
 
-const { getVotingOptions } = storeToRefs(useVotingOptionsStore());
-const notLoggedInMessage: SnackbarState = {
-  message: "Bitte anmelden um die Poker Funktion zu nutzen.",
-  level: STATUS_INDICATORS.ERROR,
-  show: true,
-};
-
-const snackbarStore = useSnackbarStore();
-const props = defineProps(["issue"]);
-const votes = ref<Votes>({ voteCount: 0 });
-const voteCounts = ref<Record<string, number>>({});
-const voteCountValues = ref<number[]>([]);
-const revealed = ref(false);
-const deleteDialog = ref(false);
-
-let eventSource: EventSource | null = null;
+const props = defineProps<{
+  issue: IssueDetails;
+}>();
+const issue = ref<IssueDetails>(props.issue);
+const {
+  votes,
+  revealed,
+  voteCounts,
+  voteCountValues,
+  votingOptions,
+  resetDialog,
+  fetchVotes,
+  setVote,
+  toggleRevealed,
+  resetVotes,
+} = useIssueVoting(issue);
+const graphValues = computed(() => [...voteCountValues.value]);
 
 onMounted(() => {
-  if (props.issue) {
-    fetchVotes();
-  }
+  parseProps(props.issue);
 });
 
 watch(
   () => props.issue,
-  () => fetchVotes()
+  (value) => parseProps(value)
 );
 
-onUnmounted(() => {
-  if (eventSource) eventSource.close();
-});
-
-function fetchVotes() {
-  if (!isLoggedIn()) {
-    snackbarStore.showMessage(notLoggedInMessage);
-    return;
+function parseProps(issueProp: IssueDetails) {
+  if (issueProp) {
+    issue.value = issueProp;
+    fetchVotes();
   }
-  if (eventSource) eventSource.close();
-  eventSource = subscribeVotes(
-    props.issue,
-    (content) => {
-      votes.value = content;
-      revealed.value = isDefined(content.allVotings);
-      countVotes();
-    },
-    () => setTimeout(fetchVotes, 1000)
-  );
-}
-
-function vote(voting: number) {
-  if (isAdmin() && revealed.value) {
-    setVoteResult(
-      props.issue,
-      voting === votes.value.voteResult ? undefined : voting
-    ).catch((error) => snackbarStore.showMessage(error));
-  } else if (votes.value?.userVoting != voting) {
-    createVote(props.issue, voting).catch((error) =>
-      snackbarStore.showMessage(error)
-    );
-  } else {
-    deleteVote(props.issue).catch((error) => snackbarStore.showMessage(error));
-  }
-}
-
-function toggleRevealed() {
-  setVoteRevealed(props.issue, !revealed.value).catch((error) =>
-    snackbarStore.showMessage(error)
-  );
-}
-
-function resetVotes() {
-  deleteDialog.value = false;
-  deleteAllVotes(props.issue).catch((error) =>
-    snackbarStore.showMessage(error)
-  );
-}
-
-function countVotes() {
-  if (!votes.value.allVotings) return;
-  voteCounts.value = votes.value.allVotings.reduce(
-    (acc, voting) => {
-      acc[voting] = (acc[voting] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
-  voteCountValues.value = new Array(getVotingOptions.value.length).fill(0);
-  Object.entries(voteCounts.value).forEach(([voting, count]) => {
-    voteCountValues.value[getVotingOptions.value.indexOf(parseInt(voting))] =
-      count;
-  });
 }
 </script>
 

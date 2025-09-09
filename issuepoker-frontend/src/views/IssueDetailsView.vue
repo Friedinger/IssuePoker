@@ -47,75 +47,28 @@
 </template>
 
 <script lang="ts" setup>
-import type IssueDetails from "@/types/IssueDetails.ts";
-import type { RouteParamsGeneric } from "vue-router";
+import type IssueKey from "@/types/IssueKey.ts";
 
 import { onMounted, ref, watch } from "vue";
 import VueMarkdown from "vue-markdown-render";
 import { useRoute } from "vue-router";
 
-import { getIssue } from "@/api/issue/get-issue.ts";
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
-import {
-  ROUTES_HOME,
-  ROUTES_ISSUE_EDIT,
-  STATUS_INDICATORS,
-} from "@/constants.ts";
-import router from "@/plugins/router.ts";
-import { useIssueImportStore } from "@/stores/issueImport.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
+import { useIssueDetails } from "@/composables/issueDetails.ts";
 import { parseRouteParamsToIssueKey } from "@/util/parser.ts";
-import { isAdmin } from "@/util/userUtils.ts";
 
 const markdownOptions = {
   html: true,
 };
-const snackbarStore = useSnackbarStore();
-const issueImportStore = useIssueImportStore();
 const route = useRoute();
-const issue = ref<IssueDetails>();
-
-onMounted(() => {
-  fetchIssue(route.params);
-});
+const issueKey = ref<IssueKey>(parseRouteParamsToIssueKey(route.params));
+const { issue } = useIssueDetails(issueKey);
 
 watch(
   () => route.params,
-  (params) => fetchIssue(params)
+  (params) => (issueKey.value = parseRouteParamsToIssueKey(params))
 );
-
-function fetchIssue(params: RouteParamsGeneric) {
-  const { owner, repository, number } = parseRouteParamsToIssueKey(params);
-  getIssue(owner, repository, number)
-    .then((content: IssueDetails) => (issue.value = content))
-    .catch(() => {
-      if (isAdmin()) {
-        issueImportStore.setIssueImport({
-          owner,
-          repository,
-          number,
-          title: "",
-          description: "",
-          labels: {},
-        });
-        snackbarStore.showMessage({
-          message: `${owner}/${repository}#${number} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,
-          level: STATUS_INDICATORS.INFO,
-        });
-        router.push({
-          name: ROUTES_ISSUE_EDIT,
-          params: { owner, repository, number, action: "new" },
-        });
-      } else {
-        snackbarStore.showMessage({
-          message: `${owner}/${repository}#${number} wurde nicht gefunden.`,
-          level: STATUS_INDICATORS.WARNING,
-        });
-        router.push({ name: ROUTES_HOME });
-      }
-    });
-}
 </script>
 
 <style>

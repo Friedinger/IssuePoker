@@ -26,10 +26,7 @@
       >
         <v-card>
           <v-card-text>
-            <vue-markdown
-              :options="markdownOptions"
-              :source="issue.description"
-            />
+            <markdown-render :content="issue.description" />
           </v-card-text>
         </v-card>
       </v-col>
@@ -49,18 +46,15 @@
 <script lang="ts" setup>
 import type IssueKey from "@/types/IssueKey.ts";
 
-import { onMounted, ref, watch } from "vue";
-import VueMarkdown from "vue-markdown-render";
+import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import IssueDetailsActions from "@/components/IssueDetailsActions.vue";
 import IssueVoting from "@/components/IssueVoting.vue";
+import MarkdownRender from "@/components/MarkdownRender.vue";
 import { useIssueDetails } from "@/composables/issueDetails.ts";
 import { parseRouteParamsToIssueKey } from "@/util/parser.ts";
 
-const markdownOptions = {
-  html: true,
-};
 const route = useRoute();
 const issueKey = ref<IssueKey>(parseRouteParamsToIssueKey(route.params));
 const { issue } = useIssueDetails(issueKey);

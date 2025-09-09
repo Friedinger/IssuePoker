@@ -247,6 +247,9 @@ function isDirty(): boolean {
     originalIssue?.labels ?? {},
     originalIssue?.description ?? "",
   ];
-  return currentValues.some((value, index) => value !== originalValues[index]);
+  return currentValues.some(
+    (value, index) =>
+      JSON.stringify(value) !== JSON.stringify(originalValues[index])
+  );
 }
 </script>

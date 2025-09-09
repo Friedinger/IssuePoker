@@ -13,6 +13,7 @@
           v-for="(color, name) in issue.labels"
           :key="name"
           :color="color"
+          variant="elevated"
         >
           {{ name }}
         </v-chip>

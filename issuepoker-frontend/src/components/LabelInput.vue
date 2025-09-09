@@ -16,19 +16,24 @@
         :floating="isActive()"
         >{{ label }}</v-field-label
       >
-      <v-chip-group>
+      <div class="d-flex flex-wrap ga-2 align-center pt-2 pb-2">
         <v-chip
           v-for="(color, name) in modelValue"
           :key="name"
-          :style="`color: ${color}`"
+          :color="color"
           closable
+          variant="elevated"
           @click:close="removeLabel(name)"
         >
           {{ name }}
         </v-chip>
-      </v-chip-group>
+      </div>
       <v-btn
-        :style="!isActive() && label ? `margin-left: ${label.length}ch;` : ''"
+        :style="
+          !isActive() && label
+            ? `margin-left: ${label.length}ch;`
+            : 'margin-left: 8px;'
+        "
         class="align-self-center"
         density="compact"
         icon
@@ -76,8 +81,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { VInput } from "vuetify/components";
-
 import { mdiPlus } from "@mdi/js";
 import { ref } from "vue";
 

@@ -105,12 +105,13 @@ public class VoteController {
         if (issueEmitters == null) {
             return;
         }
-        for (final UserEmitter userEmitter : issueEmitters) {
+        for (final UserEmitter userEmitter : List.copyOf(issueEmitters)) {
             try {
                 final VotesDTO votesDTO = voteService.getVotes(issueKey, userEmitter.username);
                 userEmitter.emitter.send(SseEmitter.event().name("votes").data(votesDTO));
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException e) {
                 userEmitter.emitter.completeWithError(e);
+                issueEmitters.remove(userEmitter);
             }
         }
     }

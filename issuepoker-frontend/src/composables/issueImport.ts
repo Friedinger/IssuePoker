@@ -50,18 +50,22 @@ export function useIssueImport() {
             }, {}),
         };
         issueImportStore.setIssueImport(imported);
+        const showSuccessMessage = () => {
+          snackbarStore.showMessage({
+            message: `${owner}/${repository}#${number} wurde erfolgreich importiert.`,
+            level: STATUS_INDICATORS.SUCCESS,
+          });
+        };
         if (route.name !== ROUTES_ISSUE_EDIT) {
           router
             .push({
               name: ROUTES_ISSUE_EDIT,
               params: { owner, repository, number, action: "new" },
             })
-            .then();
+            .then(showSuccessMessage);
+        } else {
+          showSuccessMessage();
         }
-        snackbarStore.showMessage({
-          message: `${owner}/${repository}#${number} wurde erfolgreich importiert.`,
-          level: STATUS_INDICATORS.SUCCESS,
-        });
       })
       .catch((e) => {
         if (e.message === "Pull Requests are not supported.") {

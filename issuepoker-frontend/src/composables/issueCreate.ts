@@ -54,7 +54,6 @@ export function useIssueCreate(
   }
 
   function issueExistsNot() {
-    // if (issue.value) return;
     router
       .push({
         name: ROUTES_ISSUE_EDIT,

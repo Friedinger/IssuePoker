@@ -41,6 +41,7 @@ const datetimeFormats = {
 };
 
 export default createI18n<[MessageSchema], Locales>({
+  legacy: false,
   locale: "de",
   fallbackLocale: "de",
   messages,

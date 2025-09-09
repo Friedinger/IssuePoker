@@ -64,10 +64,3 @@ watch(
   (params) => (issueKey.value = parseRouteParamsToIssueKey(params))
 );
 </script>
-
-<style>
-ul,
-ol {
-  margin-left: 1.25rem;
-}
-</style>

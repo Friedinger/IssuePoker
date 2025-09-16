@@ -92,41 +92,14 @@
 
 <script lang="ts" setup>
 import type IssueDetails from "@/types/IssueDetails.ts";
-import type { RouteLocationRaw } from "vue-router";
 
 import { mdiCancel, mdiContentSave } from "@mdi/js";
 import { onMounted, ref, watch } from "vue";
 
-import { createIssue } from "@/api/issue/create-issue.ts";
-import { updateIssue } from "@/api/issue/update-issue.ts";
 import YesNoDialog from "@/components/common/YesNoDialog.vue";
 import LabelInput from "@/components/LabelInput.vue";
+import { useIssueCreateForm } from "@/composables/issueCreateForm.ts";
 import { useSaveLeave } from "@/composables/saveLeave.ts";
-import {
-  ROUTES_HOME,
-  ROUTES_ISSUE_DETAIL,
-  STATUS_INDICATORS,
-} from "@/constants.ts";
-import router from "@/plugins/router.ts";
-import { useSnackbarStore } from "@/stores/snackbar.ts";
-
-const snackbarStore = useSnackbarStore();
-const {
-  stay,
-  leave,
-  saveLeaveDialog,
-  saveLeaveDialogText,
-  saveLeaveDialogTitle,
-} = useSaveLeave(isDirty);
-
-const owner = ref("");
-const repository = ref("");
-const number = ref(NaN);
-const title = ref("");
-const labels = ref<Record<string, string>>({});
-const description = ref("");
-const valid = ref();
-const saved = ref<boolean>(false);
 
 const {
   issue,
@@ -140,6 +113,34 @@ const {
   action: "new" | "edit";
 }>();
 
+const original = ref<IssueDetails | undefined>(originalIssue);
+
+const {
+  owner,
+  repository,
+  number,
+  title,
+  labels,
+  description,
+  valid,
+  save,
+  validateOwner,
+  validateRepository,
+  validateNumber,
+  validateTitle,
+  validateDescription,
+  cancel,
+  isDirty,
+} = useIssueCreateForm(action, issue, original);
+
+const {
+  stay,
+  leave,
+  saveLeaveDialog,
+  saveLeaveDialogText,
+  saveLeaveDialogTitle,
+} = useSaveLeave(isDirty);
+
 onMounted(() => {
   parseProp(issue);
 });
@@ -149,64 +150,10 @@ watch(
   (issue) => parseProp(issue)
 );
 
-function save() {
-  if (!valid.value) return;
-  const request = action === "edit" ? updateIssue : createIssue;
-  request(
-    owner.value,
-    repository.value,
-    number.value,
-    title.value,
-    description.value,
-    labels.value
-  )
-    .then((content: IssueDetails) => {
-      saved.value = true;
-      const { owner, repository, number } = content;
-      router.push({
-        name: ROUTES_ISSUE_DETAIL,
-        params: { owner, repository, number },
-      });
-      snackbarStore.showMessage({
-        message: `${owner}/${repository}#${number} wurde erfolgreich ${action === "edit" ? "bearbeitet" : "angelegt"}.`,
-        level: STATUS_INDICATORS.SUCCESS,
-      });
-    })
-    .catch((error) => snackbarStore.showMessage(error));
-}
-
-function validateOwner(value: string) {
-  if (value.trim().length < 1) return "Bitte einen Besitzer angeben.";
-  if (value.length > 255)
-    return "Besitzer darf nicht länger als 255 Zeichen sein.";
-  return true;
-}
-
-function validateRepository(value: string) {
-  if (value.trim().length < 1) return "Bitte eine Repository angeben.";
-  if (value.length > 255)
-    return "Repository darf nicht länger als 255 Zeichen sein.";
-  return true;
-}
-
-function validateNumber(value: number | null) {
-  if (value === null) return "Bitte eine Nummer angeben.";
-  if (value < 1) return "Nummer muss positiv sein.";
-  return true;
-}
-
-function validateTitle(value: string) {
-  if (value.trim().length < 1) return "Bitte einen Titel angeben.";
-  if (value.length > 255)
-    return "Titel darf nicht länger als 255 Zeichen sein.";
-  return true;
-}
-
-function validateDescription(value: string) {
-  if (value.length > 65_535)
-    return "Beschreibung darf nicht länger als 65535 Zeichen sein.";
-  return true;
-}
+watch(
+  () => originalIssue,
+  (originalIssue) => (original.value = originalIssue)
+);
 
 function parseProp(issue?: IssueDetails) {
   if (!issue) return;
@@ -216,40 +163,5 @@ function parseProp(issue?: IssueDetails) {
   title.value = issue.title;
   labels.value = issue.labels;
   description.value = issue.description;
-}
-
-function cancel(): RouteLocationRaw {
-  if (action === "edit" && issue) {
-    const { owner, repository, number } = issue;
-    return {
-      name: ROUTES_ISSUE_DETAIL,
-      params: { owner, repository, number },
-    };
-  }
-  return { name: ROUTES_HOME };
-}
-
-function isDirty(): boolean {
-  if (saved.value === true) return false;
-  const currentValues = [
-    owner.value,
-    repository.value,
-    number.value,
-    title.value,
-    labels.value,
-    description.value,
-  ];
-  const originalValues = [
-    originalIssue?.owner ?? "",
-    originalIssue?.repository ?? "",
-    originalIssue?.number ?? null,
-    originalIssue?.title ?? "",
-    originalIssue?.labels ?? {},
-    originalIssue?.description ?? "",
-  ];
-  return currentValues.some(
-    (value, index) =>
-      JSON.stringify(value) !== JSON.stringify(originalValues[index])
-  );
 }
 </script>

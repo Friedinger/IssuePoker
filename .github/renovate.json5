@@ -19,5 +19,6 @@
     }
   ],
   "dependencyDashboardTitle": "📌 Dependency Dashboard",
-  "dependencyDashboardLabels": ["Type: Dependency"]
+  "dependencyDashboardLabels": ["Type: Dependency"],
+  "schedule": ["at any time"]
 }

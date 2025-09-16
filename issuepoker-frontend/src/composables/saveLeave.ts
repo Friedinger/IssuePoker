@@ -10,7 +10,7 @@
  */
 import type { NavigationGuardNext, RouteLocationNormalized } from "vue-router";
 
-import { ref } from "vue";
+import { readonly, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 export function useSaveLeave(isDirty: () => boolean) {
@@ -54,11 +54,11 @@ export function useSaveLeave(isDirty: () => boolean) {
   }
 
   return {
-    saveLeaveDialogTitle,
-    saveLeaveDialogText,
-    saveLeaveDialog,
-    isSave,
-    nextRoute,
+    saveLeaveDialogTitle: readonly(saveLeaveDialogTitle),
+    saveLeaveDialogText: readonly(saveLeaveDialogText),
+    saveLeaveDialog: readonly(saveLeaveDialog),
+    isSave: readonly(isSave),
+    nextRoute: readonly(nextRoute),
     stay,
     leave,
   };

@@ -4,7 +4,7 @@ import type Page from "@/types/Page.ts";
 import type { SortItem } from "vuetify/lib/components/VDataTable/composables/sort.js";
 
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { readonly, ref } from "vue";
 
 import { getIssueList } from "@/api/issue/get-issueList.ts";
 import { ROUTES_ISSUE_DETAIL } from "@/constants.ts";
@@ -78,13 +78,13 @@ export function useIssueList() {
   }
 
   return {
-    issues,
-    totalIssues,
-    itemsPerPage,
-    loading,
-    page,
+    issues: readonly(issues),
+    totalIssues: readonly(totalIssues),
+    itemsPerPage: readonly(itemsPerPage),
+    loading: readonly(loading),
+    page: readonly(page),
     search: getFilter.value.search,
-    sortBy,
+    sortBy: readonly(sortBy),
     fetchIssues,
     updateOptions,
     goToIssue,

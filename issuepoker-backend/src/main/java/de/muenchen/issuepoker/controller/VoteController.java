@@ -41,9 +41,10 @@ public class VoteController {
         final String username = AuthUtils.getUsername();
         final SseEmitter emitter = new SseEmitter();
         final UserEmitter userEmitter = new UserEmitter(emitter, username);
-        emitters.computeIfAbsent(issueKey, k -> new CopyOnWriteArrayList<>()).add(userEmitter);
+        emitters.computeIfAbsent(issueKey, key -> new CopyOnWriteArrayList<>()).add(userEmitter);
         emitter.onCompletion(() -> emitters.get(issueKey).remove(userEmitter));
         emitter.onTimeout(() -> emitters.get(issueKey).remove(userEmitter));
+        emitter.onError((e) -> emitters.get(issueKey).remove(userEmitter));
         try {
             final SseEmitter.SseEventBuilder event = SseEmitter.event()
                     .name("votes")
@@ -53,6 +54,17 @@ public class VoteController {
             emitter.completeWithError(e);
         }
         return emitter;
+    }
+
+    @DeleteMapping("unsubscribe")
+    public void unsubscribeGetVotes(@PathVariable("owner") final String owner,
+            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
+        final IssueKey issueKey = new IssueKey(owner, repository, id);
+        final String username = AuthUtils.getUsername();
+        emitters.computeIfPresent(issueKey, (key, userEmitters) -> {
+            userEmitters.removeIf(emitter -> emitter.username.equals(username));
+            return userEmitters.isEmpty() ? null : userEmitters;
+        });
     }
 
     @PostMapping

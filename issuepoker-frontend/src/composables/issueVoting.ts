@@ -1,6 +1,6 @@
+import type { ComposableParam } from "@/types/ComposableParam.ts";
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type Votes from "@/types/Votes.ts";
-import type { Ref } from "vue";
 
 import { isDefined } from "@vueuse/core";
 import { storeToRefs } from "pinia";
@@ -17,9 +17,7 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
 import { isAdmin, isLoggedIn } from "@/util/userUtils.ts";
 
-export function useIssueVoting(
-  issue: IssueDetails | Ref<IssueDetails> | (() => IssueDetails)
-) {
+export function useIssueVoting(issue: ComposableParam<IssueDetails>) {
   const snackbarStore = useSnackbarStore();
   const { getVotingOptions: votingOptions } = storeToRefs(
     useVotingOptionsStore()

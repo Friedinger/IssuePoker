@@ -1,6 +1,6 @@
+import type { ComposableParam } from "@/types/ComposableParam.ts";
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueKey from "@/types/IssueKey.ts";
-import type { Ref } from "vue";
 
 import { readonly, ref, toValue, watchEffect } from "vue";
 
@@ -16,9 +16,7 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { issueKeyToString } from "@/types/IssueKey.ts";
 import { isAdmin } from "@/util/userUtils.ts";
 
-export function useIssueDetails(
-  issueKey: IssueKey | Ref<IssueKey> | (() => IssueKey)
-) {
+export function useIssueDetails(issueKey: ComposableParam<IssueKey>) {
   const snackbarStore = useSnackbarStore();
   const issueImportStore = useIssueImportStore();
   const issue = ref<IssueDetails>();

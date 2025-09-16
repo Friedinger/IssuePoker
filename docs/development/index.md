@@ -32,7 +32,6 @@ and [Develop](https://refarch.oss.muenchen.de/templates/develop.html) documentat
 4. Open your browser and visit [http://localhost:8083](http://localhost:8083)
 
 5. Login one of the local accounts from keycloak migration:
-
    - Username: `admin` Password: `admin`
    - Username: `user1` Password: `user1`
    - Username: `user2` Password: `user2`

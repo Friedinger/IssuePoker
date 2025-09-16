@@ -173,10 +173,8 @@ watch(
 );
 
 function parseProps(issueProp: IssueDetails) {
-  if (issueProp) {
-    issue.value = issueProp;
-    fetchVotes();
-  }
+  issue.value = issueProp;
+  fetchVotes();
 }
 </script>
 

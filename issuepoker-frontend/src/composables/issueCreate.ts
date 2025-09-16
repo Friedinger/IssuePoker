@@ -1,6 +1,6 @@
+import type { ComposableParam } from "@/types/ComposableParam.ts";
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueKey from "@/types/IssueKey.ts";
-import type { Ref } from "vue";
 
 import { readonly, ref, toValue, watchEffect } from "vue";
 
@@ -10,11 +10,7 @@ import router from "@/plugins/router.ts";
 import { useIssueImportStore } from "@/stores/issueImport.ts";
 
 export function useIssueCreate(
-  issueKey:
-    | IssueKey
-    | undefined
-    | Ref<IssueKey | undefined>
-    | (() => IssueKey | undefined)
+  issueKey: ComposableParam<IssueKey | undefined>
 ) {
   const issueImportStore = useIssueImportStore();
   const issue = ref<IssueDetails>();

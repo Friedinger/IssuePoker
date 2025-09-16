@@ -93,5 +93,3 @@ function issueToUrl(issue: IssueDetails | undefined) {
   return `https://github.com/${issue.owner}/${issue.repository}/issues/${issue.number}`;
 }
 </script>
-
-<style scoped></style>

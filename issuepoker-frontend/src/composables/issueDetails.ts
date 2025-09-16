@@ -1,6 +1,6 @@
+import type { ComposableParam } from "@/types/ComposableParam.ts";
 import type IssueDetails from "@/types/IssueDetails.ts";
 import type IssueKey from "@/types/IssueKey.ts";
-import type { Ref } from "vue";
 
 import { readonly, ref, toValue, watchEffect } from "vue";
 
@@ -16,9 +16,7 @@ import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { issueKeyToString } from "@/types/IssueKey.ts";
 import { isAdmin } from "@/util/userUtils.ts";
 
-export function useIssueDetails(
-  issueKey: IssueKey | Ref<IssueKey> | (() => IssueKey)
-) {
+export function useIssueDetails(issueKey: ComposableParam<IssueKey>) {
   const snackbarStore = useSnackbarStore();
   const issueImportStore = useIssueImportStore();
   const issue = ref<IssueDetails>();
@@ -52,13 +50,15 @@ export function useIssueDetails(
       message: `${issueKeyToString(key.value)} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,
       level: STATUS_INDICATORS.INFO,
     });
-    router.push({
-      name: ROUTES_ISSUE_EDIT,
-      params: {
-        ...key.value,
-        action: "new",
-      },
-    });
+    router
+      .push({
+        name: ROUTES_ISSUE_EDIT,
+        params: {
+          ...key.value,
+          action: "new",
+        },
+      })
+      .then();
   }
 
   function handleNotFoundUser() {
@@ -66,7 +66,7 @@ export function useIssueDetails(
       message: `${issueKeyToString(key.value)} wurde nicht gefunden.`,
       level: STATUS_INDICATORS.WARNING,
     });
-    router.push({ name: ROUTES_HOME });
+    router.push({ name: ROUTES_HOME }).then();
   }
 
   return { issue: readonly(issue), fetchIssue };

@@ -76,5 +76,3 @@ const { issue } = defineProps<{
 }>();
 const deleteDialog = ref(false);
 </script>
-
-<style scoped></style>

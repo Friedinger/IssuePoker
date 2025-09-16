@@ -12,6 +12,7 @@ import { deleteVote } from "@/api/vote/delete-vote.ts";
 import { setVoteResult } from "@/api/vote/set-voteResult.ts";
 import { setVoteRevealed } from "@/api/vote/set-voteRevealed.ts";
 import { subscribeVotes } from "@/api/vote/subscribe-votes.ts";
+import { unsubscribeVotes } from "@/api/vote/unsubscribe-votes.ts";
 import { STATUS_INDICATORS } from "@/constants.ts";
 import { useSnackbarStore } from "@/stores/snackbar.ts";
 import { useVotingOptionsStore } from "@/stores/votingOptions.ts";
@@ -32,7 +33,7 @@ export function useIssueVoting(issue: ComposableParam<IssueDetails>) {
   const eventSource = ref<EventSource | null>(null);
 
   onUnmounted(() => {
-    if (eventSource.value) eventSource.value.close();
+    closeEvent();
   });
 
   watchEffect(() => {
@@ -48,7 +49,7 @@ export function useIssueVoting(issue: ComposableParam<IssueDetails>) {
       });
       return;
     }
-    if (eventSource.value) eventSource.value.close();
+    if (eventSource.value) return;
     eventSource.value = subscribeVotes(
       toValue(issue),
       (content) => {
@@ -56,7 +57,10 @@ export function useIssueVoting(issue: ComposableParam<IssueDetails>) {
         revealed.value = isDefined(content.allVotings);
         countVotes();
       },
-      () => setTimeout(fetchVotes, 1000)
+      () => {
+        closeEvent();
+        setTimeout(fetchVotes, 1000);
+      }
     );
   }
 
@@ -109,6 +113,16 @@ export function useIssueVoting(issue: ComposableParam<IssueDetails>) {
       voteCountValues.value[votingOptions.value.indexOf(parseInt(voting))] =
         count;
     });
+  }
+
+  function closeEvent() {
+    const event = eventSource.value;
+    if (event) {
+      unsubscribeVotes(toValue(issue)).finally(() => {
+        event.close();
+        eventSource.value = null;
+      });
+    }
   }
 
   return {

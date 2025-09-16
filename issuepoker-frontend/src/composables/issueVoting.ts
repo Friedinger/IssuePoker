@@ -90,7 +90,7 @@ export function useIssueVoting(
     deleteAllVotes(toValue(issue))
       .then(() => {
         snackbarStore.showMessage({
-          message: "Votes wurden erfolgreich zurückgesetzt.",
+          message: "Stimmen wurden erfolgreich zurückgesetzt.",
           level: STATUS_INDICATORS.SUCCESS,
         });
       })

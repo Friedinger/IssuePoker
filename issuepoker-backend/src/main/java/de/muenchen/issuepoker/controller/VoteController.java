@@ -27,7 +27,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/issues/{owner}/{repository}/{id}/votes")
+@RequestMapping("/issues/{owner}/{repository}/{number}/votes")
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class VoteController {
     private final VoteService voteService;
@@ -36,8 +36,8 @@ public class VoteController {
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
     public SseEmitter getVotes(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         final String username = AuthUtils.getUsername();
         final SseEmitter emitter = new SseEmitter();
         final UserEmitter userEmitter = new UserEmitter(emitter, username);
@@ -58,8 +58,8 @@ public class VoteController {
 
     @DeleteMapping("unsubscribe")
     public void unsubscribeGetVotes(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         final String username = AuthUtils.getUsername();
         emitters.computeIfPresent(issueKey, (key, userEmitters) -> {
             userEmitters.removeIf(emitter -> emitter.username.equals(username));
@@ -70,8 +70,8 @@ public class VoteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createVote(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
-            @PathVariable("id") final long id, @Valid @RequestBody final VoteRequestVotingDTO voteRequestDTO) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("number") final long number, @Valid @RequestBody final VoteRequestVotingDTO voteRequestDTO) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         voteService.saveVote(issueKey, voteRequestDTO);
         sendVotesUpdate(issueKey);
     }
@@ -79,8 +79,8 @@ public class VoteController {
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
     public void deleteVote(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         voteService.deleteVote(issueKey);
         sendVotesUpdate(issueKey);
     }
@@ -88,8 +88,8 @@ public class VoteController {
     @DeleteMapping("all")
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllVotes(@PathVariable("owner") final String owner,
-            @PathVariable("repository") final String repository, @PathVariable("id") final long id) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("repository") final String repository, @PathVariable("number") final long number) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         voteService.deleteAllVotes(issueKey);
         sendVotesUpdate(issueKey);
     }
@@ -97,8 +97,8 @@ public class VoteController {
     @PostMapping("revealed")
     @ResponseStatus(HttpStatus.OK)
     public void setRevealed(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
-            @PathVariable("id") final long id, @RequestBody final VoteRequestRevealedDTO revealedDTO) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("number") final long number, @RequestBody final VoteRequestRevealedDTO revealedDTO) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         voteService.setRevealed(issueKey, revealedDTO.revealed());
         sendVotesUpdate(issueKey);
     }
@@ -106,8 +106,8 @@ public class VoteController {
     @PostMapping("result")
     @ResponseStatus(HttpStatus.OK)
     public void setResult(@PathVariable("owner") final String owner, @PathVariable("repository") final String repository,
-            @PathVariable("id") final long id, @RequestBody final VoteRequestResultDTO resultDTO) {
-        final IssueKey issueKey = new IssueKey(owner, repository, id);
+            @PathVariable("number") final long number, @RequestBody final VoteRequestResultDTO resultDTO) {
+        final IssueKey issueKey = new IssueKey(owner, repository, number);
         voteService.setResult(issueKey, resultDTO.voteResult());
         sendVotesUpdate(issueKey);
     }

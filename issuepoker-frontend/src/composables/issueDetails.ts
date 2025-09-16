@@ -52,13 +52,15 @@ export function useIssueDetails(
       message: `${issueKeyToString(key.value)} wurde nicht gefunden. Ein neues Issue kann jetzt erstellt werden.`,
       level: STATUS_INDICATORS.INFO,
     });
-    router.push({
-      name: ROUTES_ISSUE_EDIT,
-      params: {
-        ...key.value,
-        action: "new",
-      },
-    });
+    router
+      .push({
+        name: ROUTES_ISSUE_EDIT,
+        params: {
+          ...key.value,
+          action: "new",
+        },
+      })
+      .then();
   }
 
   function handleNotFoundUser() {
@@ -66,7 +68,7 @@ export function useIssueDetails(
       message: `${issueKeyToString(key.value)} wurde nicht gefunden.`,
       level: STATUS_INDICATORS.WARNING,
     });
-    router.push({ name: ROUTES_HOME });
+    router.push({ name: ROUTES_HOME }).then();
   }
 
   return { issue: readonly(issue), fetchIssue };

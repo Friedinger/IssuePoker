@@ -1,5 +1,7 @@
 package de.muenchen.issuepoker.configuration.filter.nfcconverter;
 
+import static de.muenchen.issuepoker.util.LogUtil.sanitizeForLog;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.annotations.SuppressMatchType;
 import jakarta.servlet.http.Cookie;
@@ -38,10 +40,10 @@ public class NfcHelper {
             return null;
         }
 
-        log.debug("String BEFORE nfc conversion: \"{}\".", in);
+        log.debug("String BEFORE nfc conversion: \"{}\".", sanitizeForLog(in));
         log.debug("Length of String BEFORE nfc conversion: {}.", in.length());
         final String nfcConvertedContent = Normalizer.normalize(in, Normalizer.Form.NFC);
-        log.debug("String AFTER nfc conversion: \"{}\".", nfcConvertedContent);
+        log.debug("String AFTER nfc conversion: \"{}\".", sanitizeForLog(nfcConvertedContent));
         log.debug("Length of String AFTER nfc conversion: {}.", nfcConvertedContent.length());
         return nfcConvertedContent;
     }

@@ -16,7 +16,7 @@ public final class LogUtil {
                 .replaceAll("[^\\x20-\\x7E]", "?"); // Replace non-ASCII printable with '?'
     }
 
-    public static String sanitizeForLog(final Object object) {
+    public static String sanitizeObjectForLog(final Object object) {
         if (object == null) {
             return "";
         }

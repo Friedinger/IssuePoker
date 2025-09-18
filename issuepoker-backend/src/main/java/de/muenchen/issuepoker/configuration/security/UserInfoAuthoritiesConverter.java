@@ -1,5 +1,7 @@
 package de.muenchen.issuepoker.configuration.security;
 
+import static de.muenchen.issuepoker.util.LogUtil.sanitizeForLog;
+
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Ticker;
 import java.util.ArrayList;
@@ -107,7 +109,7 @@ public class UserInfoAuthoritiesConverter implements Converter<Jwt, Collection<G
             final Map<String, Object> map = restTemplate.exchange(this.userInfoUri, HttpMethod.GET, entity,
                     Map.class).getBody();
 
-            log.debug("Response from user-info Endpoint: {}", map);
+            log.debug("Response from user-info Endpoint: {}", sanitizeForLog(map));
             if (map != null && map.containsKey(CLAIM_AUTHORITIES)) {
                 authorities = asAuthorities(map.get(CLAIM_AUTHORITIES));
             }

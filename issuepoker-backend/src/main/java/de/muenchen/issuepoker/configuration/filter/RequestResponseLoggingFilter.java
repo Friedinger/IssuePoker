@@ -58,7 +58,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
      */
     private boolean checkForLogging(final HttpServletRequest httpServletRequest) {
         final boolean isLoggingMode = switch (securityProperties.getLoggingMode()) {
-            // spotless:off
+        // spotless:off
             case ALL -> true;
             case CHANGING -> CHANGING_METHODS.contains(httpServletRequest.getMethod());
             default -> false;

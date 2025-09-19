@@ -1,7 +1,5 @@
 package de.muenchen.issuepoker.configuration.filter;
 
-import static de.muenchen.issuepoker.util.LogUtil.sanitizeForLog;
-
 import de.muenchen.issuepoker.configuration.security.SecurityProperties;
 import de.muenchen.issuepoker.security.AuthUtils;
 import jakarta.servlet.FilterChain;
@@ -47,7 +45,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
             log.info("User {} executed {} on URI {} with http status {}",
                     AuthUtils.getUsername(),
                     request.getMethod(),
-                    sanitizeForLog(request.getRequestURI()),
+                    request.getRequestURI(),
                     response.getStatus());
         }
     }
@@ -60,7 +58,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
      */
     private boolean checkForLogging(final HttpServletRequest httpServletRequest) {
         final boolean isLoggingMode = switch (securityProperties.getLoggingMode()) {
-        // spotless:off
+            // spotless:off
             case ALL -> true;
             case CHANGING -> CHANGING_METHODS.contains(httpServletRequest.getMethod());
             default -> false;

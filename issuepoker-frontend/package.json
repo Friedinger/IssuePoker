@@ -28,7 +28,7 @@
     "vuetify": "3.10.1"
   },
   "devDependencies": {
-    "@cyclonedx/cyclonedx-npm": "4.0.1",
+    "@cyclonedx/cyclonedx-npm": "4.0.2",
     "@mdi/js": "7.4.47",
     "@muenchen/prettier-codeformat": "1.0.2",
     "@tsconfig/node-lts": "22.0.2",

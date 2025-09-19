@@ -1,7 +1,6 @@
 package de.muenchen.issuepoker.services;
 
 import static de.muenchen.issuepoker.common.ExceptionMessageConstants.MSG_NOT_FOUND;
-import static de.muenchen.issuepoker.util.LogUtil.sanitizeForLog;
 
 import de.muenchen.issuepoker.common.ConflictException;
 import de.muenchen.issuepoker.common.NotFoundException;
@@ -38,7 +37,7 @@ public class IssueService {
 
     @PreAuthorize(Authorities.IS_USER)
     public Page<Issue> getIssueList(final Pageable pageRequest, final FilterDTO filter) {
-        log.info("Get all Issues for page {} filtered by {}", pageRequest, sanitizeForLog(filter.toString()));
+        log.info("Get all Issues for page {} filtered by {}", pageRequest, filter.toString());
         return issueRepository.findAll(
                 (root, query, criteriaBuilder) -> issueFilterService.filterIssues(filter, root, criteriaBuilder),
                 pageRequest);

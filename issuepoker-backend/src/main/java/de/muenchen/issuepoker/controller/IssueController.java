@@ -12,7 +12,6 @@ import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.vote.Vote;
 import de.muenchen.issuepoker.services.IssueService;
 import de.muenchen.issuepoker.util.SortUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,11 +49,11 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueList(@PageableDefault final Pageable pageable,
-            @RequestParam(required = false) final String sort, final FilterDTO filter, final HttpServletRequest request) {
-        final Pageable pageRequest = "-1".equals(request.getParameter("size"))
+    public Page<IssueSummaryDTO> getIssueList(@RequestParam(defaultValue = "0") final int page, @RequestParam(defaultValue = "10") final int size,
+            @RequestParam(required = false) final String sort, final FilterDTO filter) {
+        final Pageable pageRequest = (size == -1)
                 ? Pageable.unpaged(SortUtil.parseSort(sort))
-                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
+                : PageRequest.of(page, size, SortUtil.parseSort(sort));
         final Page<Issue> issuePage = issueService.getIssueList(pageRequest, filter);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());

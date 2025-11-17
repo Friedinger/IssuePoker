@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/issues")
 public class IssueController {
+    private static final int UNPAGED_SIZE = -1;
+
     private final IssueService issueService;
     private final IssueMapper issueMapper;
 
@@ -50,9 +51,11 @@ public class IssueController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Page<IssueSummaryDTO> getIssueList(@PageableDefault final Pageable pageable,
+    public Page<IssueSummaryDTO> getIssueList(@RequestParam(defaultValue = "0") final int page, @RequestParam(defaultValue = "10") final int size,
             @RequestParam(required = false) final String sort, final FilterDTO filter) {
-        final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
+        final Pageable pageRequest = (size == UNPAGED_SIZE)
+                ? Pageable.unpaged(SortUtil.parseSort(sort))
+                : PageRequest.of(page, size, SortUtil.parseSort(sort));
         final Page<Issue> issuePage = issueService.getIssueList(pageRequest, filter);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());

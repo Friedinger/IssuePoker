@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/issues")
 public class IssueController {
+    private static final int UNPAGED_SIZE = -1;
+
     private final IssueService issueService;
     private final IssueMapper issueMapper;
 
@@ -51,7 +53,7 @@ public class IssueController {
     @ResponseStatus(HttpStatus.OK)
     public Page<IssueSummaryDTO> getIssueList(@RequestParam(defaultValue = "0") final int page, @RequestParam(defaultValue = "10") final int size,
             @RequestParam(required = false) final String sort, final FilterDTO filter) {
-        final Pageable pageRequest = (size == -1)
+        final Pageable pageRequest = (size == UNPAGED_SIZE)
                 ? Pageable.unpaged(SortUtil.parseSort(sort))
                 : PageRequest.of(page, size, SortUtil.parseSort(sort));
         final Page<Issue> issuePage = issueService.getIssueList(pageRequest, filter);

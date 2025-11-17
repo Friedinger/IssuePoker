@@ -12,6 +12,7 @@ import de.muenchen.issuepoker.entities.issue.response.IssueSummaryDTO;
 import de.muenchen.issuepoker.entities.vote.Vote;
 import de.muenchen.issuepoker.services.IssueService;
 import de.muenchen.issuepoker.util.SortUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
@@ -51,8 +52,10 @@ public class IssueController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public Page<IssueSummaryDTO> getIssueList(@PageableDefault final Pageable pageable,
-            @RequestParam(required = false) final String sort, final FilterDTO filter) {
-        final Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
+            @RequestParam(required = false) final String sort, final FilterDTO filter, final HttpServletRequest request) {
+        final Pageable pageRequest = "-1".equals(request.getParameter("size"))
+                ? Pageable.unpaged(SortUtil.parseSort(sort))
+                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SortUtil.parseSort(sort));
         final Page<Issue> issuePage = issueService.getIssueList(pageRequest, filter);
         final List<IssueSummaryDTO> summaryList = issuePage.getContent().stream().map(issueMapper::toSummary).toList();
         return new PageImpl<>(summaryList, issuePage.getPageable(), issuePage.getTotalElements());
